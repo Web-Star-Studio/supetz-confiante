@@ -57,6 +57,14 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        "supetz-orange": "hsl(var(--supetz-orange))",
+        "supetz-orange-dark": "hsl(var(--supetz-orange-dark))",
+        "supetz-bg": "hsl(var(--supetz-bg))",
+        "supetz-bg-alt": "hsl(var(--supetz-bg-alt))",
+        "supetz-text": "hsl(var(--supetz-text))",
+      },
+      fontFamily: {
+        nunito: ["Nunito", "sans-serif"],
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -65,25 +73,24 @@ export default {
       },
       keyframes: {
         "accordion-down": {
-          from: {
-            height: "0",
-          },
-          to: {
-            height: "var(--radix-accordion-content-height)",
-          },
+          from: { height: "0" },
+          to: { height: "var(--radix-accordion-content-height)" },
         },
         "accordion-up": {
-          from: {
-            height: "var(--radix-accordion-content-height)",
-          },
-          to: {
-            height: "0",
-          },
+          from: { height: "var(--radix-accordion-content-height)" },
+          to: { height: "0" },
+        },
+        "float": {
+          "0%, 100%": { transform: "translateY(0px)" },
+          "50%": { transform: "translateY(-12px)" },
         },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
+        "float": "float 3s ease-in-out infinite",
+        "float-slow": "float 5s ease-in-out infinite",
+        "float-slower": "float 7s ease-in-out infinite",
       },
     },
   },
