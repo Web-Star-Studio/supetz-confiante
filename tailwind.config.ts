@@ -1,4 +1,5 @@
 import type { Config } from "tailwindcss";
+import tailwindcssAnimate from "tailwindcss-animate";
 
 export default {
   darkMode: ["class"],
@@ -64,6 +65,8 @@ export default {
         "supetz-text": "hsl(var(--supetz-text))",
       },
       fontFamily: {
+        display: ["Bricolage Grotesque", "sans-serif"],
+        body: ["Plus Jakarta Sans", "sans-serif"],
         nunito: ["Nunito", "sans-serif"],
       },
       borderRadius: {
@@ -84,6 +87,14 @@ export default {
           "0%, 100%": { transform: "translateY(0px)" },
           "50%": { transform: "translateY(-12px)" },
         },
+        "drift": {
+          "0%, 100%": { transform: "translate3d(0, 0, 0) rotate(0deg)" },
+          "50%": { transform: "translate3d(0, -8px, 0) rotate(-4deg)" },
+        },
+        "marquee": {
+          "0%": { transform: "translateX(0)" },
+          "100%": { transform: "translateX(-50%)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -91,8 +102,11 @@ export default {
         "float": "float 3s ease-in-out infinite",
         "float-slow": "float 5s ease-in-out infinite",
         "float-slower": "float 7s ease-in-out infinite",
+        "drift": "drift 6s ease-in-out infinite",
+        "marquee": "marquee 30s linear infinite",
+        "marquee-slow": "marquee 40s linear infinite",
       },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [tailwindcssAnimate],
 } satisfies Config;

@@ -1,4 +1,11 @@
-import { Product, Benefit, FAQ } from "@/types";
+import {
+  Product,
+  Benefit,
+  FAQ,
+  Testimonial,
+  BlogPostPreview,
+  SocialLink,
+} from "@/types";
 
 export const products: Product[] = [
   {
@@ -36,54 +43,153 @@ export const products: Product[] = [
 export const benefits: Benefit[] = [
   {
     id: "b1",
-    icon: "⚡",
-    title: "Alívio em 7 Dias",
-    description: "Resultados visíveis na primeira semana de uso. Seu pet sente a diferença rapidamente.",
+    icon: "🛡️",
+    title: "Imunidade Reforçada",
+    description:
+      "Nutrientes funcionais que apoiam a resposta natural do organismo e reduzem recorrências.",
   },
   {
     id: "b2",
-    icon: "🌿",
-    title: "100% Natural",
-    description: "Ingredientes naturais selecionados por veterinários. Sem químicos, sem efeitos colaterais.",
+    icon: "✨",
+    title: "Pelo e Pelagem Brilhante",
+    description:
+      "Ômega, biotina e vitaminas para uma pelagem mais forte, macia e com brilho visível.",
   },
   {
     id: "b3",
-    icon: "✨",
-    title: "Pelagem Linda",
-    description: "Pelos mais brilhantes, macios e saudáveis. A mudança que se vê e se sente.",
+    icon: "🌿",
+    title: "Fórmula Cruelty-Free",
+    description:
+      "Composição sem testes em animais e sem ingredientes agressivos para o bem-estar do seu pet.",
   },
   {
     id: "b4",
-    icon: "🛡️",
-    title: "Fortalece a Imunidade",
-    description: "Fortalece as defesas do organismo de dentro para fora, prevenindo recaídas.",
+    icon: "🐾",
+    title: "Saúde das Articulações",
+    description:
+      "Suporte diário para mobilidade, conforto e qualidade de vida em todas as fases.",
   },
 ];
 
 export const faqs: FAQ[] = [
   {
     id: "f1",
-    question: "Em quanto tempo vou ver resultados?",
-    answer: "A maioria dos tutores relata melhorias visíveis já na primeira semana. Para resultados completos, recomendamos o uso contínuo por pelo menos 30 dias.",
+    question: "O que e Supet?",
+    answer:
+      "Supet e um suplemento natural desenvolvido para ajudar a combater problemas de pele em caes, como coceiras, alergias e queda de pelos.",
   },
   {
     id: "f2",
-    question: "É seguro para todas as raças e idades?",
-    answer: "Sim! Nossa fórmula foi desenvolvida por veterinários e é segura para cães de todas as raças e idades, incluindo filhotes a partir de 3 meses.",
+    question: "Como devo oferecer Supet ao meu pet?",
+    answer:
+      "Recomenda-se oferecer uma unidade por dia, preferencialmente apos a alimentacao.",
   },
   {
     id: "f3",
-    question: "Qual a composição das gomas?",
-    answer: "Nossas gomas são feitas com ingredientes 100% naturais, incluindo ômega 3, biotina, zinco, vitamina E e extratos vegetais selecionados.",
+    question: "A partir de qual idade o pet pode usar?",
+    answer: "Pets a partir de 3 meses ja podem consumir.",
   },
   {
     id: "f4",
-    question: "Como devo dar para meu pet?",
-    answer: "As gomas são palatáveis e a maioria dos cães adora o sabor! Basta oferecer a quantidade recomendada de acordo com o peso do seu pet, uma vez ao dia.",
+    question: "Supet pode engordar meu pet?",
+    answer: "Nao. A formula nao contem acucares ou gorduras prejudiciais.",
   },
   {
     id: "f5",
-    question: "Tem garantia de satisfação?",
-    answer: "Sim! Oferecemos garantia de 30 dias. Se você não notar diferença na saúde do seu pet, devolvemos 100% do seu dinheiro.",
+    question: "Existem contraindicacoes?",
+    answer: "Supet e formulado com ingredientes naturais e seguros para a maioria dos pets.",
+  },
+  {
+    id: "f6",
+    question: "E se meu pet nao se adaptar?",
+    answer:
+      "Caso seu pet nao se adapte ao produto, existe garantia de satisfacao dentro do prazo informado.",
+  },
+];
+
+export const testimonials: Testimonial[] = [
+  {
+    id: "t1",
+    petName: "Revi",
+    tutorName: "Maria A.",
+    quote:
+      "Em poucas semanas o Revi parou de se cocar o tempo todo e a pele ficou muito melhor.",
+    rating: 5,
+    image: "/images/hero-dog.png",
+  },
+  {
+    id: "t2",
+    petName: "Mimo",
+    tutorName: "Pedro M.",
+    quote:
+      "A queda de pelos reduziu bastante e ele voltou a ficar ativo. Hoje Supet faz parte da rotina diaria.",
+    rating: 5,
+    image: "/images/dog-closeup.png",
+  },
+  {
+    id: "t3",
+    petName: "Thor",
+    tutorName: "Carla F.",
+    quote:
+      "Testamos varios tratamentos antes, mas com Supet vimos resultado consistente de dentro para fora.",
+    rating: 5,
+    image: "/images/lifestyle-dog.png",
+  },
+];
+
+export const blogPreviews: BlogPostPreview[] = [
+  {
+    id: "p1",
+    title: "5 sinais de que a pele do seu pet precisa de suporte nutricional",
+    excerpt:
+      "Entenda os sintomas mais comuns e quando incluir suplementação na rotina de cuidado.",
+    slug: "sinais-pele-pet",
+    coverImage: "/images/pet-studio.png",
+    publishedAt: "2026-03-01",
+  },
+  {
+    id: "p2",
+    title: "Como melhorar a imunidade do seu cão com hábitos simples",
+    excerpt:
+      "Alimentação, rotina e nutrientes que ajudam a manter o organismo forte no dia a dia.",
+    slug: "imunidade-cao-habitos",
+    coverImage: "/images/pet-winter.png",
+    publishedAt: "2026-02-20",
+  },
+  {
+    id: "p3",
+    title: "Pele, pelo e articulações: guia prático para tutores",
+    excerpt:
+      "Um resumo direto dos cuidados que fazem diferença real na saúde do seu companheiro.",
+    slug: "guia-pele-pelo-articulacoes",
+    coverImage: "/images/pet-fashion.png",
+    publishedAt: "2026-02-12",
+  },
+];
+
+export const socialLinks: SocialLink[] = [
+  {
+    id: "s1",
+    platform: "facebook",
+    url: "https://facebook.com/supet.oficial",
+    ariaLabel: "Supet no Facebook",
+  },
+  {
+    id: "s2",
+    platform: "instagram",
+    url: "https://instagram.com/supet.oficial",
+    ariaLabel: "Supet no Instagram",
+  },
+  {
+    id: "s3",
+    platform: "youtube",
+    url: "https://youtube.com/@supet.oficial",
+    ariaLabel: "Supet no YouTube",
+  },
+  {
+    id: "s4",
+    platform: "tiktok",
+    url: "https://tiktok.com/@supet.oficial",
+    ariaLabel: "Supet no TikTok",
   },
 ];

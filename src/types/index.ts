@@ -34,3 +34,28 @@ export interface FAQ {
   question: string;
   answer: string;
 }
+
+export interface Testimonial {
+  id: string;
+  petName: string;
+  tutorName: string;
+  quote: string;
+  rating: number;
+  image: string;
+}
+
+export interface BlogPostPreview {
+  id: string;
+  title: string;
+  excerpt: string;
+  slug: string;
+  coverImage: string;
+  publishedAt: string;
+}
+
+export interface SocialLink {
+  id: string;
+  platform: "facebook" | "instagram" | "youtube" | "tiktok";
+  url: string;
+  ariaLabel: string;
+}
