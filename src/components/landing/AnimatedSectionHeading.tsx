@@ -72,7 +72,7 @@ export default function AnimatedSectionHeading({
       >
         <HeadingTag
           className={cn(
-            "mt-3 font-display font-extrabold leading-[0.9] tracking-[-0.028em] text-supetz-text",
+            "mt-3 font-display font-extrabold leading-[1.05] tracking-[-0.028em] text-supetz-text",
             sizeClasses[size],
             uppercase ? "uppercase" : "",
           )}
