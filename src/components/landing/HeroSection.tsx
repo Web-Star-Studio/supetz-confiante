@@ -100,22 +100,22 @@ export default function HeroSection() {
                 reduceMotion
                   ? undefined
                   : {
-                      opacity: 1,
-                      scale: 1,
-                      rotate: bone.rotate,
-                      y: [0, -4, 0, 3, 0],
-                    }
+                    opacity: 1,
+                    scale: 1,
+                    rotate: bone.rotate,
+                    y: [0, -4, 0, 3, 0],
+                  }
               }
               transition={
                 reduceMotion
                   ? undefined
                   : {
-                      opacity: { duration: motionTokens.durationBase, delay: bone.delay },
-                      scale: { duration: motionTokens.durationBase, delay: bone.delay },
-                      y: { duration: 6 + i * 0.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: bone.delay },
-                    }
+                    opacity: { duration: motionTokens.durationBase, delay: bone.delay },
+                    scale: { duration: motionTokens.durationBase, delay: bone.delay },
+                    y: { duration: 6 + i * 0.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: bone.delay },
+                  }
               }
-              src="/images/Supet - logo.png"
+              src="/images/supet-logo.png"
               alt="Gominha em formato de osso"
               className="hero-layer z-30"
               style={{
@@ -135,10 +135,10 @@ export default function HeroSection() {
               reduceMotion
                 ? undefined
                 : {
-                    opacity: { duration: motionTokens.durationBase, delay: 0.3 },
-                    y: { duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.3 },
-                    rotate: { duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.3 },
-                  }
+                  opacity: { duration: motionTokens.durationBase, delay: 0.3 },
+                  y: { duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.3 },
+                  rotate: { duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.3 },
+                }
             }
             src="/images/hero/lid.png"
             alt="Tampa do pote Supet"
@@ -204,12 +204,12 @@ export default function HeroSection() {
                   reduceMotion
                     ? undefined
                     : {
-                        opacity: { duration: motionTokens.durationBase, delay: bone.delay },
-                        scale: { duration: motionTokens.durationBase, delay: bone.delay },
-                        y: { duration: 6 + i * 0.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-                      }
+                      opacity: { duration: motionTokens.durationBase, delay: bone.delay },
+                      scale: { duration: motionTokens.durationBase, delay: bone.delay },
+                      y: { duration: 6 + i * 0.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
+                    }
                 }
-                src="/images/Supet - logo.png"
+                src="/images/supet-logo.png"
                 alt="Gominha"
                 className="hero-layer z-30"
                 style={{
@@ -227,9 +227,9 @@ export default function HeroSection() {
                 reduceMotion
                   ? undefined
                   : {
-                      opacity: { duration: motionTokens.durationBase, delay: 0.28 },
-                      y: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.28 },
-                    }
+                    opacity: { duration: motionTokens.durationBase, delay: 0.28 },
+                    y: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.28 },
+                  }
               }
               src="/images/hero/lid.png"
               alt="Tampa do pote Supet"
