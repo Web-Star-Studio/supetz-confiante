@@ -18,9 +18,9 @@ interface AnimatedSectionHeadingProps {
 }
 
 const sizeClasses: Record<HeadingSize, string> = {
-  md: "text-2xl md:text-4xl",
-  lg: "text-3xl md:text-5xl",
-  xl: "text-4xl md:text-6xl",
+  md: "text-2xl md:text-3xl lg:text-4xl",
+  lg: "text-2xl md:text-4xl lg:text-5xl",
+  xl: "text-3xl md:text-5xl lg:text-6xl",
 };
 
 export default function AnimatedSectionHeading({
@@ -72,7 +72,7 @@ export default function AnimatedSectionHeading({
       >
         <HeadingTag
           className={cn(
-            "mt-3 font-display font-extrabold leading-[0.9] tracking-[-0.028em] text-supetz-text",
+            "mt-3 font-display font-extrabold leading-[1.05] tracking-[-0.028em] text-supetz-text",
             sizeClasses[size],
             uppercase ? "uppercase" : "",
           )}
