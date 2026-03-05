@@ -122,9 +122,13 @@ export default function NaturalTreatmentSection() {
           <div className="pointer-events-none absolute left-1/2 top-1/2 h-[420px] w-[420px] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed border-supetz-orange/30" />
 
           <motion.div
-            animate={{ y: [0, -8, 0], rotate: [0, 1, 0] }}
+            style={{ x: "-50%", y: "-50%" }}
+            animate={{
+              y: ["-50%", "-52%", "-50%"],
+              rotate: [0, 1, 0]
+            }}
             transition={{ duration: 7.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-            className="absolute left-1/2 top-1/2 h-[260px] w-[260px] -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-full border-[10px] border-white bg-white shadow-[0_32px_58px_-28px_rgba(55,35,10,0.62)]"
+            className="absolute left-1/2 top-1/2 h-[260px] w-[260px] overflow-hidden rounded-full border-[10px] border-white bg-white shadow-[0_32px_58px_-28px_rgba(55,35,10,0.62)]"
           >
             <img src="/images/product-gummy.png" alt="Produto Supet" className="h-full w-full object-cover" />
           </motion.div>
