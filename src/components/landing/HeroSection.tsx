@@ -10,6 +10,22 @@ import {
 } from "framer-motion";
 import { motionTokens } from "@/lib/motion";
 
+/* Bone positions designed for portrait mobile viewport (~375×700).
+   Cluster around the center scene zone (top 28-55%) so they surround
+   the jar/lid without covering the title above or the description below. */
+const MOBILE_GUMMY_BONES = [
+  { left: "16%", top: "20%", size: 90, rotate: -30, delay: 0.1 },
+  { left: "54%", top: "16%", size: 100, rotate: 20, delay: 0.15 },
+  { left: "4%", top: "30%", size: 78, rotate: 55, delay: 0.18 },
+  { left: "66%", top: "26%", size: 82, rotate: -50, delay: 0.12 },
+  { left: "32%", top: "14%", size: 95, rotate: -15, delay: 0.08 },
+  { left: "74%", top: "36%", size: 70, rotate: 35, delay: 0.22 },
+  { left: "-1%", top: "24%", size: 74, rotate: 40, delay: 0.14 },
+  { left: "44%", top: "32%", size: 68, rotate: -65, delay: 0.2 },
+  { left: "22%", top: "40%", size: 72, rotate: 10, delay: 0.17 },
+  { left: "80%", top: "20%", size: 65, rotate: 25, delay: 0.09 },
+];
+
 const GUMMY_BONES = [
   // Cluster below the lid / above the jar — large
   { left: "38%", top: "22%", size: 180, rotate: -30, delay: 0.1 },
@@ -325,19 +341,23 @@ export default function HeroSection() {
           </div>
         </div>
 
-        <div className="relative pt-16 md:hidden">
-          <motion.h1
-            initial={reduceMotion ? undefined : { opacity: 0, y: 14 }}
-            animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-            transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
-            className="hero-title mobile-hero-title z-[60]"
-          >
-            SEU PET
-            <br />
-            AGRADECE
-          </motion.h1>
+        <div className="relative h-[calc(100svh-56px)] min-h-[520px] md:hidden">
+          <div className="relative h-full w-full overflow-hidden">
+            <motion.h1
+              initial={reduceMotion ? undefined : { opacity: 0, y: 14 }}
+              animate={reduceMotion ? undefined : { opacity: 0.35, y: 0 }}
+              transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
+              className="hero-title mobile-hero-title z-[10]"
+            >
+              <div className="flex w-full justify-between">
+                <span>SEU</span>
+                <span>PET</span>
+              </div>
+              <div className="w-full">
+                <span>AGRADECE</span>
+              </div>
+            </motion.h1>
 
-          <div className="relative mx-auto mt-6 h-[330px] w-full max-w-[360px]">
             <motion.img
               initial={reduceMotion ? undefined : { opacity: 0, y: 24 }}
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -346,7 +366,8 @@ export default function HeroSection() {
               alt="Pote Supet aberto"
               className="hero-layer hero-jar-mobile z-20"
             />
-            {GUMMY_BONES.slice(0, 8).map((bone, i) => (
+
+            {MOBILE_GUMMY_BONES.map((bone, i) => (
               <motion.img
                 key={i}
                 initial={reduceMotion ? undefined : { opacity: 0, scale: 0.5 }}
@@ -355,10 +376,10 @@ export default function HeroSection() {
                   reduceMotion
                     ? undefined
                     : {
-                      opacity: { duration: motionTokens.durationBase, delay: bone.delay },
-                      scale: { duration: motionTokens.durationBase, delay: bone.delay },
-                      y: { duration: 6 + i * 0.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-                    }
+                        opacity: { duration: motionTokens.durationBase, delay: bone.delay },
+                        scale: { duration: motionTokens.durationBase, delay: bone.delay },
+                        y: { duration: 6 + i * 0.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
+                      }
                 }
                 src="/images/supet-logo.png"
                 alt=""
@@ -367,11 +388,12 @@ export default function HeroSection() {
                 style={{
                   left: bone.left,
                   top: bone.top,
-                  width: bone.size * 0.6,
+                  width: bone.size,
                   rotate: `${bone.rotate}deg`,
                 }}
               />
             ))}
+
             <motion.img
               initial={reduceMotion ? undefined : { opacity: 0, y: -12 }}
               animate={reduceMotion ? undefined : { opacity: 1, y: [0, -2, 0] }}
@@ -379,14 +401,15 @@ export default function HeroSection() {
                 reduceMotion
                   ? undefined
                   : {
-                    opacity: { duration: motionTokens.durationBase, delay: 0.28 },
-                    y: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.28 },
-                  }
+                      opacity: { duration: motionTokens.durationBase, delay: 0.28 },
+                      y: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.28 },
+                    }
               }
               src="/images/hero/lid.png"
               alt="Tampa do pote Supet"
               className="hero-layer hero-lid-mobile hero-lid-blend z-40"
             />
+
             <motion.img
               initial={reduceMotion ? undefined : { opacity: 0, x: 20 }}
               animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
@@ -395,17 +418,24 @@ export default function HeroSection() {
               alt="Golden retriever da Supet"
               className="hero-layer hero-dog-mobile z-50"
             />
-          </div>
 
-          <motion.p
-            initial={reduceMotion ? undefined : { opacity: 0 }}
-            animate={reduceMotion ? undefined : { opacity: 1 }}
-            transition={{ duration: motionTokens.durationBase, delay: 0.5 }}
-            className="mt-5 px-2 text-center text-xs font-medium leading-relaxed text-supetz-text/60"
-          >
-            Formulado por Farmacêutico/Nutricionista.{" "}
-            <span className="font-bold text-supetz-text/85">100% vegano</span>, livre de crueldade.
-          </motion.p>
+            <motion.div
+              initial={reduceMotion ? undefined : { opacity: 0, y: 16 }}
+              animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+              transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.45 }}
+              className="mobile-hero-desc z-[15]"
+            >
+              <p className="hero-desc-body">
+                Nosso suplemento em goma é
+              </p>
+              <p className="hero-desc-highlight">
+                Formulado por Farmacêutico/Nutricionista,
+              </p>
+              <p className="hero-desc-body">
+                100% vegano, livre de crueldade.
+              </p>
+            </motion.div>
+          </div>
         </div>
       </div>
     </section>

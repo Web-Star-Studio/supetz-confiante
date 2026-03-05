@@ -116,7 +116,10 @@
   }
 
   .mobile-hero-title {
-    @apply text-[clamp(3rem,16vw,5rem)];
+    @apply absolute inset-x-0 top-[clamp(60px,12vh,100px)] flex flex-col px-[clamp(8px,2vw,16px)];
+    font-size: clamp(3.3rem, 17.5vw, 6.2rem);
+    line-height: 0.85;
+    letter-spacing: -0.045em;
   }
 
   .hero-layer {
@@ -136,16 +139,19 @@
   }
 
   .hero-jar-mobile {
-    @apply bottom-[-30px] left-1/2 w-[220px] -translate-x-1/2;
-    clip-path: inset(0 0 30% 0);
+    @apply left-[9%] top-[26%] w-[clamp(280px,75vw,400px)] -translate-x-1/2 -translate-y-1/2;
   }
 
   .hero-lid-mobile {
-    @apply left-1/2 top-[22px] w-[190px] -translate-x-[38%] rotate-[-11deg];
+    @apply left-[19%] top-[6%] w-[clamp(210px,56vw,300px)] -translate-x-1/2 rotate-[-13deg];
   }
 
   .hero-dog-mobile {
-    @apply bottom-[-12px] right-[-24px] w-[230px];
+    @apply bottom-[2%] right-[-6%] w-[clamp(200px,52vw,280px)];
+  }
+
+  .mobile-hero-desc {
+    @apply absolute bottom-[clamp(60px,10vh,120px)] left-[clamp(12px,4vw,24px)] max-w-[200px] pointer-events-none select-none text-[0.75rem] leading-snug;
   }
 
   .hero-desc-text {
