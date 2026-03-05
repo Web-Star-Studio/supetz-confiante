@@ -75,8 +75,8 @@ export default function AnimatedSectionHeading({
             "mt-3 font-display font-extrabold leading-[0.9] tracking-[-0.028em] text-supetz-text",
             sizeClasses[size],
             uppercase ? "uppercase" : "",
-            lineLayout === "alternate" ? "w-fit" : "",
-            lineLayout === "alternate" && align === "center" ? "mx-auto" : ""
+            "flex flex-col",
+            align === "center" ? "items-center text-center" : "items-start text-left"
           )}
         >
           {lines.map((line, index) => (
@@ -86,6 +86,7 @@ export default function AnimatedSectionHeading({
                 hidden: {
                   opacity: 0,
                   y: 18,
+                  rotate: lineLayout === "alternate" ? (index % 2 === 0 ? -1.5 : 1.5) : 0,
                   x:
                     lineLayout === "alternate"
                       ? index % 2 === 0
@@ -99,6 +100,7 @@ export default function AnimatedSectionHeading({
                   opacity: 1,
                   y: 0,
                   x: 0,
+                  rotate: lineLayout === "alternate" ? (index % 2 === 0 ? -0.45 : 0.45) : 0,
                   transition: { duration: motionTokens.durationBase, ease: motionTokens.easeOut },
                 },
               }}
@@ -106,24 +108,26 @@ export default function AnimatedSectionHeading({
                 reduceMotion
                   ? undefined
                   : accentLines.includes(index)
-                    ? { y: [0, -2, 0] }
+                    ? { y: [0, -3, 0] }
                     : undefined
               }
               transition={
                 reduceMotion
                   ? undefined
                   : accentLines.includes(index)
-                    ? { duration: 4.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }
+                    ? { duration: 5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }
                     : undefined
               }
               className={cn(
+                "max-w-full",
                 lineLayout === "alternate"
-                  ? cn(
-                    "block w-fit",
-                    index % 2 === 0
-                      ? "mr-auto text-left -rotate-[0.45deg]"
-                      : "ml-auto text-right rotate-[0.45deg]",
-                  )
+                  ? align === "center"
+                    ? index % 2 === 0
+                      ? "relative -left-3 md:-left-6"
+                      : "relative left-3 md:left-6"
+                    : index % 2 === 0
+                      ? "relative -left-1 md:-left-2"
+                      : "relative left-4 md:left-8"
                   : "block",
                 accentLines.includes(index) ? "text-supetz-orange" : "text-supetz-text",
               )}
