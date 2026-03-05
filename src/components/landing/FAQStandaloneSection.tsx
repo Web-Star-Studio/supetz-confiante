@@ -11,11 +11,12 @@ export default function FAQStandaloneSection() {
         <div className="mx-auto mb-8 max-w-3xl text-center">
           <AnimatedSectionHeading
             eyebrow="Perguntas frequentes"
-            lines={["Tire suas", "duvidas", "antes de comprar"]}
-            accentLines={[2]}
-            lineLayout="alternate"
+            lines={["Tire suas duvidas", "antes de comprar"]}
+            accentLines={[1]}
+            lineLayout="stacked"
             align="center"
             size="lg"
+            className="mx-auto max-w-[38rem]"
           />
         </div>
 
