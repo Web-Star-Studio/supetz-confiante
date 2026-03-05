@@ -124,13 +124,13 @@ export default function NaturalTreatmentSection() {
           <motion.div
             style={{ x: "-50%", y: "-50%" }}
             animate={{
-              y: ["-50%", "-52%", "-50%"],
-              rotate: [0, 1, 0]
+              y: ["-50%", "-51.5%", "-50%"],
+              rotate: [0, 0.5, 0]
             }}
-            transition={{ duration: 7.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-            className="absolute left-1/2 top-1/2 h-[260px] w-[260px] overflow-hidden rounded-full border-[10px] border-white bg-white shadow-[0_32px_58px_-28px_rgba(55,35,10,0.62)]"
+            transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
+            className="absolute left-1/2 top-1/2 h-[320px] w-[320px] overflow-hidden rounded-full border-[10px] border-white bg-white shadow-[0_32px_58px_-28px_rgba(55,35,10,0.62)]"
           >
-            <img src="/images/product-gummy.png" alt="Produto Supet" className="h-full w-full object-cover" />
+            <img src="/images/product-bottle.png" alt="Produto Supet" className="h-full w-full object-contain p-4" />
           </motion.div>
 
           {ingredients.map((item, index) => (
