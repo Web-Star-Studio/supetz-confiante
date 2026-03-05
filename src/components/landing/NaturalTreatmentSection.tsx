@@ -128,9 +128,9 @@ export default function NaturalTreatmentSection() {
               rotate: [0, 0.5, 0]
             }}
             transition={{ duration: 8, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-            className="absolute left-1/2 top-1/2 h-[320px] w-[320px] overflow-hidden rounded-full border-[10px] border-white bg-white shadow-[0_32px_58px_-28px_rgba(55,35,10,0.62)]"
+            className="absolute left-1/2 top-1/2 h-[420px] w-[420px] overflow-hidden rounded-full"
           >
-            <img src="/images/product-bottle.png" alt="Produto Supet" className="h-full w-full object-contain p-4" />
+            <img src="/images/product-bottle.png" alt="Produto Supet" className="h-full w-full object-contain" />
           </motion.div>
 
           {ingredients.map((item, index) => (
