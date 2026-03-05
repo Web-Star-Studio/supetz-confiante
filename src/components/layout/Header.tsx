@@ -1,6 +1,6 @@
 import { useState, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Menu,
   X,
@@ -10,7 +10,7 @@ import {
   Music2,
 } from "lucide-react";
 import { socialLinks } from "@/services/mockData";
-import supetLogo from "/images/SUPET.png";
+import supetHeaderLogo from "/images/supet-header-logo.png";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
@@ -29,6 +29,7 @@ const iconByPlatform = {
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
+  const shouldReduceMotion = useReducedMotion();
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     setMobileOpen(false);
@@ -44,12 +45,54 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 bg-supetz-bg/80 backdrop-blur-sm">
       <div className="relative mx-auto flex max-w-[1480px] items-center justify-between px-4 py-2 md:px-8 md:py-3">
-        <Link to="/" className="relative z-10">
-          <img
-            src={supetLogo}
-            alt="Supet - Suplemento Animal"
-            className="h-18 w-auto md:h-32 -my-5 md:-my-12"
-          />
+        <Link to="/" className="relative z-10 flex shrink-0 items-center">
+          <motion.div
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <motion.img
+              src={supetHeaderLogo}
+              alt="Supet - Suplemento Animal"
+              className="block h-[46px] w-auto md:h-[56px]"
+              animate={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      y: [0, -1.25, 0],
+                      rotate: [0, -0.45, 0.25, 0],
+                      scale: [1, 1.01, 1],
+                    }
+              }
+              transition={
+                shouldReduceMotion
+                  ? undefined
+                  : {
+                      y: {
+                        duration: 3.6,
+                        ease: "easeInOut",
+                        times: [0, 0.5, 1],
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatDelay: 1.2,
+                      },
+                      rotate: {
+                        duration: 3.6,
+                        ease: "easeInOut",
+                        times: [0, 0.35, 0.7, 1],
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatDelay: 1.2,
+                      },
+                      scale: {
+                        duration: 3.6,
+                        ease: "easeInOut",
+                        times: [0, 0.5, 1],
+                        repeat: Number.POSITIVE_INFINITY,
+                        repeatDelay: 1.2,
+                      },
+                    }
+              }
+            />
+          </motion.div>
         </Link>
 
         {/* Desktop nav — centered */}

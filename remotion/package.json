@@ -1,0 +1,22 @@
+{
+    "name": "supet-logo-animation",
+    "version": "1.0.0",
+    "private": true,
+    "scripts": {
+        "studio": "remotion studio",
+        "render": "remotion render LogoAnimation out/logo.mp4",
+        "render:webm": "remotion render LogoAnimation out/logo.webm"
+    },
+    "dependencies": {
+        "@remotion/cli": "4.0.242",
+        "@remotion/bundler": "4.0.242",
+        "react": "^18.3.1",
+        "react-dom": "^18.3.1",
+        "remotion": "4.0.242"
+    },
+    "devDependencies": {
+        "@types/react": "^18.3.23",
+        "@types/react-dom": "^18.3.7",
+        "typescript": "^5.8.3"
+    }
+}
