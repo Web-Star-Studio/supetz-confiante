@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
@@ -10,9 +10,24 @@ function isReducedMotionPreferred() {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+function isIframe() {
+  try {
+    return window.self !== window.top;
+  } catch (e) {
+    return true; // If access is denied, we're likely in a cross-origin iframe
+  }
+}
+
 export default function SmoothScrollProvider({ children }: { children: ReactNode }) {
+  const [isIframeContext, setIsIframeContext] = useState(false);
+
   useEffect(() => {
-    if (isReducedMotionPreferred()) {
+    setIsIframeContext(isIframe());
+  }, []);
+
+  useEffect(() => {
+    // Disable smooth scrolling in iframes (like Lovable preview) or if reduced motion is preferred
+    if (isReducedMotionPreferred() || isIframeContext) {
       ScrollTrigger.refresh();
       return;
     }
@@ -37,7 +52,7 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
       gsap.ticker.remove(update);
       lenis.destroy();
     };
-  }, []);
+  }, [isIframeContext]);
 
   return <>{children}</>;
 }
