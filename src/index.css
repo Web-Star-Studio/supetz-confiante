@@ -117,9 +117,10 @@
 
   .mobile-hero-title {
     @apply absolute inset-x-0 top-[clamp(60px,12vh,100px)] flex flex-col px-[clamp(8px,2vw,16px)];
-    font-size: clamp(3.3rem, 17.5vw, 6.2rem);
+    font-size: clamp(3rem, 17vw, 5.5rem);
     line-height: 0.85;
     letter-spacing: -0.045em;
+    opacity: 0.35;
   }
 
   .hero-layer {
@@ -139,11 +140,11 @@
   }
 
   .hero-jar-mobile {
-    @apply left-[9%] top-[26%] w-[clamp(280px,75vw,400px)] -translate-x-1/2 -translate-y-1/2;
+    @apply left-[49%] top-[53%] w-[clamp(280px,80vw,400px)] -translate-x-1/2 -translate-y-1/2;
   }
 
   .hero-lid-mobile {
-    @apply left-[19%] top-[6%] w-[clamp(210px,56vw,300px)] -translate-x-1/2 rotate-[-13deg];
+    @apply left-[50%] top-[4%] w-[clamp(240px,65vw,320px)] -translate-x-1/2 rotate-[-13deg];
   }
 
   .hero-dog-mobile {

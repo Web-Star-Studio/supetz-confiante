@@ -14,16 +14,26 @@ import { motionTokens } from "@/lib/motion";
    Cluster around the center scene zone (top 28-55%) so they surround
    the jar/lid without covering the title above or the description below. */
 const MOBILE_GUMMY_BONES = [
-  { left: "16%", top: "20%", size: 90, rotate: -30, delay: 0.1 },
-  { left: "54%", top: "16%", size: 100, rotate: 20, delay: 0.15 },
-  { left: "4%", top: "30%", size: 78, rotate: 55, delay: 0.18 },
-  { left: "66%", top: "26%", size: 82, rotate: -50, delay: 0.12 },
-  { left: "32%", top: "14%", size: 95, rotate: -15, delay: 0.08 },
-  { left: "74%", top: "36%", size: 70, rotate: 35, delay: 0.22 },
-  { left: "-1%", top: "24%", size: 74, rotate: 40, delay: 0.14 },
-  { left: "44%", top: "32%", size: 68, rotate: -65, delay: 0.2 },
-  { left: "22%", top: "40%", size: 72, rotate: 10, delay: 0.17 },
-  { left: "80%", top: "20%", size: 65, rotate: 25, delay: 0.09 },
+  // Background layer (behind jar, blurry) 
+  { left: "12%", top: "45%", size: 70, rotate: 45, delay: 0.1, zIndex: 15, blur: 2 },
+  { left: "70%", top: "35%", size: 65, rotate: -30, delay: 0.15, zIndex: 15, blur: 3 },
+  { left: "-3%", top: "52%", size: 80, rotate: 15, delay: 0.18, zIndex: 15, blur: 1.5 },
+  { left: "68%", top: "48%", size: 75, rotate: -60, delay: 0.12, zIndex: 15, blur: 2 },
+  
+  // Mid layer (behind lid, above jar)
+  { left: "25%", top: "35%", size: 100, rotate: -15, delay: 0.08, zIndex: 25 },
+  { left: "55%", top: "28%", size: 90, rotate: 35, delay: 0.22, zIndex: 25 },
+  { left: "2%", top: "38%", size: 95, rotate: 40, delay: 0.14, zIndex: 25 },
+  { left: "75%", top: "26%", size: 85, rotate: -65, delay: 0.2, zIndex: 25 },
+  { left: "45%", top: "42%", size: 110, rotate: 10, delay: 0.17, zIndex: 25 },
+  { left: "10%", top: "22%", size: 80, rotate: 25, delay: 0.09, zIndex: 25 }, 
+
+  // Foreground layer (in front of jar, pop out)
+  { left: "35%", top: "52%", size: 130, rotate: -25, delay: 0.11, zIndex: 45, blur: 1 }, 
+  { left: "68%", top: "42%", size: 140, rotate: 45, delay: 0.16, zIndex: 45, blur: 1.5 },
+  { left: "0%", top: "30%", size: 120, rotate: -10, delay: 0.13, zIndex: 45 },
+  { left: "60%", top: "50%", size: 115, rotate: 60, delay: 0.19, zIndex: 45 },
+  { left: "18%", top: "24%", size: 125, rotate: -40, delay: 0.14, zIndex: 45 },
 ];
 
 const GUMMY_BONES = [
@@ -383,13 +393,14 @@ export default function HeroSection() {
                 }
                 src="/images/supet-logo.png"
                 alt=""
-                aria-hidden="true"
-                className="hero-layer z-30"
+                className="hero-layer"
                 style={{
                   left: bone.left,
                   top: bone.top,
                   width: bone.size,
                   rotate: `${bone.rotate}deg`,
+                  zIndex: bone.zIndex || 30,
+                  ...(bone.blur ? { filter: `blur(${bone.blur}px)` } : {}),
                 }}
               />
             ))}
