@@ -25,11 +25,11 @@ export default function Footer() {
 
           {/* Brand & Description */}
           <div className="lg:col-span-1">
-            <Link to="/" className="inline-block bg-white rounded-2xl p-3 shadow-lg hover:scale-105 transition-transform duration-300">
+            <Link to="/" className="inline-block relative w-56 md:w-64 h-20 overflow-hidden -ml-2 -mt-2 -mb-2 hover:scale-105 transition-transform duration-300">
               <img
-                src={supetLogo}
+                src="/images/supet_Logos/Supet - logo (5).svg"
                 alt="Supet - Suplemento Animal"
-                className="h-16 w-auto"
+                className="absolute top-1/2 left-0 w-full h-auto -translate-y-1/2 object-cover brightness-0 invert"
               />
             </Link>
             <p className="mt-6 text-sm text-white/90 leading-relaxed font-medium">

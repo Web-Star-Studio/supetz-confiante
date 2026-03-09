@@ -15,56 +15,60 @@ import { motionTokens } from "@/lib/motion";
    the jar/lid without covering the title above or the description below. */
 const MOBILE_GUMMY_BONES = [
   // Background layer (behind jar, blurry) 
-  { left: "12%", top: "45%", size: 70, rotate: 45, delay: 0.1, zIndex: 15, blur: 2 },
-  { left: "70%", top: "35%", size: 65, rotate: -30, delay: 0.15, zIndex: 15, blur: 3 },
-  { left: "-3%", top: "52%", size: 80, rotate: 15, delay: 0.18, zIndex: 15, blur: 1.5 },
-  { left: "68%", top: "48%", size: 75, rotate: -60, delay: 0.12, zIndex: 15, blur: 2 },
-  
+  { left: "28%", top: "55%", size: 70, rotate: 45, delay: 0.1, zIndex: 15, blur: 2 },
+  { left: "86%", top: "45%", size: 65, rotate: -30, delay: 0.15, zIndex: 15, blur: 3 },
+  { left: "13%", top: "62%", size: 80, rotate: 15, delay: 0.18, zIndex: 15, blur: 1.5 },
+  { left: "84%", top: "58%", size: 75, rotate: -60, delay: 0.12, zIndex: 15, blur: 2 },
+
   // Mid layer (behind lid, above jar)
-  { left: "25%", top: "35%", size: 100, rotate: -15, delay: 0.08, zIndex: 25 },
-  { left: "55%", top: "28%", size: 90, rotate: 35, delay: 0.22, zIndex: 25 },
-  { left: "2%", top: "38%", size: 95, rotate: 40, delay: 0.14, zIndex: 25 },
-  { left: "75%", top: "26%", size: 85, rotate: -65, delay: 0.2, zIndex: 25 },
-  { left: "45%", top: "42%", size: 110, rotate: 10, delay: 0.17, zIndex: 25 },
-  { left: "10%", top: "22%", size: 80, rotate: 25, delay: 0.09, zIndex: 25 }, 
+  { left: "41%", top: "45%", size: 100, rotate: -15, delay: 0.08, zIndex: 25 },
+  { left: "71%", top: "38%", size: 90, rotate: 35, delay: 0.22, zIndex: 25 },
+  { left: "18%", top: "48%", size: 95, rotate: 40, delay: 0.14, zIndex: 25 },
+  { left: "91%", top: "36%", size: 85, rotate: -65, delay: 0.2, zIndex: 25 },
+  { left: "61%", top: "52%", size: 110, rotate: 10, delay: 0.17, zIndex: 25 },
+  { left: "26%", top: "32%", size: 80, rotate: 25, delay: 0.09, zIndex: 25 },
 
   // Foreground layer (in front of jar, pop out)
-  { left: "35%", top: "52%", size: 130, rotate: -25, delay: 0.11, zIndex: 45, blur: 1 }, 
-  { left: "68%", top: "42%", size: 140, rotate: 45, delay: 0.16, zIndex: 45, blur: 1.5 },
-  { left: "0%", top: "30%", size: 120, rotate: -10, delay: 0.13, zIndex: 45 },
-  { left: "60%", top: "50%", size: 115, rotate: 60, delay: 0.19, zIndex: 45 },
-  { left: "18%", top: "24%", size: 125, rotate: -40, delay: 0.14, zIndex: 45 },
+  { left: "51%", top: "62%", size: 130, rotate: -25, delay: 0.11, zIndex: 45, blur: 1 },
+  { left: "84%", top: "52%", size: 140, rotate: 45, delay: 0.16, zIndex: 45, blur: 1.5 },
+  { left: "16%", top: "40%", size: 120, rotate: -10, delay: 0.13, zIndex: 45 },
+  { left: "76%", top: "60%", size: 115, rotate: 60, delay: 0.19, zIndex: 45 },
+  { left: "34%", top: "34%", size: 125, rotate: -40, delay: 0.14, zIndex: 45 },
 ];
 
 const GUMMY_BONES = [
-  // Cluster below the lid / above the jar — large
-  { left: "38%", top: "22%", size: 180, rotate: -30, delay: 0.1 },
-  { left: "52%", top: "16%", size: 200, rotate: 20, delay: 0.15 },
-  { left: "32%", top: "32%", size: 160, rotate: 55, delay: 0.18 },
-  { left: "58%", top: "28%", size: 170, rotate: -50, delay: 0.12 },
-  { left: "44%", top: "12%", size: 190, rotate: -15, delay: 0.08 },
-  { left: "64%", top: "36%", size: 150, rotate: 35, delay: 0.22 },
-  { left: "26%", top: "16%", size: 165, rotate: 40, delay: 0.14 },
-  { left: "48%", top: "30%", size: 140, rotate: -65, delay: 0.2 },
-  { left: "36%", top: "42%", size: 155, rotate: 10, delay: 0.17 },
-  // Extra cluster between SEU and PET
-  { left: "42%", top: "14%", size: 160, rotate: 25, delay: 0.09 },
-  { left: "50%", top: "20%", size: 175, rotate: -35, delay: 0.11 },
-  { left: "46%", top: "26%", size: 145, rotate: 50, delay: 0.13 },
-  { left: "54%", top: "12%", size: 155, rotate: -10, delay: 0.07 },
-  { left: "40%", top: "18%", size: 135, rotate: 60, delay: 0.16 },
-  // Scattered to edges — medium to large
-  { left: "4%", top: "24%", size: 140, rotate: -20, delay: 0.2 },
-  { left: "90%", top: "20%", size: 155, rotate: 45, delay: 0.25 },
-  { left: "8%", top: "52%", size: 130, rotate: -60, delay: 0.28 },
-  { left: "88%", top: "56%", size: 135, rotate: 25, delay: 0.3 },
-  { left: "2%", top: "72%", size: 120, rotate: 10, delay: 0.32 },
-  { left: "93%", top: "42%", size: 125, rotate: -40, delay: 0.26 },
-  { left: "16%", top: "40%", size: 145, rotate: 70, delay: 0.16 },
-  { left: "78%", top: "14%", size: 130, rotate: -25, delay: 0.19 },
-  { left: "12%", top: "68%", size: 110, rotate: 50, delay: 0.34 },
-  { left: "84%", top: "68%", size: 105, rotate: -10, delay: 0.36 },
-  { left: "22%", top: "60%", size: 125, rotate: -45, delay: 0.24 },
+  // Background layer (behind jar, blurry) -> size 120-145
+  { left: "4%", top: "24%", size: 140, rotate: -20, delay: 0.2, zIndex: 15, blur: 3 },
+  { left: "8%", top: "52%", size: 130, rotate: -60, delay: 0.28, zIndex: 15, blur: 2.5 },
+  { left: "2%", top: "72%", size: 120, rotate: 10, delay: 0.32, zIndex: 15, blur: 4 },
+  { left: "12%", top: "68%", size: 110, rotate: 50, delay: 0.34, zIndex: 15, blur: 3.5 },
+  { left: "84%", top: "68%", size: 105, rotate: -10, delay: 0.36, zIndex: 15, blur: 3 },
+  { left: "93%", top: "42%", size: 125, rotate: -40, delay: 0.26, zIndex: 15, blur: 2 },
+  { left: "90%", top: "20%", size: 155, rotate: 45, delay: 0.25, zIndex: 15, blur: 2.5 },
+  { left: "88%", top: "56%", size: 135, rotate: 25, delay: 0.3, zIndex: 15, blur: 3 },
+
+  // Mid layer (behind lid, above jar, mostly sharp) -> size 140-190
+  { left: "38%", top: "22%", size: 180, rotate: -30, delay: 0.1, zIndex: 25 },
+  { left: "52%", top: "16%", size: 200, rotate: 20, delay: 0.15, zIndex: 25 },
+  { left: "32%", top: "32%", size: 160, rotate: 55, delay: 0.18, zIndex: 25 },
+  { left: "58%", top: "28%", size: 170, rotate: -50, delay: 0.12, zIndex: 25 },
+  { left: "44%", top: "12%", size: 190, rotate: -15, delay: 0.08, zIndex: 25 },
+  { left: "64%", top: "36%", size: 150, rotate: 35, delay: 0.22, zIndex: 25 },
+  { left: "26%", top: "16%", size: 165, rotate: 40, delay: 0.14, zIndex: 25 },
+  { left: "48%", top: "30%", size: 140, rotate: -65, delay: 0.2, zIndex: 25 },
+  { left: "36%", top: "42%", size: 155, rotate: 10, delay: 0.17, zIndex: 25 },
+
+  // Extra cluster between SEU and PET (Mid Depth)
+  { left: "42%", top: "14%", size: 160, rotate: 25, delay: 0.09, zIndex: 25 },
+  { left: "50%", top: "20%", size: 175, rotate: -35, delay: 0.11, zIndex: 25 },
+  { left: "46%", top: "26%", size: 145, rotate: 50, delay: 0.13, zIndex: 25 },
+  { left: "54%", top: "12%", size: 155, rotate: -10, delay: 0.07, zIndex: 25 },
+  { left: "40%", top: "18%", size: 135, rotate: 60, delay: 0.16, zIndex: 25 },
+
+  // Foreground layer (in front, slightly blurry/fast) -> size 125-155
+  { left: "16%", top: "40%", size: 145, rotate: 70, delay: 0.16, zIndex: 45, blur: 1.5 },
+  { left: "78%", top: "14%", size: 130, rotate: -25, delay: 0.19, zIndex: 45, blur: 2 },
+  { left: "22%", top: "60%", size: 125, rotate: -45, delay: 0.24, zIndex: 45, blur: 1.5 },
 ];
 
 type HeroParallaxLayerProps = {
@@ -172,10 +176,10 @@ export default function HeroSection() {
                 reduceMotion
                   ? undefined
                   : {
-                      rotateX: sceneRotateX,
-                      rotateY: sceneRotateY,
-                      transformStyle: "preserve-3d",
-                    }
+                    rotateX: sceneRotateX,
+                    rotateY: sceneRotateY,
+                    transformStyle: "preserve-3d",
+                  }
               }
             >
               <HeroParallaxLayer
@@ -225,7 +229,7 @@ export default function HeroSection() {
               {GUMMY_BONES.map((bone, i) => (
                 <HeroParallaxLayer
                   key={`${bone.left}-${bone.top}-${bone.size}`}
-                  className="hero-layer z-30"
+                  className="hero-layer"
                   pointerX={smoothPointerX}
                   pointerY={smoothPointerY}
                   depthX={bone.size * 0.08}
@@ -234,6 +238,8 @@ export default function HeroSection() {
                     left: bone.left,
                     top: bone.top,
                     width: bone.size,
+                    zIndex: bone.zIndex || 30,
+                    ...(bone.blur ? { filter: `blur(${bone.blur}px)` } : {}),
                   }}
                 >
                   <motion.img
@@ -243,25 +249,25 @@ export default function HeroSection() {
                       reduceMotion
                         ? undefined
                         : {
-                            opacity: 1,
-                            scale: 1,
-                            rotate: bone.rotate,
-                            y: [0, -4, 0, 3, 0],
-                          }
+                          opacity: 1,
+                          scale: 1,
+                          rotate: bone.rotate,
+                          y: [0, -4, 0, 3, 0],
+                        }
                     }
                     transition={
                       reduceMotion
                         ? undefined
                         : {
-                            opacity: { duration: motionTokens.durationBase, delay: bone.delay },
-                            scale: { duration: motionTokens.durationBase, delay: bone.delay },
-                            y: {
-                              duration: 6 + i * 0.5,
-                              repeat: Number.POSITIVE_INFINITY,
-                              ease: "easeInOut",
-                              delay: bone.delay,
-                            },
-                          }
+                          opacity: { duration: motionTokens.durationBase, delay: bone.delay },
+                          scale: { duration: motionTokens.durationBase, delay: bone.delay },
+                          y: {
+                            duration: 6 + i * 0.5,
+                            repeat: Number.POSITIVE_INFINITY,
+                            ease: "easeInOut",
+                            delay: bone.delay,
+                          },
+                        }
                     }
                     src="/images/supet-logo.png"
                     alt=""
@@ -287,15 +293,15 @@ export default function HeroSection() {
                     reduceMotion
                       ? undefined
                       : {
-                          opacity: { duration: motionTokens.durationBase, delay: 0.3 },
-                          y: { duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.3 },
-                          rotate: {
-                            duration: 6.5,
-                            repeat: Number.POSITIVE_INFINITY,
-                            ease: "easeInOut",
-                            delay: 0.3,
-                          },
-                        }
+                        opacity: { duration: motionTokens.durationBase, delay: 0.3 },
+                        y: { duration: 6.5, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.3 },
+                        rotate: {
+                          duration: 6.5,
+                          repeat: Number.POSITIVE_INFINITY,
+                          ease: "easeInOut",
+                          delay: 0.3,
+                        },
+                      }
                   }
                   src="/images/hero/lid.png"
                   alt="Tampa do pote Supet"
@@ -368,67 +374,81 @@ export default function HeroSection() {
               </div>
             </motion.h1>
 
-            <motion.img
-              initial={reduceMotion ? undefined : { opacity: 0, y: 24 }}
-              animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
-              transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.1 }}
-              src="/hero-assets/pote.png"
-              alt="Pote Supet aberto"
-              className="hero-layer hero-jar-mobile z-20"
-            />
+            <div className="hero-layer hero-jar-mobile z-20">
+              <motion.img
+                initial={reduceMotion ? undefined : { opacity: 0, y: 24 }}
+                animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
+                transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.1 }}
+                src="/hero-assets/pote.png"
+                alt="Pote Supet aberto"
+                className="block w-full"
+              />
+            </div>
 
             {MOBILE_GUMMY_BONES.map((bone, i) => (
-              <motion.img
+              <div
                 key={i}
-                initial={reduceMotion ? undefined : { opacity: 0, scale: 0.5 }}
-                animate={reduceMotion ? undefined : { opacity: 1, scale: 1, y: [0, -2, 0, 2, 0] }}
-                transition={
-                  reduceMotion
-                    ? undefined
-                    : {
-                        opacity: { duration: motionTokens.durationBase, delay: bone.delay },
-                        scale: { duration: motionTokens.durationBase, delay: bone.delay },
-                        y: { duration: 6 + i * 0.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
-                      }
-                }
-                src="/images/supet-logo.png"
-                alt=""
                 className="hero-layer"
                 style={{
                   left: bone.left,
                   top: bone.top,
                   width: bone.size,
-                  rotate: `${bone.rotate}deg`,
                   zIndex: bone.zIndex || 30,
+                  transform: "translate(-50%, -50%)",
                   ...(bone.blur ? { filter: `blur(${bone.blur}px)` } : {}),
                 }}
-              />
+              >
+                <motion.img
+                  initial={reduceMotion ? undefined : { opacity: 0, scale: 0.5, rotate: bone.rotate }}
+                  animate={
+                    reduceMotion
+                      ? undefined
+                      : { opacity: 1, scale: 1, rotate: bone.rotate, y: [0, -2, 0, 2, 0] }
+                  }
+                  transition={
+                    reduceMotion
+                      ? undefined
+                      : {
+                        opacity: { duration: motionTokens.durationBase, delay: bone.delay },
+                        scale: { duration: motionTokens.durationBase, delay: bone.delay },
+                        y: { duration: 6 + i * 0.4, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" },
+                      }
+                  }
+                  src="/images/supet-logo.png"
+                  alt=""
+                  className="block w-full"
+                />
+              </div>
             ))}
 
-            <motion.img
-              initial={reduceMotion ? undefined : { opacity: 0, y: -12 }}
-              animate={reduceMotion ? undefined : { opacity: 1, y: [0, -2, 0] }}
-              transition={
-                reduceMotion
-                  ? undefined
-                  : {
+            <div className="hero-layer hero-lid-mobile hero-lid-blend z-40">
+              <motion.img
+                initial={reduceMotion ? undefined : { opacity: 0, y: -12 }}
+                animate={reduceMotion ? undefined : { opacity: 1, y: [0, -2, 0] }}
+                transition={
+                  reduceMotion
+                    ? undefined
+                    : {
                       opacity: { duration: motionTokens.durationBase, delay: 0.28 },
                       y: { duration: 6, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut", delay: 0.28 },
                     }
-              }
-              src="/images/hero/lid.png"
-              alt="Tampa do pote Supet"
-              className="hero-layer hero-lid-mobile hero-lid-blend z-40"
-            />
+                }
+                src="/images/hero/lid.png"
+                alt="Tampa do pote Supet"
+                className="block w-full"
+              />
+            </div>
 
-            <motion.img
-              initial={reduceMotion ? undefined : { opacity: 0, x: 20 }}
-              animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
-              transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.28 }}
-              src="/images/hero/dog-golden.png"
-              alt="Golden retriever da Supet"
-              className="hero-layer hero-dog-mobile z-50"
-            />
+            <div className="hero-layer hero-dog-mobile z-50">
+              <motion.img
+                initial={reduceMotion ? undefined : { opacity: 0, x: 20 }}
+                animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+                transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.28 }}
+                src="/images/hero/dog-golden.png"
+                alt="Golden retriever da Supet"
+                className="block w-full"
+              />
+            </div>
 
             <motion.div
               initial={reduceMotion ? undefined : { opacity: 0, y: 16 }}
