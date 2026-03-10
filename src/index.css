@@ -136,7 +136,7 @@
   }
 
   .hero-dog {
-    @apply bottom-[-44px] left-[66%] w-[clamp(320px,30vw,500px)] -translate-x-1/2;
+    @apply bottom-[-44px] left-[76%] w-[clamp(340px,31vw,525px)] -translate-x-1/2;
   }
 
   .hero-jar-mobile {

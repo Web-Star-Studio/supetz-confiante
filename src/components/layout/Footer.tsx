@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Facebook, Instagram, Youtube, Music2, ArrowRight } from "lucide-react";
+import { motion, useReducedMotion } from "framer-motion";
 import { socialLinks } from "@/services/mockData";
-import supetLogo from "/images/SUPET.png";
 
 const iconByPlatform = {
   facebook: Facebook,
@@ -11,8 +11,38 @@ const iconByPlatform = {
 } as const;
 
 export default function Footer() {
+  const reduceMotion = useReducedMotion();
+
   return (
     <footer className="relative overflow-hidden bg-gradient-to-b from-[#FE6D00] to-[#E56200] pt-20 pb-10 text-white">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[180px] overflow-hidden opacity-75 md:h-[240px]">
+        <motion.div
+          initial={reduceMotion ? undefined : { x: "calc(100vw + 420px)" }}
+          animate={reduceMotion ? undefined : { x: "-420px" }}
+          transition={
+            reduceMotion
+              ? undefined
+              : {
+                duration: 4.6,
+                repeat: Number.POSITIVE_INFINITY,
+                ease: "linear",
+                repeatDelay: 0.2,
+              }
+          }
+          className={`absolute bottom-0 w-auto select-none ${reduceMotion ? "left-1/2 -translate-x-1/2" : ""}`}
+        >
+          <video
+            src="/images/transparent_dog.webm"
+            autoPlay
+            loop
+            muted
+            playsInline
+            className="h-[170px] w-auto md:h-[230px]"
+            style={{ transform: "scaleX(-1)" }}
+          />
+        </motion.div>
+      </div>
+
       {/* Decorative large text */}
       <div className="pointer-events-none absolute -right-10 bottom-0 select-none opacity-5">
         <span className="text-[15rem] font-bold leading-none tracking-tighter">
@@ -20,7 +50,7 @@ export default function Footer() {
         </span>
       </div>
 
-      <div className="relative mx-auto max-w-7xl px-6 lg:px-8">
+      <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
 
           {/* Brand & Description */}

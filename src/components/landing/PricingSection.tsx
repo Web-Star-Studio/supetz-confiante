@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { products } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
+import { motionTokens } from "@/lib/motion";
 
 export default function PricingSection() {
   const { addItem } = useCart();
@@ -18,7 +19,7 @@ export default function PricingSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-          {products.map((product, i) => (
+          {products.filter(p => p.category === "combo" || !p.category).map((product, i) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 30 }}
@@ -26,19 +27,17 @@ export default function PricingSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.12 }}
               whileHover={{ scale: 1.02 }}
-              className={`relative flex flex-col rounded-3xl p-8 ${
-                product.highlighted
-                  ? "bg-supetz-orange text-white ring-4 ring-supetz-orange/30"
-                  : "bg-supetz-bg-alt text-supetz-text"
-              }`}
+              className={`relative flex flex-col rounded-3xl p-8 ${product.highlighted
+                ? "bg-supetz-orange text-white ring-4 ring-supetz-orange/30"
+                : "bg-supetz-bg-alt text-supetz-text"
+                }`}
             >
               {product.badge && (
                 <span
-                  className={`absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold ${
-                    product.highlighted
-                      ? "bg-white text-supetz-orange"
-                      : "bg-supetz-orange text-white"
-                  }`}
+                  className={`absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold ${product.highlighted
+                    ? "bg-white text-supetz-orange"
+                    : "bg-supetz-orange text-white"
+                    }`}
                 >
                   {product.badge}
                 </span>
@@ -66,11 +65,10 @@ export default function PricingSection() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => addItem(product)}
-                  className={`w-full rounded-full py-3.5 text-sm font-bold transition-colors ${
-                    product.highlighted
-                      ? "bg-white text-supetz-orange hover:bg-white/90"
-                      : "bg-supetz-orange text-white hover:bg-supetz-orange-dark"
-                  }`}
+                  className={`w-full rounded-full py-3.5 text-sm font-bold transition-colors ${product.highlighted
+                    ? "bg-white text-supetz-orange hover:bg-white/90"
+                    : "bg-supetz-orange text-white hover:bg-supetz-orange-dark"
+                    }`}
                 >
                   ADICIONAR AO CARRINHO
                 </motion.button>

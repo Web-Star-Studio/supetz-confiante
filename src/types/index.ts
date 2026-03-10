@@ -8,6 +8,8 @@ export interface Product {
   quantity: number;
   badge?: string;
   highlighted?: boolean;
+  category?: "combo" | "extra";
+  image?: string;
   variants?: ProductVariant[];
 }
 

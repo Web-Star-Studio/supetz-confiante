@@ -67,6 +67,37 @@ export default function Blog() {
           </div>
         </div>
       </section>
+
+      {/* Newsletter Section */}
+      <section className="py-20 bg-supetz-orange text-white">
+        <div className="mx-auto max-w-4xl px-6 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+          >
+            <h2 className="text-3xl md:text-4xl font-extrabold mb-4">Sua dose semanal de saúde pet</h2>
+            <p className="text-white/80 mb-8 max-w-2xl mx-auto">
+              Inscreva-se na nossa newsletter e receba dicas práticas para melhorar a qualidade de vida do seu melhor amigo.
+            </p>
+            <form className="flex flex-col sm:flex-row max-w-lg mx-auto gap-3" onSubmit={(e) => e.preventDefault()}>
+              <input
+                type="email"
+                placeholder="Seu melhor e-mail"
+                className="flex-1 rounded-full px-6 py-4 text-supetz-text bg-white outline-none focus:ring-4 focus:ring-white/30"
+                required
+              />
+              <button
+                type="submit"
+                className="rounded-full bg-supetz-text text-white px-8 py-4 font-bold hover:bg-supetz-text/90 transition-colors shrink-0"
+              >
+                Inscrever-se
+              </button>
+            </form>
+          </motion.div>
+        </div>
+      </section>
     </Layout>
   );
 }

@@ -16,6 +16,7 @@ export const products: Product[] = [
     originalPrice: 199.90,
     pricePerUnit: "R$ 149,90/pote",
     quantity: 1,
+    category: "combo",
   },
   {
     id: "combo-2",
@@ -27,6 +28,7 @@ export const products: Product[] = [
     quantity: 2,
     badge: "Mais Popular",
     highlighted: true,
+    category: "combo",
   },
   {
     id: "combo-3",
@@ -37,6 +39,40 @@ export const products: Product[] = [
     pricePerUnit: "R$ 109,97/pote",
     quantity: 3,
     badge: "Melhor Custo-Benefício",
+    category: "combo",
+  },
+  {
+    id: "extra-1",
+    title: "Shampoo Calmante",
+    subtitle: "Extratos naturais • 250ml",
+    price: 69.90,
+    originalPrice: 89.90,
+    pricePerUnit: "R$ 69,90/un",
+    quantity: 1,
+    category: "extra",
+    image: "/images/product-gummy.png",
+  },
+  {
+    id: "extra-2",
+    title: "EcoBag Supet",
+    subtitle: "Sustentável e estilosa",
+    price: 45.00,
+    originalPrice: 60.00,
+    pricePerUnit: "R$ 45,00/un",
+    quantity: 1,
+    category: "extra",
+    image: "/images/hero-dog.png",
+  },
+  {
+    id: "extra-3",
+    title: "Petiscos Imunidade",
+    subtitle: "Sabor Carne • 150g",
+    price: 39.90,
+    originalPrice: 49.90,
+    pricePerUnit: "R$ 39,90/un",
+    quantity: 1,
+    category: "extra",
+    image: "/images/dog-closeup.png",
   },
 ];
 
@@ -164,6 +200,33 @@ export const blogPreviews: BlogPostPreview[] = [
     slug: "guia-pele-pelo-articulacoes",
     coverImage: "/images/pet-fashion.png",
     publishedAt: "2026-02-12",
+  },
+  {
+    id: "p4",
+    title: "Por que as alergias são tão comuns em algumas raças?",
+    excerpt:
+      "Conheça as predisposições raciais e como proteger o seu amigão da melhor forma possível, evitando crises e desconfortos extremos.",
+    slug: "alergias-racas",
+    coverImage: "/images/dog-closeup.png",
+    publishedAt: "2026-03-05",
+  },
+  {
+    id: "p5",
+    title: "O papel fundamental do ômega 3 na saúde canina",
+    excerpt:
+      "Descubra como escolher o suplemento ideal de ômega 3 e os enormes benefícios para a pele, visão e coração do seu pet.",
+    slug: "papel-omega-3",
+    coverImage: "/images/lifestyle-dog.png",
+    publishedAt: "2026-03-08",
+  },
+  {
+    id: "p6",
+    title: "Como garantir o conforto do seu pet em dias quentes",
+    excerpt:
+      "Dicas práticas e seguras para refrescar o seu cachorro durante o verão e evitar hipertermia ou problemas de pele relacionados ao calor.",
+    slug: "conforto-dias-quentes",
+    coverImage: "/images/pet-studio.png",
+    publishedAt: "2026-01-25",
   },
 ];
 

@@ -1,63 +1,212 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Plus, Minus, Star, ShieldCheck, Leaf, PackageCheck } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import PricingSection from "@/components/landing/PricingSection";
+import ExtrasSection from "@/components/landing/ExtrasSection";
+import FAQStandaloneSection from "@/components/landing/FAQStandaloneSection";
 import { motionTokens } from "@/lib/motion";
+import { useCart } from "@/context/CartContext";
+import type { Product } from "@/types";
 
-const trustPoints = [
-  "Frete para todo o Brasil",
-  "Pagamento seguro",
-  "Garantia de 30 dias",
+const mainProduct: Product = {
+  id: "combo-1",
+  title: "O Queridinho",
+  subtitle: "1 pote • Tratamento de 30 dias",
+  price: 149.90,
+  originalPrice: 199.90,
+  pricePerUnit: "R$ 149,90/pote",
+  quantity: 1,
+  category: "combo",
+  image: "/hero-assets/pote.png"
+};
+
+const productDetails = [
+  {
+    id: "benefits",
+    title: "Benefícios Clínicos",
+    icon: ShieldCheck,
+    content: "Desenvolvido por especialistas para entregar suporte imunológico avançado, interrupção rápida de coceiras e alergias, brilho espelhado na pelagem e fortalecimento estrutural das articulações."
+  },
+  {
+    id: "ingredients",
+    title: "Ingredientes Premium",
+    icon: Leaf,
+    content: "Colágeno Peptídeo de alta absorção (500mg), Ômega 3 puro extraído a frio (250mg), Biotina Complex e um blend exclusivo de antioxidantes naturais. Livre de corantes, transgênicos e conservantes artificiais."
+  },
+  {
+    id: "usage",
+    title: "Ritual de Uso",
+    icon: Star,
+    content: "Ofereça 1 goma diária para cães até 10kg, 2 gomas para 11kg a 25kg, e 3 gomas para cães acima de 25kg. A textura macia e o sabor idêntico a carne garantem 99% de aceitação."
+  },
+  {
+    id: "shipping",
+    title: "Envio e Garantia",
+    icon: PackageCheck,
+    content: "Frete expresso gratuito para compras acima de 2 potes. Confiamos tanto na nossa fórmula que oferecemos o Desafio 30 Dias: se não ver resultados, devolvemos 100% do seu dinheiro."
+  }
 ];
 
 export default function Shop() {
+  const { addItem } = useCart();
+  const [activeAccordion, setActiveAccordion] = useState<string | null>("benefits");
+
+  const [quantity, setQuantity] = useState(1);
+
+  const handleAddToCart = () => {
+    // Add multiple items if quantity > 1
+    for (let i = 0; i < quantity; i++) {
+      addItem(mainProduct);
+    }
+  };
+
   return (
     <Layout>
-      <section className="relative overflow-hidden pb-12 pt-16 md:pt-20">
-        <div className="pointer-events-none absolute -top-20 right-0 h-72 w-72 rounded-full bg-supetz-orange/20 blur-3xl" />
-        <div className="mx-auto max-w-6xl px-6">
-          <div className="grid gap-7 lg:grid-cols-[1.1fr_1fr] lg:items-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
-            >
-              <span className="text-xs font-black uppercase tracking-[0.26em] text-supetz-orange">Shop Supet</span>
-              <h1 className="mt-3 text-4xl font-extrabold leading-tight text-supetz-text md:text-6xl">
-                Escolha o combo ideal para seu pet.
-              </h1>
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-supetz-text/65 md:text-base">
-                Fórmulas naturais desenvolvidas para apoiar pele, pelagem e imunidade. Selecione o plano com melhor
-                custo-benefício e comece hoje.
-              </p>
-              <div className="mt-6 flex flex-wrap gap-2.5">
-                {trustPoints.map((point) => (
-                  <span
-                    key={point}
-                    className="rounded-full border border-supetz-orange/25 bg-white/80 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-supetz-text/70"
-                  >
-                    {point}
-                  </span>
-                ))}
-              </div>
-            </motion.div>
+      <section className="bg-supetz-bg pt-24 md:pt-32 pb-24 border-b border-supetz-text/5 relative">
+        <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
+          {/* Breadcrumb / Top label */}
+          <div className="mb-8">
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-supetz-text/40">
+              Home / <span className="text-supetz-orange">Loja</span>
+            </span>
+          </div>
 
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
-              className="supet-soft-panel p-4"
-            >
-              <img
-                src="/images/product-gummy.png"
-                alt="Pote Supet em destaque"
-                className="h-[320px] w-full rounded-[1.5rem] object-cover md:h-[380px]"
-              />
-            </motion.div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 xl:gap-32">
+
+            {/* Left Column: Fixed Gallery */}
+            <div className="relative">
+              <div className="sticky top-32 flex flex-col gap-6">
+                {/* Main Big Image */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: motionTokens.durationSlow, ease: motionTokens.easeOut }}
+                  className="relative w-full aspect-[4/5] md:aspect-square bg-[#F9F7F4] rounded-[2rem] overflow-hidden flex items-center justify-center p-8 group border border-supetz-text/5"
+                >
+                  {/* Abstract circular spotlight */}
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-white rounded-full blur-3xl opacity-50 pointer-events-none"></div>
+
+                  <motion.img
+                    src={mainProduct.image}
+                    alt="Pote Supet"
+                    className="relative z-10 w-[60%] md:w-[70%] max-w-[400px] drop-shadow-[0_40px_40px_rgba(0,0,0,0.15)] group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                </motion.div>
+              </div>
+            </div>
+
+            {/* Right Column: Product Info (Scrolls) */}
+            <div className="flex flex-col justify-center py-4 lg:py-16">
+
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2, ease: motionTokens.easeOut }}
+              >
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="flex text-supetz-orange">
+                    {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
+                  </div>
+                  <span className="text-sm font-bold text-supetz-text/60">4.9/5 (1.2k+ avaliações)</span>
+                </div>
+
+                <h1 className="text-5xl md:text-6xl font-black text-supetz-text tracking-tight mb-2 uppercase">
+                  Goma Supet
+                </h1>
+                <p className="text-xl text-supetz-text/60 font-medium mb-8">
+                  O suplemento diário definitivo para a saúde da pele, imunidade e articulações do seu cão.
+                </p>
+
+                <div className="flex items-baseline gap-4 mb-8">
+                  <span className="text-4xl font-black text-supetz-text">R$ 149,90</span>
+                  <span className="text-xl font-bold text-supetz-text/30 line-through">R$ 199,90</span>
+                </div>
+
+                {/* Quantity & Add to Cart */}
+                <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                  <div className="flex items-center justify-between border-2 border-supetz-text/10 rounded-full px-6 py-4 sm:w-1/3 bg-white">
+                    <button
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      className="text-supetz-text/50 hover:text-supetz-orange transition-colors"
+                    >
+                      <Minus className="w-5 h-5" />
+                    </button>
+                    <span className="text-lg font-black text-supetz-text">{quantity}</span>
+                    <button
+                      onClick={() => setQuantity(quantity + 1)}
+                      className="text-supetz-text/50 hover:text-supetz-orange transition-colors"
+                    >
+                      <Plus className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <button
+                    onClick={handleAddToCart}
+                    className="flex-1 bg-supetz-text hover:bg-supetz-orange text-white rounded-full py-4 px-8 text-lg font-black uppercase tracking-widest transition-all duration-300 hover:shadow-xl hover:shadow-supetz-orange/20 flex justify-center items-center"
+                  >
+                    Adicionar à Sacola
+                  </button>
+                </div>
+
+                {/* Clean Accordion */}
+                <div className="border-t border-supetz-text/10">
+                  {productDetails.map((detail) => {
+                    const Icon = detail.icon;
+                    const isActive = activeAccordion === detail.id;
+
+                    return (
+                      <div key={detail.id} className="border-b border-supetz-text/10">
+                        <button
+                          onClick={() => setActiveAccordion(isActive ? null : detail.id)}
+                          className="w-full flex items-center justify-between py-6 group"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full bg-supetz-orange/5 flex items-center justify-center group-hover:bg-supetz-orange/10 transition-colors">
+                              <Icon className="w-5 h-5 text-supetz-orange" />
+                            </div>
+                            <span className="text-lg font-bold text-supetz-text group-hover:text-supetz-orange transition-colors uppercase tracking-wide">
+                              {detail.title}
+                            </span>
+                          </div>
+                          <div className="w-8 h-8 flex items-center justify-center">
+                            {isActive ? <Minus className="w-5 h-5 text-supetz-text/50" /> : <Plus className="w-5 h-5 text-supetz-text/50" />}
+                          </div>
+                        </button>
+
+                        <AnimatePresence>
+                          {isActive && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: "auto", opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden"
+                            >
+                              <div className="pb-6 pl-14 pr-8 text-supetz-text/60 font-medium leading-relaxed">
+                                {detail.content}
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )
+                  })}
+                </div>
+
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
 
+      {/* Pricing / Combo Plans */}
       <PricingSection />
+
+      {/* Kept exclusively for cross-sell (refined version) */}
+      <ExtrasSection />
+
+      {/* Required for trust */}
+      <FAQStandaloneSection />
     </Layout>
   );
 }

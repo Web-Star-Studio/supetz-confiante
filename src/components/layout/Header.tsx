@@ -14,6 +14,7 @@ import supetHeaderLogo from "/images/supet-header-logo.png";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
+  { label: "Sobre", href: "/sobre" },
   { label: "Blog", href: "/blog" },
   { label: "Por que Supet?", href: "/#beneficios" },
   { label: "FAQ", href: "/#faq" },
@@ -59,37 +60,37 @@ export default function Header() {
                 shouldReduceMotion
                   ? undefined
                   : {
-                      y: [0, -1.25, 0],
-                      rotate: [0, -0.45, 0.25, 0],
-                      scale: [1, 1.01, 1],
-                    }
+                    y: [0, -1.25, 0],
+                    rotate: [0, -0.45, 0.25, 0],
+                    scale: [1, 1.01, 1],
+                  }
               }
               transition={
                 shouldReduceMotion
                   ? undefined
                   : {
-                      y: {
-                        duration: 3.6,
-                        ease: "easeInOut",
-                        times: [0, 0.5, 1],
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatDelay: 1.2,
-                      },
-                      rotate: {
-                        duration: 3.6,
-                        ease: "easeInOut",
-                        times: [0, 0.35, 0.7, 1],
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatDelay: 1.2,
-                      },
-                      scale: {
-                        duration: 3.6,
-                        ease: "easeInOut",
-                        times: [0, 0.5, 1],
-                        repeat: Number.POSITIVE_INFINITY,
-                        repeatDelay: 1.2,
-                      },
-                    }
+                    y: {
+                      duration: 3.6,
+                      ease: "easeInOut",
+                      times: [0, 0.5, 1],
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatDelay: 1.2,
+                    },
+                    rotate: {
+                      duration: 3.6,
+                      ease: "easeInOut",
+                      times: [0, 0.35, 0.7, 1],
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatDelay: 1.2,
+                    },
+                    scale: {
+                      duration: 3.6,
+                      ease: "easeInOut",
+                      times: [0, 0.5, 1],
+                      repeat: Number.POSITIVE_INFINITY,
+                      repeatDelay: 1.2,
+                    },
+                  }
               }
             />
           </motion.div>

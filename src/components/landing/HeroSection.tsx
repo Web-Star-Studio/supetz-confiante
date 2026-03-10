@@ -137,8 +137,6 @@ export default function HeroSection() {
   const jarY = useTransform(scrollYProgress, [0, 1], [0, -138]);
   const jarScale = useTransform(scrollYProgress, [0, 1], [1, 0.93]);
   const lidY = useTransform(scrollYProgress, [0, 1], [0, -112]);
-  const dogY = useTransform(scrollYProgress, [0, 1], [0, -92]);
-  const dogX = useTransform(scrollYProgress, [0, 1], [0, 18]);
   const sceneRotateX = useTransform(smoothPointerY, [-1, 1], [3.5, -3.5]);
   const sceneRotateY = useTransform(smoothPointerX, [-1, 1], [-5, 5]);
 
@@ -310,26 +308,6 @@ export default function HeroSection() {
               </HeroParallaxLayer>
 
               <HeroParallaxLayer
-                className="hero-layer hero-dog z-50"
-                pointerX={smoothPointerX}
-                pointerY={smoothPointerY}
-                depthX={24}
-                depthY={12}
-                scrollX={dogX}
-                scrollY={dogY}
-              >
-                <motion.img
-                  data-hero-parallax
-                  initial={reduceMotion ? undefined : { opacity: 0, x: 28 }}
-                  animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
-                  transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.28 }}
-                  src="/images/hero/dog-golden.png"
-                  alt="Golden retriever da Supet"
-                  className="block w-full"
-                />
-              </HeroParallaxLayer>
-
-              <HeroParallaxLayer
                 className="hero-desc-text z-[15]"
                 pointerX={smoothPointerX}
                 pointerY={smoothPointerY}
@@ -354,6 +332,17 @@ export default function HeroSection() {
                 </motion.div>
               </HeroParallaxLayer>
             </motion.div>
+
+            <div className="hero-layer hero-dog z-50">
+              <motion.img
+                initial={reduceMotion ? undefined : { opacity: 0 }}
+                animate={reduceMotion ? undefined : { opacity: 1 }}
+                transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.28 }}
+                src="/images/hero/dog-golden.png"
+                alt="Golden retriever da Supet"
+                className="block w-full"
+              />
+            </div>
           </div>
         </div>
 
@@ -441,8 +430,8 @@ export default function HeroSection() {
 
             <div className="hero-layer hero-dog-mobile z-50">
               <motion.img
-                initial={reduceMotion ? undefined : { opacity: 0, x: 20 }}
-                animate={reduceMotion ? undefined : { opacity: 1, x: 0 }}
+                initial={reduceMotion ? undefined : { opacity: 0 }}
+                animate={reduceMotion ? undefined : { opacity: 1 }}
                 transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.28 }}
                 src="/images/hero/dog-golden.png"
                 alt="Golden retriever da Supet"
