@@ -151,7 +151,7 @@ export const testimonials: Testimonial[] = [
     quote:
       "Em poucas semanas o Revi parou de se cocar o tempo todo e a pele ficou muito melhor.",
     rating: 5,
-    image: "/images/hero-dog.png",
+    image: "/images/tutor_maria.png",
   },
   {
     id: "t2",
@@ -160,7 +160,7 @@ export const testimonials: Testimonial[] = [
     quote:
       "A queda de pelos reduziu bastante e ele voltou a ficar ativo. Hoje Supet faz parte da rotina diaria.",
     rating: 5,
-    image: "/images/dog-closeup.png",
+    image: "/images/tutor_pedro.png",
   },
   {
     id: "t3",
@@ -169,7 +169,7 @@ export const testimonials: Testimonial[] = [
     quote:
       "Testamos varios tratamentos antes, mas com Supet vimos resultado consistente de dentro para fora.",
     rating: 5,
-    image: "/images/lifestyle-dog.png",
+    image: "/images/tutor_carla.png",
   },
 ];
 

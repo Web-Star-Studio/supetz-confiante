@@ -7,37 +7,37 @@ const symptomsList = [
     num: "01",
     title: "Coceiras constantes",
     desc: "O primeiro e mais irritante sinal de que a imunidade da pele e a barreira protetora falharam.",
-    img: "/images/pet-badboy.png"
+    img: "/images/symptom_scratching.png"
   },
   {
     num: "02",
     title: "Lamber as patas",
     desc: "Um comportamento compulsivo que indica desconforto, alergia ou inflamação localizada nas extremidades.",
-    img: "/images/dog-closeup.png"
+    img: "/images/symptom_licking.png"
   },
   {
     num: "03",
     title: "Queda excessiva",
     desc: "Muito além da troca sazonal. Falhas na pelagem e pelos opacos refletem ausência de nutrientes essenciais.",
-    img: "/images/pet-studio.png"
+    img: "/images/symptom_hairloss.png"
   },
   {
     num: "04",
     title: "Mau cheiro nas orelhas",
     desc: "Sinal claro de desequilíbrio fúngico ou bacteriano, muitas vezes ligado à imunidade baixa.",
-    img: "/images/pet-fashion.png"
+    img: "/images/symptom_ear.png"
   },
   {
     num: "05",
     title: "Comer grama freq.",
     desc: "Instinto natural para tentar aliviar desconfortos gástricos e problemas na digestão e microbiota intestinal.",
-    img: "/images/lifestyle-dog.png"
+    img: "/images/symptom_grass.png"
   },
   {
     num: "06",
     title: "Esfregar o bumbum",
     desc: "Forte indicativo de problemas nas glândulas ou incômodos inflamatórios locais.",
-    img: "/images/pet-winter.png"
+    img: "/images/symptom_scooting.png"
   }
 ];
 
@@ -127,17 +127,17 @@ export default function ProblemSection() {
           transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.08 }}
           className="mx-auto mt-16 md:mt-24 max-w-7xl lg:px-8"
         >
+          <div className="mb-12 lg:mb-16">
+            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-supetz-text/58 mb-2">O que você observa</p>
+            <h3 className="font-display text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-supetz-text leading-none">Sinais<br className="hidden md:block" /> Óbvios</h3>
+            <p className="text-supetz-text/70 mt-6 max-w-sm text-sm md:text-base font-medium leading-relaxed">
+              Seu pet não consegue falar, mas o corpo dele dá sinais claros de que a barreira protetora falhou.
+            </p>
+          </div>
+
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
             {/* Left: Text List */}
             <div className="flex flex-col w-full z-10">
-              <div className="mb-12">
-                <p className="text-[11px] font-black uppercase tracking-[0.22em] text-supetz-text/58 mb-2">O que você observa</p>
-                <h3 className="font-display text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-supetz-text leading-none">Sinais<br className="hidden md:block" /> Óbvios</h3>
-                <p className="text-supetz-text/70 mt-6 max-w-sm text-sm md:text-base font-medium leading-relaxed">
-                  Seu pet não consegue falar, mas o corpo dele dá sinais claros de que a barreira protetora falhou.
-                </p>
-              </div>
-
               <div className="flex flex-col border-t border-supetz-text/10">
                 {symptomsList.map((item, idx) => {
                   const isActive = activeSymptom === idx;
@@ -175,9 +175,9 @@ export default function ProblemSection() {
               </div>
             </div>
 
-            {/* Right: Sticky Image */}
-            <div className="hidden lg:block relative">
-              <div className="sticky top-32 h-[75vh] min-h-[600px] w-full rounded-[2.5rem] overflow-hidden bg-[#1A1918] shadow-2xl">
+            {/* Right: Image */}
+            <div className="hidden lg:block relative h-full">
+              <div className="h-full w-full rounded-2xl overflow-hidden bg-[#1A1918] shadow-2xl relative isolate" style={{ maskImage: 'radial-gradient(white, black)' }}>
                 {symptomsList.map((item, idx) => (
                   <motion.img
                     key={item.img}
@@ -233,8 +233,8 @@ export default function ProblemSection() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-bl-full pointer-events-none" />
 
               <div className="flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-full bg-supetz-text/5 flex items-center justify-center">
-                  <span className="text-supetz-text/40 font-black text-xl">✕</span>
+                <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
+                  <span className="text-red-500 font-black text-xl">✕</span>
                 </div>
                 <h4 className="font-display text-2xl font-bold tracking-tight text-supetz-text">
                   Tratamento Comum
@@ -276,8 +276,8 @@ export default function ProblemSection() {
               </div>
 
               <div className="relative z-10 flex items-center gap-4 mb-8">
-                <div className="w-12 h-12 rounded-full bg-white/20 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
+                <div className="w-12 h-12 rounded-full bg-green-400/20 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="3">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                   </svg>
                 </div>

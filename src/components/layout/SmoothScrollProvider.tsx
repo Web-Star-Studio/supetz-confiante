@@ -37,6 +37,9 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
       wheelMultiplier: 0.9,
       smoothWheel: true,
     });
+    
+    // Expose lenis globally for ScrollToTop to use
+    (window as any).lenis = lenis;
 
     const update = (time: number) => {
       lenis.raf(time * 1000);
@@ -51,6 +54,7 @@ export default function SmoothScrollProvider({ children }: { children: ReactNode
       lenis.off("scroll", ScrollTrigger.update);
       gsap.ticker.remove(update);
       lenis.destroy();
+      delete (window as any).lenis;
     };
   }, [isIframeContext]);
 
