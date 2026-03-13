@@ -12,6 +12,11 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
   },
+  preview: {
+    host: "::",
+    port: 8080,
+    allowedHosts: ["supetz-confiante.onrender.com"],
+  },
   plugins: [
     react(),
     mode === "development" && componentTagger(),
