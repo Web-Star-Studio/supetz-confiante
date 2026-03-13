@@ -18,7 +18,7 @@ const mainProduct: Product = {
   pricePerUnit: "R$ 149,90/pote",
   quantity: 1,
   category: "combo",
-  image: "/hero-assets/pote.png"
+  image: "/images/product-bottle-closed.png"
 };
 
 const productDetails = [
@@ -82,15 +82,12 @@ export default function Shop() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: motionTokens.durationSlow, ease: motionTokens.easeOut }}
-                  className="relative w-full aspect-[4/5] md:aspect-square bg-[#F9F7F4] rounded-[2rem] overflow-hidden flex items-center justify-center p-8 group border border-supetz-text/5"
+                  className="relative w-full aspect-[4/5] md:aspect-square flex items-center justify-center p-4 group"
                 >
-                  {/* Abstract circular spotlight */}
-                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-white rounded-full blur-3xl opacity-50 pointer-events-none"></div>
-
                   <motion.img
                     src={mainProduct.image}
                     alt="Pote Supet"
-                    className="relative z-10 w-[60%] md:w-[70%] max-w-[400px] drop-shadow-[0_40px_40px_rgba(0,0,0,0.15)] group-hover:scale-105 transition-transform duration-700 ease-out"
+                    className="relative z-10 w-[85%] md:w-[90%] max-w-[520px] drop-shadow-[0_40px_60px_rgba(0,0,0,0.15)] group-hover:scale-105 transition-transform duration-1000 ease-out"
                   />
                 </motion.div>
               </div>
