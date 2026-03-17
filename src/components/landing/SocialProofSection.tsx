@@ -5,7 +5,7 @@ import { motionTokens } from "@/lib/motion";
 
 export default function SocialProofSection() {
   return (
-    <section className="relative bg-supetz-bg-alt py-20 md:py-24">
+    <section className="relative bg-supet-bg-alt py-20 md:py-24">
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}

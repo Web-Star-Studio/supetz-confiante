@@ -36,12 +36,12 @@
 
     --radius: 0.5rem;
 
-    /* Supetz brand tokens */
-    --supetz-orange: 27 100% 49%;
-    --supetz-orange-dark: 27 100% 46%;
-    --supetz-bg: 30 33% 95%;
-    --supetz-bg-alt: 28 38% 90%;
-    --supetz-text: 25 20% 20%;
+    /* Supet brand tokens */
+    --supet-orange: 27 100% 49%;
+    --supet-orange-dark: 27 100% 46%;
+    --supet-bg: 30 33% 95%;
+    --supet-bg-alt: 28 38% 90%;
+    --supet-text: 25 20% 20%;
 
     --sidebar-background: 30 33% 95%;
     --sidebar-foreground: 25 20% 20%;
@@ -60,7 +60,7 @@
   }
 
   body {
-    @apply bg-supetz-bg text-supetz-text font-body antialiased;
+    @apply bg-supet-bg text-supet-text font-body antialiased;
     background-image: radial-gradient(circle at 20% 0%, rgba(255, 123, 0, 0.1), transparent 32%);
   }
 
@@ -74,7 +74,7 @@
 
 @layer utilities {
   .supet-soft-panel {
-    @apply rounded-[2rem] border border-supetz-orange/10 bg-white/75 shadow-[0_16px_48px_-24px_rgba(55,35,10,0.45)] backdrop-blur-sm;
+    @apply rounded-[2rem] border border-supet-orange/10 bg-white/75 shadow-[0_16px_48px_-24px_rgba(55,35,10,0.45)] backdrop-blur-sm;
   }
 
   .supet-glow {
@@ -90,23 +90,23 @@
   }
 
   .hero-topbar-nav {
-    @apply absolute left-1/2 flex -translate-x-1/2 items-center gap-7 text-xs font-bold uppercase tracking-[0.18em] text-supetz-text/75 md:gap-8;
+    @apply absolute left-1/2 flex -translate-x-1/2 items-center gap-7 text-xs font-bold uppercase tracking-[0.18em] text-supet-text/75 md:gap-8;
   }
 
   .hero-topbar-link {
-    @apply transition-colors hover:text-supetz-orange;
+    @apply transition-colors hover:text-supet-orange;
   }
 
   .hero-topbar-socials {
-    @apply flex items-center gap-3 text-supetz-text/75;
+    @apply flex items-center gap-3 text-supet-text/75;
   }
 
   .hero-social-link {
-    @apply transition-colors hover:text-supetz-orange;
+    @apply transition-colors hover:text-supet-orange;
   }
 
   .hero-title {
-    @apply pointer-events-none select-none text-center font-display font-extrabold uppercase leading-[0.82] tracking-[-0.04em] text-supetz-orange;
+    @apply pointer-events-none select-none text-center font-display font-extrabold uppercase leading-[0.82] tracking-[-0.04em] text-supet-orange;
   }
 
   .desktop-hero-title {
@@ -160,11 +160,11 @@
   }
 
   .hero-desc-body {
-    @apply font-body text-[clamp(0.75rem,1.1vw,0.9rem)] font-medium leading-snug text-supetz-text/65;
+    @apply font-body text-[clamp(0.75rem,1.1vw,0.9rem)] font-medium leading-snug text-supet-text/65;
   }
 
   .hero-desc-highlight {
-    @apply font-body text-[clamp(0.75rem,1.1vw,0.9rem)] font-bold leading-snug text-supetz-text/90;
+    @apply font-body text-[clamp(0.75rem,1.1vw,0.9rem)] font-bold leading-snug text-supet-text/90;
   }
 
   .hero-lid-blend {

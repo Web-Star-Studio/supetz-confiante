@@ -4,6 +4,8 @@ import BenefitsSection from "@/components/landing/BenefitsSection";
 import VisualProofSection from "@/components/landing/VisualProofSection";
 import ProblemSection from "@/components/landing/ProblemSection";
 import NaturalTreatmentSection from "@/components/landing/NaturalTreatmentSection";
+import ResultsTimeline from "@/components/landing/ResultsTimeline";
+import VetEndorsement from "@/components/landing/VetEndorsement";
 import ThemesGallery from "@/components/landing/ThemesGallery";
 import TestimonialsShowcaseSection from "@/components/landing/TestimonialsShowcaseSection";
 import TreatmentPlansSection from "@/components/landing/TreatmentPlansSection";
@@ -20,7 +22,9 @@ const Index = () => {
         <VisualProofSection />
         <ProblemSection />
         <NaturalTreatmentSection />
+        <ResultsTimeline />
         <ThemesGallery />
+        <VetEndorsement />
         <TestimonialsShowcaseSection />
         <TreatmentPlansSection />
         <PurchaseSecuritySection />

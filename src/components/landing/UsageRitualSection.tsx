@@ -21,19 +21,19 @@ const steps = [
 
 export default function UsageRitualSection() {
     return (
-        <section className="relative py-24 md:py-32 bg-supetz-bg-alt border-t border-supetz-text/5">
+        <section className="relative py-24 md:py-32 bg-supet-bg-alt border-t border-supet-text/5">
             <div className="mx-auto max-w-7xl px-6">
                 <div className="flex flex-col md:flex-row items-end justify-between gap-8 mb-20 md:mb-32">
                     <div>
-                        <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-supetz-orange flex items-center gap-4 mb-4">
-                            <span className="w-8 h-[2px] bg-supetz-orange/50"></span> Como Utilizar
+                        <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-supet-orange flex items-center gap-4 mb-4">
+                            <span className="w-8 h-[2px] bg-supet-orange/50"></span> Como Utilizar
                         </span>
-                        <h2 className="text-4xl md:text-6xl font-extrabold text-supetz-text tracking-tight">
+                        <h2 className="text-4xl md:text-6xl font-extrabold text-supet-text tracking-tight">
                             O Ritual de <br />
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-supetz-orange to-supetz-orange-dark italic font-serif">Cuidado.</span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-supet-orange to-supet-orange-dark italic font-serif">Cuidado.</span>
                         </h2>
                     </div>
-                    <p className="max-w-md text-lg text-supetz-text/60 font-medium pb-2 border-b border-supetz-orange/20">
+                    <p className="max-w-md text-lg text-supet-text/60 font-medium pb-2 border-b border-supet-orange/20">
                         Esqueça os remédios empurrados à força. Desenvolvemos uma experiência livre de estresse.
                     </p>
                 </div>
@@ -49,18 +49,18 @@ export default function UsageRitualSection() {
                             className="relative group cursor-default"
                         >
                             {/* Massive background number */}
-                            <div className="absolute -top-12 -left-4 text-[120px] font-black text-supetz-text/[0.03] select-none group-hover:text-supetz-orange/10 transition-colors duration-500">
+                            <div className="absolute -top-12 -left-4 text-[120px] font-black text-supet-text/[0.03] select-none group-hover:text-supet-orange/10 transition-colors duration-500">
                                 {step.num}
                             </div>
 
-                            <div className="relative z-10 pt-8 border-t-2 border-supetz-text/10 group-hover:border-supetz-orange/50 transition-colors duration-500">
-                                <span className="inline-block px-4 py-1.5 rounded-full bg-supetz-bg text-xs font-black uppercase tracking-widest text-supetz-orange mb-6 shadow-sm border border-supetz-orange/10">
+                            <div className="relative z-10 pt-8 border-t-2 border-supet-text/10 group-hover:border-supet-orange/50 transition-colors duration-500">
+                                <span className="inline-block px-4 py-1.5 rounded-full bg-supet-bg text-xs font-black uppercase tracking-widest text-supet-orange mb-6 shadow-sm border border-supet-orange/10">
                                     Passo {step.num}
                                 </span>
-                                <h3 className="text-2xl font-extrabold text-supetz-text mb-4 tracking-tight group-hover:text-supetz-orange transition-colors duration-300">
+                                <h3 className="text-2xl font-extrabold text-supet-text mb-4 tracking-tight group-hover:text-supet-orange transition-colors duration-300">
                                     {step.title}
                                 </h3>
-                                <p className="text-lg text-supetz-text/60 font-medium leading-relaxed">
+                                <p className="text-lg text-supet-text/60 font-medium leading-relaxed">
                                     {step.desc}
                                 </p>
                             </div>

@@ -8,6 +8,9 @@ import Sobre from "./pages/Sobre";
 import Shop from "./pages/Shop";
 import Blog from "./pages/Blog";
 import NotFound from "./pages/NotFound";
+import Quiz from "./pages/Quiz";
+import Ciencia from "./pages/Ciencia";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -22,6 +25,9 @@ const App = () => (
             <Route path="/shop" element={<Shop />} />
             <Route path="/blog" element={<Blog />} />
             <Route path="/sobre" element={<Sobre />} />
+            <Route path="/quiz" element={<Quiz />} />
+            <Route path="/ciencia" element={<Ciencia />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

@@ -157,8 +157,8 @@ export default function HeroSection() {
   };
 
   return (
-    <section ref={sectionRef} className="relative isolate min-h-[100svh] overflow-hidden bg-supetz-bg pb-4 pt-4 md:pt-6">
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-supetz-bg to-transparent" />
+    <section ref={sectionRef} className="relative isolate min-h-[100svh] overflow-hidden bg-supet-bg pb-4 pt-4 md:pt-6">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-supet-bg to-transparent" />
 
       <div className="hero-artboard px-4 md:px-8">
         <div className="relative hidden h-[calc(100svh-72px)] min-h-[620px] md:block">
@@ -320,13 +320,13 @@ export default function HeroSection() {
                   animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
                   transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.45 }}
                 >
-                  <p className="hero-desc-body">
+                  <p className="hero-desc-body text-balance">
                     Nosso suplemento em goma é
                   </p>
-                  <p className="hero-desc-highlight">
+                  <p className="hero-desc-highlight text-balance">
                     Formulado por Farmacêutico/Nutricionista,
                   </p>
-                  <p className="hero-desc-body">
+                  <p className="hero-desc-body text-balance">
                     100% vegano, livre de crueldade.
                   </p>
                 </motion.div>
@@ -445,13 +445,13 @@ export default function HeroSection() {
               transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.45 }}
               className="mobile-hero-desc z-[15]"
             >
-              <p className="hero-desc-body">
+              <p className="hero-desc-body text-balance">
                 Nosso suplemento em goma é
               </p>
-              <p className="hero-desc-highlight">
+              <p className="hero-desc-highlight text-balance">
                 Formulado por Farmacêutico/Nutricionista,
               </p>
-              <p className="hero-desc-body">
+              <p className="hero-desc-body text-balance">
                 100% vegano, livre de crueldade.
               </p>
             </motion.div>

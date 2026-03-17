@@ -10,8 +10,8 @@ export default function FAQSection() {
   return (
     <div id="faq" className="supet-soft-panel h-full p-7 md:p-9">
       <div className="mb-8">
-        <h2 className="text-3xl font-extrabold text-supetz-text md:text-4xl">
-          Perguntas <span className="text-supetz-orange">frequentes</span>
+        <h2 className="text-3xl font-extrabold text-supet-text md:text-4xl">
+          Perguntas <span className="text-supet-orange">frequentes</span>
         </h2>
       </div>
 
@@ -21,20 +21,20 @@ export default function FAQSection() {
           return (
             <div
               key={faq.id}
-              className="overflow-hidden rounded-2xl border border-supetz-text/10 bg-white/80"
+              className="overflow-hidden rounded-2xl border border-supet-text/10 bg-white/80"
             >
               <button
                 onClick={() => setOpenId(isOpen ? null : faq.id)}
                 aria-expanded={isOpen}
                 aria-controls={`faq-content-${faq.id}`}
-                className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-supetz-bg"
+                className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-supet-bg"
               >
-                <span className="pr-4 text-sm font-semibold text-supetz-text md:text-base">{faq.question}</span>
+                <span className="pr-4 text-sm font-semibold text-supet-text md:text-base">{faq.question}</span>
                 <motion.div
                   animate={{ rotate: isOpen ? 180 : 0 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <ChevronDown className="h-5 w-5 shrink-0 text-supetz-orange" />
+                  <ChevronDown className="h-5 w-5 shrink-0 text-supet-orange" />
                 </motion.div>
               </button>
               <AnimatePresence initial={false}>
@@ -47,7 +47,7 @@ export default function FAQSection() {
                     transition={{ duration: motionTokens.durationFast }}
                     className="overflow-hidden"
                   >
-                    <p className="px-5 pb-5 text-sm leading-relaxed text-supetz-text/65">
+                    <p className="px-5 pb-5 text-sm leading-relaxed text-supet-text/65">
                       {faq.answer}
                     </p>
                   </motion.div>

@@ -1,5 +1,5 @@
-import { motion, useReducedMotion, useScroll, useTransform, Variants } from "framer-motion";
-import { useRef, useState } from "react";
+import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motionTokens } from "@/lib/motion";
 
 const symptomsList = [
@@ -79,10 +79,73 @@ const supetApproach = [
   }
 ];
 
+interface PawPrint {
+  id: number;
+  x: number;
+  y: number;
+  rotate: number;
+  createdAt: number;
+}
+
+/* Faint background paws — hint the area is interactive */
+const AMBIENT_PAWS = [
+  { x: 8,  y: 22, rotate: -22, opacity: 0.055 },
+  { x: 90, y: 58, rotate: 14,  opacity: 0.045 },
+  { x: 38, y: 82, rotate: -10, opacity: 0.035 },
+  { x: 74, y: 12, rotate: 20,  opacity: 0.05 },
+];
+
 export default function ProblemSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
   const [activeSymptom, setActiveSymptom] = useState(0);
+
+  /* ── Interactive paw trail ── */
+  const [pawPrints, setPawPrints] = useState<PawPrint[]>([]);
+  const pawIdRef = useRef(0);
+  const lastPosRef = useRef({ x: 0, y: 0 });
+
+  const handlePawMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+
+    const dx = x - lastPosRef.current.x;
+    const dy = y - lastPosRef.current.y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist < 7) return;
+
+    lastPosRef.current = { x, y };
+    const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+    const isLeft = pawIdRef.current % 2 === 0;
+
+    // Perpendicular offset for natural L/R alternation
+    const perpRad = (angle - 90) * (Math.PI / 180);
+    const off = isLeft ? -2.2 : 2.2;
+
+    setPawPrints(prev => [
+      ...prev.slice(-15),
+      {
+        id: pawIdRef.current++,
+        x: x + Math.cos(perpRad) * off,
+        y: y + Math.sin(perpRad) * off,
+        rotate: angle - 90 + (isLeft ? -12 : 12),
+        createdAt: Date.now(),
+      },
+    ]);
+  }, []);
+
+  // Auto-cleanup expired paw prints
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setPawPrints(prev => {
+        const now = Date.now();
+        const next = prev.filter(p => now - p.createdAt < 4000);
+        return next.length < prev.length ? next : prev;
+      });
+    }, 500);
+    return () => clearInterval(timer);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -96,61 +159,108 @@ export default function ProblemSection() {
       <motion.div
         aria-hidden="true"
         style={reduceMotion ? undefined : { y: orbY }}
-        className="pointer-events-none absolute -left-20 top-8 h-72 w-72 rounded-full bg-supetz-orange/12 blur-[120px]"
+        className="pointer-events-none absolute -left-20 top-8 h-72 w-72 rounded-full bg-supet-orange/12 blur-[120px]"
       />
       <div className="pointer-events-none absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#f3aa2f]/10 blur-[120px]" />
 
       <div className="mx-auto max-w-6xl px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 18 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: false, amount: 0.4 }}
-          transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
-          className="mx-auto max-w-4xl text-center"
-        >
-          <p className="text-[11px] font-black uppercase tracking-[0.24em] text-supetz-orange">Problema real</p>
-          <h2 className="mt-4 font-display text-[clamp(2rem,4.5vw,4.05rem)] font-bold uppercase leading-[0.9] tracking-[-0.022em] text-supetz-text">
-            O sintoma aparece na pele.
-            <span className="mt-2 block font-semibold text-supetz-orange">A causa comeca por dentro.</span>
-          </h2>
-          <p className="mt-6 text-[1rem] font-medium leading-relaxed text-supetz-text/78 md:text-[1.16rem]">
-            Esses sinais indicam um desequilibrio silencioso. Tratar apenas o que aparece por fora costuma manter o
-            ciclo ativo.
-          </p>
-        </motion.div>
-
         {/* Editorial Hover Style Layout */}
         <motion.div
           initial={{ opacity: 0, y: 14 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.1 }}
           transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.08 }}
-          className="mx-auto mt-16 md:mt-24 max-w-7xl lg:px-8"
+          className="mx-auto max-w-7xl lg:px-8"
         >
-          <div className="mb-12 lg:mb-16">
-            <p className="text-[11px] font-black uppercase tracking-[0.22em] text-supetz-text/58 mb-2">O que você observa</p>
-            <h3 className="font-display text-[clamp(2.5rem,5vw,4rem)] font-bold tracking-tight text-supetz-text leading-none">Sinais<br className="hidden md:block" /> Óbvios</h3>
-            <p className="text-supetz-text/70 mt-6 max-w-sm text-sm md:text-base font-medium leading-relaxed">
-              Seu pet não consegue falar, mas o corpo dele dá sinais claros de que a barreira protetora falhou.
-            </p>
+          <div className="mb-20 md:mb-32 relative text-center" onMouseMove={handlePawMove}>
+            {/* Ambient texture paws — very faint, gentle float, behind text */}
+            <div className="hidden lg:block absolute inset-0 pointer-events-none overflow-visible">
+              {AMBIENT_PAWS.map((paw, i) => (
+                <motion.img
+                  key={`ambient-${i}`}
+                  src="/images/paw.svg"
+                  alt=""
+                  animate={{ y: ['-48%', '-53%', '-48%'] }}
+                  transition={{ duration: 5 + i * 1.5, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    position: 'absolute',
+                    left: `${paw.x}%`,
+                    top: `${paw.y}%`,
+                    width: 'clamp(65px, 7vw, 95px)',
+                    opacity: paw.opacity,
+                    rotate: paw.rotate,
+                    x: '-50%',
+                    y: '-50%',
+                  }}
+                />
+              ))}
+
+              {/* Interactive mouse-trail paw prints */}
+              {pawPrints.map(paw => (
+                <motion.img
+                  key={paw.id}
+                  src="/images/paw.svg"
+                  alt=""
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: [0, 0.5, 0.5, 0],
+                    scale: [0, 1.15, 1, 0.95],
+                  }}
+                  transition={{
+                    duration: 4,
+                    times: [0, 0.06, 0.5, 1],
+                    ease: 'easeOut',
+                  }}
+                  style={{
+                    position: 'absolute',
+                    left: `${paw.x}%`,
+                    top: `${paw.y}%`,
+                    width: 'clamp(42px, 4.5vw, 60px)',
+                    rotate: paw.rotate,
+                    x: '-50%',
+                    y: '-50%',
+                    willChange: 'transform, opacity',
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* Heading text — above paw layer */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+              className="relative z-10"
+            >
+              <p className="text-[12px] font-black uppercase tracking-[0.3em] text-supet-orange/60 mb-6">O que você observa</p>
+              <h2 className="font-display text-[clamp(3.5rem,8vw,6.5rem)] font-bold uppercase leading-[0.8] tracking-[-0.04em] text-supet-text text-balance">
+                Sinais <br />
+                <span className="text-supet-orange italic font-serif font-medium lowercase tracking-normal px-2">óbvios</span>
+              </h2>
+              <div className="mt-12 mx-auto w-12 h-[2px] bg-supet-orange/30 mb-12" />
+              <p className="text-supet-text/80 mx-auto max-w-2xl text-xl md:text-2xl font-medium leading-relaxed tracking-tight text-balance">
+                Seu pet não consegue falar, mas o corpo dele dá sinais claros de que a <span className="text-supet-text">barreira protetora falhou.</span>
+              </p>
+            </motion.div>
           </div>
 
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-stretch">
             {/* Left: Text List */}
             <div className="flex flex-col w-full z-10">
-              <div className="flex flex-col border-t border-supetz-text/10">
+              <div className="flex flex-col border-t border-supet-text/10">
                 {symptomsList.map((item, idx) => {
                   const isActive = activeSymptom === idx;
                   return (
                     <div
                       key={item.num}
                       onMouseEnter={() => setActiveSymptom(idx)}
-                      className={`group cursor-pointer border-b border-supetz-text/10 py-6 md:py-8 transition-colors duration-500 ${isActive ? 'bg-transparent' : 'hover:bg-supetz-orange/5'}`}
+                      className={`group cursor-pointer border-b border-supet-text/10 py-6 md:py-8 transition-colors duration-500 ${isActive ? 'bg-transparent' : 'hover:bg-supet-orange/5'}`}
                     >
                       <div className="flex gap-6 items-start px-2 lg:px-4">
-                        <span className={`font-black text-sm md:text-base mt-2 transition-colors duration-500 ${isActive ? 'text-supetz-orange' : 'text-supetz-text/30'}`}>{item.num}</span>
+                        <span className={`font-black text-sm md:text-base mt-2 transition-colors duration-500 ${isActive ? 'text-supet-orange' : 'text-supet-text/30'}`}>{item.num}</span>
                         <div>
-                          <h4 className={`font-display text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight transition-colors duration-500 ${isActive ? 'text-supetz-text' : 'text-supetz-text/40'}`}>
+                          <h4 className={`font-display text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight transition-colors duration-500 ${isActive ? 'text-supet-text' : 'text-supet-text/40'}`}>
                             {item.title}
                           </h4>
                           <motion.div
@@ -158,7 +268,7 @@ export default function ProblemSection() {
                             animate={{ height: isActive ? 'auto' : 0, opacity: isActive ? 1 : 0 }}
                             className="overflow-hidden"
                           >
-                            <p className="pt-4 text-supetz-text/70 font-medium text-[1.1rem] max-w-md leading-relaxed">
+                            <p className="pt-4 text-supet-text/70 font-medium text-[1.1rem] max-w-md leading-relaxed">
                               {item.desc}
                             </p>
 
@@ -198,7 +308,7 @@ export default function ProblemSection() {
           </div>
         </motion.div>
 
-        <div className="mt-16 border-t border-supetz-text/10 pt-16 md:pt-24 lg:pt-32">
+        <div className="mt-16 border-t border-supet-text/10 pt-16 md:pt-24 lg:pt-32">
           {/* Animated Section Header */}
           {/* Animated Section Header (Editorial Split) */}
           <motion.div
@@ -210,12 +320,12 @@ export default function ProblemSection() {
           >
             <div className="max-w-2xl">
 
-              <h3 className="font-display text-[clamp(2.5rem,5vw,4.5rem)] font-black leading-[0.9] tracking-tight text-supetz-text">
+              <h3 className="font-display text-[clamp(2.5rem,5vw,4.5rem)] font-black leading-[0.9] tracking-tight text-supet-text text-balance">
                 Quebrando o ciclo <br />
-                da <span className="text-supetz-orange italic font-serif font-medium">forma certa.</span>
+                da <span className="text-supet-orange italic font-serif font-medium">forma certa.</span>
               </h3>
             </div>
-            <p className="md:max-w-md text-base lg:text-lg text-supetz-text/70 font-medium leading-relaxed md:text-right border-l-2 md:border-l-0 md:border-r-2 border-supetz-orange/20 pl-4 md:pl-0 md:pr-4">
+            <p className="md:max-w-md text-base lg:text-lg text-supet-text/70 font-medium leading-relaxed md:text-right border-l-2 md:border-l-0 md:border-r-2 border-supet-orange/20 pl-4 md:pl-0 md:pr-4 text-balance">
               Por que cremes antialérgicos e shampoos medicinais não funcionam no longo prazo? Entenda a diferença cirúrgica entre camuflar sintomas e restaurar seu pet de dentro para fora.
             </p>
           </motion.div>
@@ -228,7 +338,7 @@ export default function ProblemSection() {
               whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: motionTokens.durationSlow, ease: motionTokens.easeOut }}
-              className="relative overflow-hidden rounded-[2rem] border border-supetz-text/5 bg-white p-8 md:p-12 shadow-[0_20px_40px_-20px_rgba(0,0,0,0.05)]"
+              className="relative overflow-hidden rounded-[2.5rem] border border-supet-text/5 bg-white p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.08)]"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-bl-full pointer-events-none" />
 
@@ -236,7 +346,7 @@ export default function ProblemSection() {
                 <div className="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center">
                   <span className="text-red-500 font-black text-xl">✕</span>
                 </div>
-                <h4 className="font-display text-2xl font-bold tracking-tight text-supetz-text">
+                <h4 className="font-display text-2xl font-bold tracking-tight text-supet-text">
                   Tratamento Comum
                 </h4>
               </div>
@@ -249,10 +359,10 @@ export default function ProblemSection() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: false }}
                     transition={{ delay: 0.2 + i * 0.1, duration: 0.5 }}
-                    className="flex flex-col gap-2 relative pl-6 border-l-[3px] border-supetz-text/10 group-hover:border-supetz-text/30 transition-colors"
+                    className="flex flex-col gap-2 relative pl-6 border-l-[3px] border-supet-text/10 group-hover:border-supet-text/30 transition-colors"
                   >
-                    <h5 className="text-[1.15rem] font-bold leading-none text-supetz-text tracking-tight">{item.title}</h5>
-                    <p className="text-[0.95rem] font-medium leading-relaxed text-supetz-text/60 mt-1">{item.desc}</p>
+                    <h5 className="text-[1.15rem] font-bold leading-none text-supet-text tracking-tight">{item.title}</h5>
+                    <p className="text-[0.95rem] font-medium leading-relaxed text-supet-text/60 mt-1">{item.desc}</p>
                   </motion.div>
                 ))}
               </div>
@@ -264,15 +374,15 @@ export default function ProblemSection() {
               whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: motionTokens.durationSlow, ease: motionTokens.easeOut, delay: 0.1 }}
-              className="relative overflow-hidden rounded-[2rem] border border-supetz-orange/20 bg-supetz-orange p-8 md:p-12 shadow-[0_20px_50px_-15px_rgba(255,122,0,0.3)] text-white group"
+              className="relative overflow-hidden rounded-[2.5rem] border border-supet-orange/20 bg-supet-orange p-8 md:p-12 shadow-[0_30px_60px_-15px_rgba(255,122,0,0.4)] text-white group"
             >
               <motion.div
-                className="absolute inset-0 bg-gradient-to-br from-supetz-orange-dark to-supetz-orange opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                className="absolute inset-0 bg-gradient-to-br from-supet-orange-dark to-supet-orange opacity-0 group-hover:opacity-100 transition-opacity duration-700"
               />
 
               {/* Background abstract image/texture */}
               <div className="absolute -bottom-20 -right-20 w-[120%] h-[120%] opacity-15 mix-blend-overlay pointer-events-none">
-                <img src="/images/hero-dog.png" alt="" className="w-full h-full object-cover grayscale" />
+                <img src="/images/product-lifestyle.png" alt="" className="w-full h-full object-cover grayscale" />
               </div>
 
               <div className="relative z-10 flex items-center gap-4 mb-8">

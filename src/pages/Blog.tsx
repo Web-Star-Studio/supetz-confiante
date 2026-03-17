@@ -15,7 +15,7 @@ export default function Blog() {
   return (
     <Layout>
       <section className="relative overflow-hidden py-16 md:py-20">
-        <div className="pointer-events-none absolute -top-14 left-0 h-72 w-72 rounded-full bg-supetz-orange/15 blur-3xl" />
+        <div className="pointer-events-none absolute -top-14 left-0 h-72 w-72 rounded-full bg-supet-orange/15 blur-3xl" />
         <div className="mx-auto max-w-6xl px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -23,11 +23,11 @@ export default function Blog() {
             transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
             className="mb-10 max-w-3xl"
           >
-            <span className="text-xs font-black uppercase tracking-[0.26em] text-supetz-orange">Blog Supet</span>
-            <h1 className="mt-3 text-4xl font-extrabold leading-tight text-supetz-text md:text-6xl">
+            <span className="text-xs font-black uppercase tracking-[0.26em] text-supet-orange">Blog Supet</span>
+            <h1 className="mt-3 text-4xl font-extrabold leading-tight text-supet-text md:text-6xl">
               Conteúdo prático para cuidar melhor do seu pet.
             </h1>
-            <p className="mt-4 text-sm leading-relaxed text-supetz-text/65 md:text-base">
+            <p className="mt-4 text-sm leading-relaxed text-supet-text/65 md:text-base">
               Publicações sobre pele, pelagem, imunidade e rotina saudável para quem busca mais qualidade de vida para
               cães de todas as idades.
             </p>
@@ -50,14 +50,14 @@ export default function Blog() {
                   loading="lazy"
                 />
                 <div className="px-2 pb-3 pt-4">
-                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-supetz-orange/80">
+                  <p className="text-[11px] font-black uppercase tracking-[0.2em] text-supet-orange/80">
                     {formatDate(post.publishedAt)}
                   </p>
-                  <h2 className="mt-2 text-xl font-bold leading-tight text-supetz-text">{post.title}</h2>
-                  <p className="mt-3 text-sm leading-relaxed text-supetz-text/65">{post.excerpt}</p>
+                  <h2 className="mt-2 text-xl font-bold leading-tight text-supet-text">{post.title}</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-supet-text/65">{post.excerpt}</p>
                   <a
                     href={`/blog?post=${post.slug}`}
-                    className="mt-4 inline-flex text-sm font-bold uppercase tracking-wide text-supetz-orange transition-colors hover:text-supetz-orange-dark"
+                    className="mt-4 inline-flex text-sm font-bold uppercase tracking-wide text-supet-orange transition-colors hover:text-supet-orange-dark"
                   >
                     Ler artigo
                   </a>
@@ -69,7 +69,7 @@ export default function Blog() {
       </section>
 
       {/* Newsletter Section */}
-      <section className="py-20 bg-supetz-orange text-white">
+      <section className="py-20 bg-supet-orange text-white">
         <div className="mx-auto max-w-4xl px-6 text-center">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -85,12 +85,12 @@ export default function Blog() {
               <input
                 type="email"
                 placeholder="Seu melhor e-mail"
-                className="flex-1 rounded-full px-6 py-4 text-supetz-text bg-white outline-none focus:ring-4 focus:ring-white/30"
+                className="flex-1 rounded-full px-6 py-4 text-supet-text bg-white outline-none focus:ring-4 focus:ring-white/30"
                 required
               />
               <button
                 type="submit"
-                className="rounded-full bg-supetz-text text-white px-8 py-4 font-bold hover:bg-supetz-text/90 transition-colors shrink-0"
+                className="rounded-full bg-supet-text text-white px-8 py-4 font-bold hover:bg-supet-text/90 transition-colors shrink-0"
               >
                 Inscrever-se
               </button>

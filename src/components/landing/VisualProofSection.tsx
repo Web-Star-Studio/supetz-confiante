@@ -22,12 +22,12 @@ export default function VisualProofSection() {
   );
 
   return (
-    <section ref={sectionRef} id="antes-e-depois" className="relative overflow-hidden bg-supetz-bg py-16 md:py-20">
+    <section ref={sectionRef} id="antes-e-depois" className="relative overflow-hidden bg-supet-bg py-16 md:py-20">
       <motion.div
         aria-hidden="true"
         animate={reduceMotion ? undefined : { x: [0, 14, 0], y: [0, -10, 0], scale: [1, 1.05, 1] }}
         transition={reduceMotion ? undefined : { duration: 12, repeat: Number.POSITIVE_INFINITY, ease: "easeInOut" }}
-        className="pointer-events-none absolute -left-12 top-20 h-36 w-36 rounded-full bg-supetz-orange/12 blur-2xl"
+        className="pointer-events-none absolute -left-12 top-20 h-36 w-36 rounded-full bg-supet-orange/12 blur-2xl"
       />
       <motion.div
         aria-hidden="true"
@@ -50,7 +50,7 @@ export default function VisualProofSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: motionTokens.durationFast, ease: motionTokens.easeOut }}
-              className="inline-block text-xs font-black uppercase tracking-[0.26em] text-supetz-orange"
+              className="inline-block text-xs font-black uppercase tracking-[0.26em] text-supet-orange"
             >
               Prova visual
             </motion.span>
@@ -68,7 +68,7 @@ export default function VisualProofSection() {
                   },
                 },
               }}
-              className="mt-4 max-w-[11ch] font-display text-[clamp(2.6rem,6.8vw,6.4rem)] font-extrabold uppercase leading-[0.83] tracking-[-0.035em] text-supetz-orange"
+              className="mt-4 max-w-[11ch] font-display text-[clamp(2.6rem,6.8vw,6.4rem)] font-extrabold uppercase leading-[0.83] tracking-[-0.035em] text-supet-orange"
             >
               {headlineLines.map((line) => (
                 <motion.span
@@ -122,7 +122,7 @@ export default function VisualProofSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: motionTokens.durationBase, delay: 0.2, ease: motionTokens.easeOut }}
-              className="mt-6 max-w-xl text-sm leading-relaxed text-supetz-text/70 md:text-base"
+              className="mt-6 max-w-xl text-sm leading-relaxed text-supet-text/70 md:text-base"
             >
               Apos algumas semanas de uso do Supet, e possivel notar mudancas visiveis na saude da pele e da pelagem
               do seu pet.

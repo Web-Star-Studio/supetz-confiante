@@ -50,7 +50,7 @@ export const products: Product[] = [
     pricePerUnit: "R$ 69,90/un",
     quantity: 1,
     category: "extra",
-    image: "/images/product-gummy.png",
+    image: "/images/product-shampoo.png",
   },
   {
     id: "extra-2",
@@ -61,7 +61,7 @@ export const products: Product[] = [
     pricePerUnit: "R$ 45,00/un",
     quantity: 1,
     category: "extra",
-    image: "/images/hero-dog.png",
+    image: "/images/product-ecobag.png",
   },
   {
     id: "extra-3",
@@ -72,7 +72,7 @@ export const products: Product[] = [
     pricePerUnit: "R$ 39,90/un",
     quantity: 1,
     category: "extra",
-    image: "/images/dog-closeup.png",
+    image: "/images/product-petiscos.png",
   },
 ];
 
@@ -189,7 +189,7 @@ export const blogPreviews: BlogPostPreview[] = [
     excerpt:
       "Alimentação, rotina e nutrientes que ajudam a manter o organismo forte no dia a dia.",
     slug: "imunidade-cao-habitos",
-    coverImage: "/images/pet-winter.png",
+    coverImage: "/images/pet-healthy-coat.png",
     publishedAt: "2026-02-20",
   },
   {
@@ -198,7 +198,7 @@ export const blogPreviews: BlogPostPreview[] = [
     excerpt:
       "Um resumo direto dos cuidados que fazem diferença real na saúde do seu companheiro.",
     slug: "guia-pele-pelo-articulacoes",
-    coverImage: "/images/pet-fashion.png",
+    coverImage: "/images/pet-comfortable-home.png",
     publishedAt: "2026-02-12",
   },
   {

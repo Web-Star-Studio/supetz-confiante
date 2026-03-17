@@ -51,7 +51,7 @@ export default function Footer() {
       </div>
 
       <div className="relative z-20 mx-auto max-w-7xl px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-12 lg:grid-cols-4 lg:gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:grid-cols-4 lg:gap-8">
 
           {/* Brand & Description */}
           <div className="lg:col-span-1">
@@ -91,7 +91,7 @@ export default function Footer() {
             <ul className="space-y-4 text-sm font-medium">
               <li><Link to="/" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Início</Link></li>
               <li><Link to="/shop" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Nossos Produtos</Link></li>
-              <li><Link to="/blog" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Blog Supetz</Link></li>
+              <li><Link to="/blog" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Blog Supet</Link></li>
               <li><a href="/#faq" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Dúvidas Frequentes (FAQ)</a></li>
             </ul>
           </div>
@@ -102,7 +102,7 @@ export default function Footer() {
             <ul className="space-y-4 text-sm font-medium">
               <li>
                 <span className="block text-white/60 text-xs uppercase mb-1">E-mail</span>
-                <a href="mailto:contato@supetz.com.br" className="text-white/90 hover:text-white transition-colors">contato@supetz.com.br</a>
+                <a href="mailto:contato@supet.com.br" className="text-white/90 hover:text-white transition-colors">contato@supet.com.br</a>
               </li>
               <li>
                 <span className="block text-white/60 text-xs uppercase mb-1">WhatsApp / Telefone</span>
@@ -143,7 +143,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-16 border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/70 font-medium">
-          <p>© {new Date().getFullYear()} Supetz. Todos os direitos reservados.</p>
+          <p>© {new Date().getFullYear()} Supet. Todos os direitos reservados.</p>
           <div className="flex gap-6">
             <Link to="/privacidade" className="hover:text-white transition-colors">Política de Privacidade</Link>
             <Link to="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>

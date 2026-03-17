@@ -50,7 +50,7 @@ export default function AnimatedSectionHeading({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: motionTokens.durationFast, ease: motionTokens.easeOut }}
-          className="inline-block text-xs font-black uppercase tracking-[0.26em] text-supetz-orange"
+          className="inline-block text-xs font-black uppercase tracking-[0.26em] text-supet-orange"
         >
           {eyebrow}
         </motion.span>
@@ -72,7 +72,7 @@ export default function AnimatedSectionHeading({
       >
         <HeadingTag
           className={cn(
-            "mt-3 font-display font-extrabold leading-[0.9] tracking-[-0.028em] text-supetz-text",
+            "mt-3 font-display font-extrabold leading-[0.9] tracking-[-0.028em] text-supet-text",
             sizeClasses[size],
             uppercase ? "uppercase" : "",
             "flex flex-col",
@@ -129,7 +129,7 @@ export default function AnimatedSectionHeading({
                       ? "relative -left-1 md:-left-2"
                       : "relative left-4 md:left-8"
                   : "block",
-                accentLines.includes(index) ? "text-supetz-orange" : "text-supetz-text",
+                accentLines.includes(index) ? "text-supet-orange" : "text-supet-text",
               )}
             >
               {line}
@@ -145,7 +145,7 @@ export default function AnimatedSectionHeading({
         transition={{ duration: motionTokens.durationBase, delay: 0.2, ease: motionTokens.easeOut }}
         animate={reduceMotion ? undefined : { opacity: [0.7, 1, 0.7] }}
         className={cn(
-          "mt-4 h-[3px] rounded-full bg-supetz-orange/75",
+          "mt-4 h-[3px] rounded-full bg-supet-orange/75",
           align === "center" ? "mx-auto" : "mx-0",
         )}
       />

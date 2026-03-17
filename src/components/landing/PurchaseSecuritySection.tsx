@@ -23,7 +23,7 @@ const securityItems = [
 
 export default function PurchaseSecuritySection() {
   return (
-    <section id="seguranca" className="relative overflow-hidden bg-supetz-bg-alt py-20 md:py-24">
+    <section id="seguranca" className="relative overflow-hidden bg-supet-bg-alt py-20 md:py-24">
       <div className="mx-auto max-w-6xl px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -32,8 +32,8 @@ export default function PurchaseSecuritySection() {
           transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
           className="mx-auto max-w-3xl text-center"
         >
-          <span className="text-xs font-black uppercase tracking-[0.26em] text-supetz-orange">Seguranca da compra</span>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supetz-text md:text-5xl">
+          <span className="text-xs font-black uppercase tracking-[0.26em] text-supet-orange">Seguranca da compra</span>
+          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supet-text md:text-5xl">
             Comprar pela internet e seguro
           </h2>
         </motion.div>
@@ -48,10 +48,10 @@ export default function PurchaseSecuritySection() {
               transition={{ duration: motionTokens.durationFast, delay: index * 0.06, ease: motionTokens.easeOut }}
               className="supet-soft-panel flex items-center gap-4 p-6"
             >
-              <div className="rounded-2xl border border-supetz-orange/25 bg-supetz-orange/10 p-3">
-                <item.Icon className="h-6 w-6 text-supetz-orange" />
+              <div className="rounded-2xl border border-supet-orange/25 bg-supet-orange/10 p-3">
+                <item.Icon className="h-6 w-6 text-supet-orange" />
               </div>
-              <p className="text-sm font-bold text-supetz-text/80 md:text-base">{item.title}</p>
+              <p className="text-sm font-bold text-supet-text/80 md:text-base">{item.title}</p>
             </motion.article>
           ))}
         </div>

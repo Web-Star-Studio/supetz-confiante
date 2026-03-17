@@ -5,6 +5,7 @@ import Layout from "@/components/layout/Layout";
 import PricingSection from "@/components/landing/PricingSection";
 import ExtrasSection from "@/components/landing/ExtrasSection";
 import FAQStandaloneSection from "@/components/landing/FAQStandaloneSection";
+import DosageCalculator from "@/components/landing/DosageCalculator";
 import { motionTokens } from "@/lib/motion";
 import { useCart } from "@/context/CartContext";
 import type { Product } from "@/types";
@@ -63,12 +64,12 @@ export default function Shop() {
 
   return (
     <Layout>
-      <section className="bg-supetz-bg pt-24 md:pt-32 pb-24 border-b border-supetz-text/5 relative">
+      <section className="bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
           {/* Breadcrumb / Top label */}
           <div className="mb-8">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-supetz-text/40">
-              Home / <span className="text-supetz-orange">Loja</span>
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-supet-text/40">
+              Home / <span className="text-supet-orange">Loja</span>
             </span>
           </div>
 
@@ -102,37 +103,37 @@ export default function Shop() {
                 transition={{ duration: 0.8, delay: 0.2, ease: motionTokens.easeOut }}
               >
                 <div className="flex items-center gap-2 mb-4">
-                  <div className="flex text-supetz-orange">
+                  <div className="flex text-supet-orange">
                     {[1, 2, 3, 4, 5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
                   </div>
-                  <span className="text-sm font-bold text-supetz-text/60">4.9/5 (1.2k+ avaliações)</span>
+                  <span className="text-sm font-bold text-supet-text/60">4.9/5 (1.2k+ avaliações)</span>
                 </div>
 
-                <h1 className="text-5xl md:text-6xl font-black text-supetz-text tracking-tight mb-2 uppercase">
+                <h1 className="text-5xl md:text-6xl font-black text-supet-text tracking-tight mb-2 uppercase">
                   Goma Supet
                 </h1>
-                <p className="text-xl text-supetz-text/60 font-medium mb-8">
+                <p className="text-xl text-supet-text/60 font-medium mb-8">
                   O suplemento diário definitivo para a saúde da pele, imunidade e articulações do seu cão.
                 </p>
 
                 <div className="flex items-baseline gap-4 mb-8">
-                  <span className="text-4xl font-black text-supetz-text">R$ 149,90</span>
-                  <span className="text-xl font-bold text-supetz-text/30 line-through">R$ 199,90</span>
+                  <span className="text-4xl font-black text-supet-text">R$ 149,90</span>
+                  <span className="text-xl font-bold text-supet-text/30 line-through">R$ 199,90</span>
                 </div>
 
                 {/* Quantity & Add to Cart */}
                 <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                  <div className="flex items-center justify-between border-2 border-supetz-text/10 rounded-full px-6 py-4 sm:w-1/3 bg-white">
+                  <div className="flex items-center justify-between border-2 border-supet-text/10 rounded-full px-6 py-4 sm:w-1/3 bg-white">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                      className="text-supetz-text/50 hover:text-supetz-orange transition-colors"
+                      className="text-supet-text/50 hover:text-supet-orange transition-colors"
                     >
                       <Minus className="w-5 h-5" />
                     </button>
-                    <span className="text-lg font-black text-supetz-text">{quantity}</span>
+                    <span className="text-lg font-black text-supet-text">{quantity}</span>
                     <button
                       onClick={() => setQuantity(quantity + 1)}
-                      className="text-supetz-text/50 hover:text-supetz-orange transition-colors"
+                      className="text-supet-text/50 hover:text-supet-orange transition-colors"
                     >
                       <Plus className="w-5 h-5" />
                     </button>
@@ -140,34 +141,34 @@ export default function Shop() {
 
                   <button
                     onClick={handleAddToCart}
-                    className="flex-1 bg-supetz-text hover:bg-supetz-orange text-white rounded-full py-4 px-8 text-lg font-black uppercase tracking-widest transition-all duration-300 hover:shadow-xl hover:shadow-supetz-orange/20 flex justify-center items-center"
+                    className="flex-1 bg-supet-text hover:bg-supet-orange text-white rounded-full py-4 px-8 text-lg font-black uppercase tracking-widest transition-all duration-300 hover:shadow-xl hover:shadow-supet-orange/20 flex justify-center items-center"
                   >
                     Adicionar à Sacola
                   </button>
                 </div>
 
                 {/* Clean Accordion */}
-                <div className="border-t border-supetz-text/10">
+                <div className="border-t border-supet-text/10">
                   {productDetails.map((detail) => {
                     const Icon = detail.icon;
                     const isActive = activeAccordion === detail.id;
 
                     return (
-                      <div key={detail.id} className="border-b border-supetz-text/10">
+                      <div key={detail.id} className="border-b border-supet-text/10">
                         <button
                           onClick={() => setActiveAccordion(isActive ? null : detail.id)}
                           className="w-full flex items-center justify-between py-6 group"
                         >
                           <div className="flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full bg-supetz-orange/5 flex items-center justify-center group-hover:bg-supetz-orange/10 transition-colors">
-                              <Icon className="w-5 h-5 text-supetz-orange" />
+                            <div className="w-10 h-10 rounded-full bg-supet-orange/5 flex items-center justify-center group-hover:bg-supet-orange/10 transition-colors">
+                              <Icon className="w-5 h-5 text-supet-orange" />
                             </div>
-                            <span className="text-lg font-bold text-supetz-text group-hover:text-supetz-orange transition-colors uppercase tracking-wide">
+                            <span className="text-lg font-bold text-supet-text group-hover:text-supet-orange transition-colors uppercase tracking-wide">
                               {detail.title}
                             </span>
                           </div>
                           <div className="w-8 h-8 flex items-center justify-center">
-                            {isActive ? <Minus className="w-5 h-5 text-supetz-text/50" /> : <Plus className="w-5 h-5 text-supetz-text/50" />}
+                            {isActive ? <Minus className="w-5 h-5 text-supet-text/50" /> : <Plus className="w-5 h-5 text-supet-text/50" />}
                           </div>
                         </button>
 
@@ -179,7 +180,7 @@ export default function Shop() {
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="pb-6 pl-14 pr-8 text-supetz-text/60 font-medium leading-relaxed">
+                              <div className="pb-6 pl-14 pr-8 text-supet-text/60 font-medium leading-relaxed">
                                 {detail.content}
                               </div>
                             </motion.div>
@@ -195,6 +196,9 @@ export default function Shop() {
           </div>
         </div>
       </section>
+
+      {/* Interactive Dosage Calculator */}
+      <DosageCalculator />
 
       {/* Pricing / Combo Plans */}
       <PricingSection />
