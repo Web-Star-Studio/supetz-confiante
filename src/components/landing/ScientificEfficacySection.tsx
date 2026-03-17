@@ -19,7 +19,7 @@ export default function ScientificEfficacySection() {
                             <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-supet-orange flex items-center gap-4 mb-4">
                                 <span className="w-8 h-[2px] bg-supet-orange/50"></span> A Causa e a Cura
                             </span>
-                            <h2 className="text-4xl md:text-5xl font-extrabold text-supet-text leading-tight tracking-tight mt-6">
+                            <h2 className="text-4xl md:text-5xl font-extrabold text-supet-text leading-tight tracking-tight mt-6 text-balance">
                                 Resultados comprovados em até <span className="text-transparent bg-clip-text bg-gradient-to-r from-supet-orange to-supet-orange-dark italic font-serif">28 dias.</span>
                             </h2>
                             <p className="mt-6 text-lg text-supet-text/60 font-medium leading-relaxed">

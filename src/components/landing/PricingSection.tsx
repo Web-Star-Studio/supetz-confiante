@@ -10,7 +10,7 @@ export default function PricingSection() {
     <section id="precos" className="relative py-20 md:py-28">
       <div className="mx-auto max-w-6xl px-6">
         <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-supet-text">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-supet-text text-balance">
             Escolha o melhor <span className="text-supet-orange">combo</span> para seu pet
           </h2>
           <p className="mt-4 text-supet-text/50 max-w-lg mx-auto">
@@ -27,7 +27,7 @@ export default function PricingSection() {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.12 }}
               whileHover={{ scale: 1.02 }}
-              className={`relative flex flex-col rounded-3xl p-8 ${product.highlighted
+              className={`relative flex flex-col rounded-[2rem] p-8 ${product.highlighted
                 ? "bg-supet-orange text-white ring-4 ring-supet-orange/30"
                 : "bg-supet-bg-alt text-supet-text"
                 }`}
@@ -65,9 +65,9 @@ export default function PricingSection() {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.97 }}
                   onClick={() => addItem(product)}
-                  className={`w-full rounded-full py-3.5 text-sm font-bold transition-colors ${product.highlighted
-                    ? "bg-white text-supet-orange hover:bg-white/90"
-                    : "bg-supet-orange text-white hover:bg-supet-orange-dark"
+                  className={`w-full rounded-full py-3.5 text-sm font-bold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${product.highlighted
+                    ? "bg-white text-supet-orange hover:bg-white/90 shadow-[0_8px_30px_-6px_rgba(255,255,255,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,255,255,0.6)]"
+                    : "bg-supet-orange text-white hover:bg-supet-orange-dark shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)]"
                     }`}
                 >
                   ADICIONAR AO CARRINHO

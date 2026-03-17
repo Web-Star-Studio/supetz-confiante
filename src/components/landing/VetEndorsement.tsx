@@ -43,7 +43,7 @@ export default function VetEndorsement() {
               <span className="w-8 h-[2px] bg-supet-orange/50"></span> Opinião Médica
             </span>
             
-            <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold leading-[1] tracking-tight mb-8">
+            <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold leading-[1] tracking-tight mb-8 text-balance">
               "A verdadeira cura vem da <br />
               <span className="text-supet-orange italic font-serif">imunidade base.</span>"
             </h2>

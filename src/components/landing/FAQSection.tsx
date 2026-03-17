@@ -10,7 +10,7 @@ export default function FAQSection() {
   return (
     <div id="faq" className="supet-soft-panel h-full p-7 md:p-9">
       <div className="mb-8">
-        <h2 className="text-3xl font-extrabold text-supet-text md:text-4xl">
+        <h2 className="text-3xl font-extrabold text-supet-text md:text-4xl text-balance">
           Perguntas <span className="text-supet-orange">frequentes</span>
         </h2>
       </div>

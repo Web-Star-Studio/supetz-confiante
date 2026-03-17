@@ -17,7 +17,7 @@ export default function ExtrasSection() {
                         <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-supet-orange flex items-center gap-4 mb-4">
                             <span className="w-8 h-[2px] bg-supet-orange/50"></span> Acessórios
                         </span>
-                        <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold text-supet-text leading-[0.9] tracking-tight">
+                        <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold text-supet-text leading-[0.9] tracking-tight text-balance">
                             A Coleção <br />
                             <span className="text-supet-orange italic font-serif">Essencial.</span>
                         </h2>

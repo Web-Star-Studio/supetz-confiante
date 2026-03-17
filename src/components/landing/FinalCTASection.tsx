@@ -21,7 +21,7 @@ export default function FinalCTASection() {
           <div className="relative z-10 grid gap-8 md:grid-cols-[1.2fr_1fr] md:items-center">
             <div>
               <span className="text-xs font-black uppercase tracking-[0.26em] text-supet-orange">Garantia</span>
-              <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supet-text md:text-5xl">
+              <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supet-text md:text-5xl text-balance">
                 Garantia de satisfacao
               </h2>
               <p className="mt-4 max-w-xl text-sm leading-relaxed text-supet-text/65 md:text-base">
@@ -35,7 +35,7 @@ export default function FinalCTASection() {
                 to="/shop"
                 whileHover={{ scale: 1.04 }}
                 whileTap={{ scale: 0.97 }}
-                className="rounded-full bg-supet-orange px-9 py-4 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-supet-orange-dark"
+                className="rounded-full bg-supet-orange px-9 py-4 text-sm font-bold uppercase tracking-wide text-white transition-all duration-300 hover:bg-supet-orange-dark hover:scale-[1.02] active:scale-[0.98] shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)]"
               >
                 Comprar agora
               </MotionLink>

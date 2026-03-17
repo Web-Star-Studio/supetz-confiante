@@ -30,7 +30,7 @@ export default function IngredientsDeepDiveSection() {
                     <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-supet-orange flex items-center justify-center gap-4 mb-4">
                         <span className="w-8 h-[2px] bg-supet-orange/50"></span> A Fórmula <span className="w-8 h-[2px] bg-supet-orange/50"></span>
                     </span>
-                    <h2 className="text-4xl md:text-6xl font-extrabold text-supet-text tracking-tight max-w-3xl">
+                    <h2 className="text-4xl md:text-6xl font-extrabold text-supet-text tracking-tight max-w-3xl text-balance">
                         Ciência exata em cada <span className="text-supet-orange italic font-serif">miligrama.</span>
                     </h2>
                 </div>

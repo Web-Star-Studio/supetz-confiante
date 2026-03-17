@@ -33,7 +33,7 @@ export default function PurchaseSecuritySection() {
           className="mx-auto max-w-3xl text-center"
         >
           <span className="text-xs font-black uppercase tracking-[0.26em] text-supet-orange">Seguranca da compra</span>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supet-text md:text-5xl">
+          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supet-text md:text-5xl text-balance">
             Comprar pela internet e seguro
           </h2>
         </motion.div>

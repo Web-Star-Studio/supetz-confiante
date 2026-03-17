@@ -28,7 +28,7 @@ export default function UsageRitualSection() {
                         <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-supet-orange flex items-center gap-4 mb-4">
                             <span className="w-8 h-[2px] bg-supet-orange/50"></span> Como Utilizar
                         </span>
-                        <h2 className="text-4xl md:text-6xl font-extrabold text-supet-text tracking-tight">
+                        <h2 className="text-4xl md:text-6xl font-extrabold text-supet-text tracking-tight text-balance">
                             O Ritual de <br />
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-supet-orange to-supet-orange-dark italic font-serif">Cuidado.</span>
                         </h2>

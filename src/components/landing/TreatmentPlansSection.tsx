@@ -31,7 +31,7 @@ export default function TreatmentPlansSection() {
       <div className="mx-auto max-w-6xl px-6">
         <div className="mx-auto max-w-3xl text-center">
           <span className="text-xs font-black uppercase tracking-[0.26em] text-supet-orange">Planos de tratamento</span>
-          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supet-text md:text-5xl">
+          <h2 className="mt-3 text-3xl font-extrabold leading-tight text-supet-text md:text-5xl text-balance">
             Escolha o tratamento ideal para seu pet
           </h2>
         </div>
@@ -65,12 +65,12 @@ export default function TreatmentPlansSection() {
 
         <div className="mt-10 flex justify-center">
           <MotionLink
-            to="/shop"
-            whileHover={{ scale: 1.03 }}
+            to="/quiz"
+            whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="rounded-full bg-supet-orange px-8 py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-supet-orange-dark"
+            className="rounded-full bg-supet-orange px-9 py-4 text-sm font-bold uppercase tracking-wide text-white transition-all duration-300 hover:bg-supet-orange-dark shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)]"
           >
-            Comprar agora
+            Fazer o Quiz
           </MotionLink>
         </div>
       </div>

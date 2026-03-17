@@ -85,7 +85,7 @@ export default function ResultsTimeline() {
                       whileInView={{ opacity: 1, x: 0 }}
                       viewport={{ once: true, margin: "-100px" }}
                       transition={{ duration: 0.6, ease: motionTokens.easeOut }}
-                      className="bg-white p-8 rounded-3xl shadow-xl shadow-supet-text/5 border border-supet-text/5 hover:border-supet-orange/30 transition-colors duration-300 relative overflow-hidden"
+                      className="bg-white p-8 rounded-[2rem] shadow-xl shadow-supet-text/5 border border-supet-text/5 hover:border-supet-orange/30 transition-colors duration-300 relative overflow-hidden"
                     >
                       <div className={`absolute top-0 ${isEven ? 'right-0 -translate-x-1/2 translate-y-[-50%]' : 'left-0 translate-x-[-10%] translate-y-[-50%]'} w-32 h-32 bg-supet-orange/5 rounded-full blur-2xl group-hover:bg-supet-orange/10 transition-colors duration-500`} />
                       

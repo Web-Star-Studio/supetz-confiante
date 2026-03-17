@@ -98,7 +98,7 @@ export default function BenefitsSection() {
               to="/shop"
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
-              className="mt-10 inline-flex items-center justify-center gap-2 rounded-full bg-supet-orange px-8 py-4 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-supet-orange-dark shadow-xl hover:shadow-2xl shadow-supet-orange/25"
+              className="mt-10 inline-flex items-center justify-center gap-2 rounded-full bg-supet-orange px-8 py-4 text-sm font-bold uppercase tracking-wide text-white transition-all duration-300 hover:bg-supet-orange-dark hover:scale-[1.02] active:scale-[0.98] shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)]"
             >
               Comprar agora
               <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2.5">

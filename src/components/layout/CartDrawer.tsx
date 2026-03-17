@@ -113,7 +113,7 @@ export default function CartDrawer() {
             
             <Link 
               to="/checkout" // Future checkout link
-              className="w-full flex items-center justify-center gap-2 bg-supet-orange text-white rounded-full py-5 font-black uppercase tracking-widest hover:bg-supet-orange-dark transition-colors shadow-xl shadow-supet-orange/25 hover:shadow-2xl hover:shadow-supet-orange/30 group"
+              className="w-full flex items-center justify-center gap-2 bg-supet-orange text-white rounded-full py-5 font-black uppercase tracking-widest hover:bg-supet-orange-dark transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)] group"
             >
               Finalizar Compra
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />

@@ -114,7 +114,7 @@ export default function ThemesGallery() {
         <span className="text-xs font-black tracking-widest text-supet-orange uppercase">
           Transformações
         </span>
-        <h2 className="mt-2 text-3xl font-black text-supet-text md:text-4xl lg:text-5xl leading-tight">
+        <h2 className="mt-2 text-3xl font-black text-supet-text md:text-4xl lg:text-5xl leading-tight text-balance">
           Pets e donos felizes com Supet
         </h2>
       </div>

@@ -32,7 +32,7 @@ export default function DosageCalculator() {
           <span className="text-xs font-black uppercase tracking-[0.2em] text-supet-orange flex items-center justify-center gap-4 mb-4">
             <span className="w-8 h-[2px] bg-supet-orange/50"></span> Na medida certa
           </span>
-          <h2 className="text-3xl md:text-5xl font-extrabold text-supet-text tracking-tight">
+          <h2 className="text-3xl md:text-5xl font-extrabold text-supet-text tracking-tight text-balance">
             Descubra a dosagem <br className="hidden md:block" />
             <span className="text-supet-orange italic font-serif">ideal pro seu pet</span>
           </h2>
@@ -41,7 +41,7 @@ export default function DosageCalculator() {
           </p>
         </div>
 
-        <div className="bg-white rounded-3xl shadow-xl shadow-supet-text/5 p-8 md:p-12 border border-supet-text/10">
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-supet-text/5 p-8 md:p-12 border border-supet-text/10">
           
           <div className="flex flex-col md:flex-row items-center gap-12">
             

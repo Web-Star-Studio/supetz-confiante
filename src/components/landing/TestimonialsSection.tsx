@@ -37,7 +37,7 @@ export default function TestimonialsSection() {
     >
       <div className="mb-8 flex items-center justify-between gap-5">
         <div>
-          <h2 className="text-3xl font-extrabold text-supet-text md:text-4xl">O que os tutores estao dizendo</h2>
+          <h2 className="text-3xl font-extrabold text-supet-text md:text-4xl text-balance">O que os tutores estao dizendo</h2>
           <p className="mt-2 text-sm text-supet-text/60">
             Centenas de tutores relatam melhora significativa nos sintomas apos o uso continuo do Supet.
           </p>
@@ -69,7 +69,7 @@ export default function TestimonialsSection() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: motionTokens.durationFast, ease: motionTokens.easeOut }}
-          className="rounded-3xl border border-supet-orange/15 bg-white p-4 md:p-5"
+          className="rounded-[2rem] border border-supet-orange/15 bg-white p-4 md:p-5"
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
             <img
