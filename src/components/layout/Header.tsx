@@ -17,7 +17,6 @@ import supetHeaderLogo from "/images/supet-header-logo.png";
 const navLinks = [
   { label: "Shop", href: "/shop" },
   { label: "Ciência", href: "/ciencia" },
-  { label: "Quiz", href: "/quiz" },
   { label: "Sobre", href: "/sobre" },
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },

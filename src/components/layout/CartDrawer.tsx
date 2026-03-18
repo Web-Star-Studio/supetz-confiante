@@ -1,12 +1,13 @@
 import { ShoppingBag, X, Minus, Plus, Trash2, ShieldCheck, ArrowRight } from "lucide-react";
 import { useCart } from "@/context/CartContext";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // Supet specific freeshipping threshold (adjustable)
 const FREE_SHIPPING_THRESHOLD = 299.80; // i.e 2 pots
 
 export default function CartDrawer() {
-  const { items, isCartOpen, closeCart, addItem, removeItem, totalPrice } = useCart();
+  const { items, isCartOpen, closeCart, addItem, removeItem, updateQuantity, totalPrice } = useCart();
+  const navigate = useNavigate();
 
   // Calculate Progress
   const progress = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
@@ -23,7 +24,7 @@ export default function CartDrawer() {
       />
       
       <div 
-        className={`fixed top-0 right-0 h-full w-full max-w-md bg-white shadow-2xl z-[110] transform transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isCartOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
+        className={`fixed top-0 right-0 h-[100dvh] w-full max-w-md bg-white shadow-2xl z-[110] transform transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${isCartOpen ? 'translate-x-0' : 'translate-x-full'} flex flex-col`}
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-supet-text/10">
@@ -74,16 +75,16 @@ export default function CartDrawer() {
           ) : (
             <div className="flex flex-col gap-6">
               {items.map((item) => (
-                <div key={item.product.id} className="flex gap-4">
+                <div key={item.product.id} className="flex gap-4 group">
                   <div className="w-24 h-24 rounded-2xl bg-supet-bg flex-shrink-0 flex items-center justify-center overflow-hidden border border-supet-text/5">
-                    <img src={item.product.image} alt={item.product.title} className="w-full h-full object-cover" />
+                    <img src={item.product.image} alt={item.product.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   </div>
                   
                   <div className="flex-1 flex flex-col justify-between">
                     <div>
                       <div className="flex justify-between items-start gap-2">
                         <h3 className="font-bold text-supet-text sm:text-lg leading-tight">{item.product.title}</h3>
-                        <button onClick={() => removeItem(item.product.id)} className="text-supet-text/30 hover:text-red-500 transition-colors p-1">
+                        <button onClick={() => removeItem(item.product.id)} className="text-supet-text/30 hover:text-red-500 transition-colors p-1" title="Remover item">
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
@@ -92,7 +93,13 @@ export default function CartDrawer() {
                     
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center gap-3 bg-white border border-supet-text/10 rounded-full px-3 py-1">
-                        <span className="text-xs font-bold text-supet-text/50">Qtd: {item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.product.id, -1)} className="text-supet-text/50 hover:text-supet-orange transition-colors p-1">
+                          <Minus className="w-3.5 h-3.5" />
+                        </button>
+                        <span className="text-xs font-bold text-supet-text w-4 text-center select-none">{item.quantity}</span>
+                        <button onClick={() => updateQuantity(item.product.id, 1)} className="text-supet-text/50 hover:text-supet-orange transition-colors p-1">
+                          <Plus className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                       <span className="font-black text-supet-text">R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}</span>
                     </div>
@@ -111,13 +118,20 @@ export default function CartDrawer() {
               <span className="text-3xl font-black text-supet-text">R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
             </div>
             
-            <Link 
-              to="/checkout" // Future checkout link
+            <button 
+              onClick={(e) => {
+                e.preventDefault();
+                closeCart();
+                // Wait for the drawer close animation (approx 300-500ms) before navigating
+                setTimeout(() => {
+                  navigate('/checkout');
+                }, 400);
+              }}
               className="w-full flex items-center justify-center gap-2 bg-supet-orange text-white rounded-full py-5 font-black uppercase tracking-widest hover:bg-supet-orange-dark transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)] group"
             >
               Finalizar Compra
               <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Link>
+            </button>
             
             <p className="text-center mt-4 text-xs font-bold text-supet-text/40 uppercase tracking-widest flex items-center justify-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5" /> Compra 100% Segura

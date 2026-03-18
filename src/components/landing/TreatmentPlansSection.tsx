@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
 import { motionTokens } from "@/lib/motion";
 
 const plans = [
@@ -22,7 +21,7 @@ const plans = [
   },
 ];
 
-const MotionLink = motion(Link);
+
 
 export default function TreatmentPlansSection() {
   return (
@@ -63,16 +62,6 @@ export default function TreatmentPlansSection() {
           ))}
         </div>
 
-        <div className="mt-10 flex justify-center">
-          <MotionLink
-            to="/quiz"
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            className="rounded-full bg-supet-orange px-9 py-4 text-sm font-bold uppercase tracking-wide text-white transition-all duration-300 hover:bg-supet-orange-dark shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)]"
-          >
-            Fazer o Quiz
-          </MotionLink>
-        </div>
       </div>
     </section>
   );

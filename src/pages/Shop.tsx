@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Minus, Star, ShieldCheck, Leaf, PackageCheck } from "lucide-react";
+import { Plus, Minus, Star, ShieldCheck, Leaf, PackageCheck, Check } from "lucide-react";
 import Layout from "@/components/layout/Layout";
 import PricingSection from "@/components/landing/PricingSection";
 import ExtrasSection from "@/components/landing/ExtrasSection";
@@ -55,11 +55,15 @@ export default function Shop() {
 
   const [quantity, setQuantity] = useState(1);
 
+  const [added, setAdded] = useState(false);
+
   const handleAddToCart = () => {
     // Add multiple items if quantity > 1
     for (let i = 0; i < quantity; i++) {
       addItem(mainProduct);
     }
+    setAdded(true);
+    setTimeout(() => setAdded(false), 2000);
   };
 
   return (
@@ -141,9 +145,34 @@ export default function Shop() {
 
                   <button
                     onClick={handleAddToCart}
-                    className="flex-1 bg-supet-text hover:bg-supet-orange text-white rounded-full py-4 px-8 text-lg font-black uppercase tracking-widest transition-all duration-300 hover:shadow-xl hover:shadow-supet-orange/20 flex justify-center items-center"
+                    className={`flex-1 rounded-full py-4 px-8 text-lg font-black uppercase tracking-widest transition-all duration-300 hover:shadow-xl flex justify-center items-center ${
+                      added 
+                        ? "bg-green-500 text-white hover:bg-green-600 shadow-none border border-green-500/20"
+                        : "bg-supet-text hover:bg-supet-orange text-white hover:shadow-supet-orange/20"
+                    }`}
                   >
-                    Adicionar à Sacola
+                    <AnimatePresence mode="wait">
+                      {added ? (
+                        <motion.div
+                          key="added"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="flex items-center gap-2"
+                        >
+                          <Check className="w-5 h-5 flex-shrink-0" /> ADICIONADO
+                        </motion.div>
+                      ) : (
+                        <motion.div
+                          key="add"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                        >
+                          Adicionar à Sacola
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
                   </button>
                 </div>
 

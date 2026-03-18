@@ -1,10 +1,19 @@
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { products } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
 import { motionTokens } from "@/lib/motion";
+import { Check } from "lucide-react";
 
 export default function PricingSection() {
   const { addItem } = useCart();
+  const [addedId, setAddedId] = useState<string | null>(null);
+
+  const handleAdd = (product: any) => {
+    addItem(product);
+    setAddedId(product.id);
+    setTimeout(() => setAddedId(null), 2000);
+  };
 
   return (
     <section id="precos" className="relative py-20 md:py-28">
@@ -64,13 +73,35 @@ export default function PricingSection() {
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={() => addItem(product)}
-                  className={`w-full rounded-full py-3.5 text-sm font-bold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] ${product.highlighted
-                    ? "bg-white text-supet-orange hover:bg-white/90 shadow-[0_8px_30px_-6px_rgba(255,255,255,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,255,255,0.6)]"
-                    : "bg-supet-orange text-white hover:bg-supet-orange-dark shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)]"
-                    }`}
+                  onClick={() => handleAdd(product)}
+                  className={`w-full rounded-full py-3.5 text-sm font-bold transition-all duration-300 flex items-center justify-center gap-2 ${
+                    product.highlighted
+                      ? "bg-white text-supet-orange hover:bg-white/90 shadow-[0_8px_30px_-6px_rgba(255,255,255,0.4)]"
+                      : "bg-supet-orange text-white hover:bg-supet-orange-dark shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)]"
+                  } ${addedId === product.id ? "bg-green-500 text-white shadow-none hover:bg-green-600" : ""}`}
                 >
-                  ADICIONAR AO CARRINHO
+                  <AnimatePresence mode="wait">
+                    {addedId === product.id ? (
+                      <motion.div
+                        key="added"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="flex items-center gap-1.5"
+                      >
+                        <Check className="w-4 h-4" /> ADICIONADO
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="add"
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                      >
+                        ADICIONAR AO CARRINHO
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </motion.button>
               </div>
             </motion.div>

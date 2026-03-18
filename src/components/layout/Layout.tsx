@@ -11,7 +11,6 @@ interface LayoutProps {
 export default function Layout({ children, hideHeader = false }: LayoutProps) {
   return (
     <div className="flex min-h-screen flex-col relative pb-20 md:pb-0">
-      <CartDrawer />
       {!hideHeader && <Header />}
       <main className="flex-1">{children}</main>
       <Footer />

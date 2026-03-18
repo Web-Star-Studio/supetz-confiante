@@ -1,0 +1,347 @@
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { useCart } from "@/context/CartContext";
+import Layout from "@/components/layout/Layout";
+import { ShieldCheck, CreditCard, Truck, User, ArrowRight, Lock, LayoutGrid, AlertCircle, Loader2 } from "lucide-react";
+import { motion } from "framer-motion";
+
+export default function Checkout() {
+  const { items, totalPrice } = useCart();
+  const navigate = useNavigate();
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    cpf: "",
+    zipCode: "",
+    address: "",
+    number: "",
+    complement: "",
+    city: "",
+    state: "",
+    paymentMethod: "credit_card"
+  });
+
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+    // Simulate secure processing delay
+    setTimeout(() => {
+      navigate("/success");
+    }, 2000);
+  };
+
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        staggerChildren: 0.15,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
+  };
+
+  if (items.length === 0) {
+    return (
+      <Layout>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="min-h-[70vh] bg-supet-bg flex items-center justify-center pt-24 md:pt-32 pb-24 px-6"
+        >
+          <div className="text-center max-w-md">
+            <AlertCircle className="w-16 h-16 text-supet-orange mx-auto mb-6" />
+            <h1 className="text-3xl font-black text-supet-text tracking-tight uppercase mb-4">
+              Sua Sacola Está Vazia
+            </h1>
+            <p className="text-supet-text/60 font-medium mb-8">
+              Adicione produtos à sua sacola antes de prosseguir com o pagamento.
+            </p>
+            <Link 
+              to="/shop"
+              className="inline-flex items-center justify-center bg-supet-orange hover:bg-supet-orange-dark text-white font-black uppercase tracking-widest px-8 py-4 rounded-full transition-all hover:scale-105"
+            >
+              Voltar para a Loja
+            </Link>
+          </div>
+        </motion.div>
+      </Layout>
+    );
+  }
+
+  return (
+    <Layout>
+      <div className="min-h-screen bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative overflow-hidden">
+        
+        {/* Decorative elements */}
+        <div className="absolute top-40 left-0 w-96 h-96 bg-supet-orange/5 rounded-full blur-[100px] pointer-events-none" />
+        
+        <div className="mx-auto max-w-[1200px] px-6 lg:px-12 relative z-10">
+          
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.4 }}
+            className="mb-8 pt-4"
+          >
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-supet-text/40">
+              Home / <Link to="/shop" className="hover:text-supet-orange transition-colors">Loja</Link> / <span className="text-supet-orange">Checkout</span>
+            </span>
+          </motion.div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
+            
+            {/* Form Section */}
+            <motion.div 
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+              className="lg:col-span-7"
+            >
+              <div className="bg-white rounded-[2rem] p-8 md:p-10 shadow-[0_20px_60px_rgba(0,0,0,0.03)] border border-supet-text/5">
+                <motion.div variants={itemVariants} className="flex items-center gap-3 mb-8">
+                  <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center border border-green-500/20">
+                    <Lock className="w-6 h-6 text-green-500" />
+                  </div>
+                  <div>
+                    <h1 className="text-3xl font-black text-supet-text tracking-tight uppercase">
+                      Checkout Seguro
+                    </h1>
+                    <p className="text-sm font-medium text-supet-text/50">Ambiente 100% criptografado e seguro</p>
+                  </div>
+                </motion.div>
+
+                <form onSubmit={handleSubmit} className="space-y-10">
+                  
+                  {/* Personal Info */}
+                  <motion.div variants={itemVariants}>
+                    <h2 className="text-lg font-black text-supet-text uppercase tracking-widest flex items-center gap-2 mb-6">
+                      <User className="w-5 h-5 text-supet-orange" />
+                      Dados Pessoais
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                      <div className="md:col-span-2">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Nome Completo</label>
+                        <input required type="text" name="name" value={formData.name} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Ex: João da Silva" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">E-mail</label>
+                        <input required type="email" name="email" value={formData.email} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="joao@exemplo.com" />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">CPF</label>
+                        <input required type="text" name="cpf" value={formData.cpf} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="000.000.000-00" />
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.hr variants={itemVariants} className="border-supet-text/5" />
+
+                  {/* Shipping Info */}
+                  <motion.div variants={itemVariants}>
+                    <h2 className="text-lg font-black text-supet-text uppercase tracking-widest flex items-center gap-2 mb-6">
+                      <Truck className="w-5 h-5 text-supet-orange" />
+                      Entrega
+                    </h2>
+                    <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+                      <div className="md:col-span-4">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">CEP</label>
+                        <input required type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="00000-000" />
+                      </div>
+                      <div className="md:col-span-8">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Endereço</label>
+                        <input required type="text" name="address" value={formData.address} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Nome da rua, avenida..." />
+                      </div>
+                      <div className="md:col-span-4">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Número</label>
+                        <input required type="text" name="number" value={formData.number} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="123" />
+                      </div>
+                      <div className="md:col-span-8">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Complemento</label>
+                        <input type="text" name="complement" value={formData.complement} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Apto, Bloco, etc. (opcional)" />
+                      </div>
+                      <div className="md:col-span-8">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Cidade</label>
+                        <input required type="text" name="city" value={formData.city} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Sua cidade" />
+                      </div>
+                      <div className="md:col-span-4">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Estado</label>
+                        <input required type="text" name="state" value={formData.state} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="UF" />
+                      </div>
+                    </div>
+                  </motion.div>
+
+                  <motion.hr variants={itemVariants} className="border-supet-text/5" />
+
+                  {/* Payment Info */}
+                  <motion.div variants={itemVariants}>
+                    <h2 className="text-lg font-black text-supet-text uppercase tracking-widest flex items-center gap-2 mb-6">
+                      <CreditCard className="w-5 h-5 text-supet-orange" />
+                      Pagamento
+                    </h2>
+                    <div className="grid grid-cols-2 gap-4 mb-6">
+                      <label className={`border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300 ${formData.paymentMethod === 'credit_card' ? 'border-supet-orange bg-supet-orange/5 scale-[1.02] shadow-sm' : 'border-supet-text/10 hover:border-supet-orange/50'}`}>
+                        <input type="radio" name="paymentMethod" value="credit_card" checked={formData.paymentMethod === 'credit_card'} onChange={handleChange} className="sr-only" />
+                        <CreditCard className={`w-6 h-6 transition-colors ${formData.paymentMethod === 'credit_card' ? 'text-supet-orange' : 'text-supet-text/40'}`} />
+                        <span className={`text-sm font-bold uppercase tracking-wider transition-colors ${formData.paymentMethod === 'credit_card' ? 'text-supet-orange' : 'text-supet-text/60'}`}>Cartão</span>
+                      </label>
+                      <label className={`border-2 rounded-xl p-4 flex flex-col items-center justify-center gap-2 cursor-pointer transition-all duration-300 ${formData.paymentMethod === 'pix' ? 'border-supet-orange bg-supet-orange/5 scale-[1.02] shadow-sm' : 'border-supet-text/10 hover:border-supet-orange/50'}`}>
+                        <input type="radio" name="paymentMethod" value="pix" checked={formData.paymentMethod === 'pix'} onChange={handleChange} className="sr-only" />
+                        <LayoutGrid className={`w-6 h-6 transition-colors ${formData.paymentMethod === 'pix' ? 'text-supet-orange' : 'text-supet-text/40'}`} />
+                        <span className={`text-sm font-bold uppercase tracking-wider transition-colors ${formData.paymentMethod === 'pix' ? 'text-supet-orange' : 'text-supet-text/60'}`}>Pix</span>
+                      </label>
+                    </div>
+
+                    <motion.div 
+                      key={formData.paymentMethod}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.3 }}
+                    >
+                      {formData.paymentMethod === 'credit_card' && (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-bold text-supet-text/60 mb-2">Número do Cartão</label>
+                            <input required type="text" className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="0000 0000 0000 0000" />
+                          </div>
+                          <div className="md:col-span-2">
+                            <label className="block text-sm font-bold text-supet-text/60 mb-2">Nome Impresso</label>
+                            <input required type="text" className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="NOME COMO NO CARTÃO" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-bold text-supet-text/60 mb-2">Validade</label>
+                            <input required type="text" className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="MM/AA" />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-bold text-supet-text/60 mb-2">CVV</label>
+                            <input required type="text" className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="123" />
+                          </div>
+                        </div>
+                      )}
+                      {formData.paymentMethod === 'pix' && (
+                        <div className="bg-supet-orange/5 border border-supet-orange/20 rounded-xl p-6 text-center">
+                          <LayoutGrid className="w-10 h-10 text-supet-orange mx-auto mb-3" />
+                          <p className="text-supet-text font-bold mb-1">Pagamento via Pix</p>
+                          <p className="text-sm text-supet-text/60">O código ou QR Code será gerado na próxima tela, após a finalização do pedido.</p>
+                        </div>
+                      )}
+                    </motion.div>
+                  </motion.div>
+
+                  {/* Submit Button */}
+                  <motion.div variants={itemVariants} className="pt-6 relative">
+                    <button 
+                      type="submit"
+                      disabled={isProcessing}
+                      className={`w-full flex items-center justify-center gap-2 bg-supet-orange text-white rounded-full py-5 text-lg font-black uppercase tracking-widest transition-all duration-300 shadow-[0_8px_30px_-6px_rgba(255,107,43,0.4)] ${isProcessing ? 'opacity-90 cursor-wait' : 'hover:bg-supet-orange-dark hover:shadow-[0_12px_40px_-8px_rgba(255,107,43,0.6)] hover:-translate-y-1'}`}
+                    >
+                      {isProcessing ? (
+                        <>
+                          <Loader2 className="w-6 h-6 animate-spin" />
+                          Processando Pagamento...
+                        </>
+                      ) : (
+                        <>
+                          Processar Pagamento Seguro
+                          <Lock className="w-4 h-4 ml-1" />
+                        </>
+                      )}
+                    </button>
+                    {!isProcessing && (
+                      <p className="text-center mt-4 text-xs font-bold text-supet-text/40 uppercase tracking-widest flex items-center justify-center gap-1.5">
+                        <ShieldCheck className="w-3.5 h-3.5" /> Ambiente protegido, dados criptografados.
+                      </p>
+                    )}
+                  </motion.div>
+
+                </form>
+              </div>
+            </motion.div>
+
+            {/* Order Summary Side */}
+            <motion.div 
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.4, type: "spring" }}
+              className="lg:col-span-5 relative"
+            >
+              <div className="sticky top-32 bg-supet-bg-alt rounded-[2rem] p-8 mt-0 border border-supet-text/5 shadow-sm">
+                <h2 className="text-2xl font-black text-supet-text tracking-tight uppercase mb-6 flex items-center gap-3">
+                  Resumo do Pedido
+                  <div className="bg-supet-orange text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center">
+                    {items.length}
+                  </div>
+                </h2>
+                
+                <div className="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-supet-orange/20">
+                  {items.map((item, i) => (
+                    <motion.div 
+                      key={item.product.id} 
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 + (i * 0.1) }}
+                      className="flex gap-4 p-3 bg-white rounded-xl border border-supet-text/5 group hover:border-supet-orange/20 transition-colors"
+                    >
+                      <div className="w-16 h-16 rounded-lg bg-supet-bg flex-shrink-0 p-1 group-hover:scale-105 transition-transform duration-300">
+                        <img src={item.product.image} alt={item.product.title} className="w-full h-full object-cover" />
+                      </div>
+                      <div className="flex-1 flex flex-col justify-center">
+                        <p className="font-bold text-sm text-supet-text">{item.product.title}</p>
+                        <p className="text-xs text-supet-text/50">Qtd: {item.quantity}</p>
+                        <p className="font-black text-supet-text mt-1">R$ {(item.product.price * item.quantity).toFixed(2).replace('.', ',')}</p>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="border-t border-supet-text/10 pt-6 space-y-4">
+                  <div className="flex justify-between items-center text-supet-text/60 font-bold">
+                    <span>Subtotal</span>
+                    <span>R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-supet-text/60 font-bold">
+                    <span>Frete</span>
+                    {totalPrice > 299.80 ? (
+                      <span className="text-green-500 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5"/> Grátis</span>
+                    ) : (
+                      <span>Calculando...</span>
+                    )}
+                  </div>
+                  <div className="border-t border-supet-text/10 pt-4 flex justify-between items-center text-supet-text font-black text-xl">
+                    <span>Total</span>
+                    <span className="text-supet-orange">R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
+                  </div>
+                </div>
+
+                {/* Additional Trust Badges */}
+                <div className="mt-8 bg-white border border-supet-text/5 rounded-xl p-4 flex items-start gap-3 transform hover:-translate-y-1 transition-transform cursor-default">
+                  <ShieldCheck className="w-6 h-6 text-green-500 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-bold text-sm text-supet-text">Garantia Supet</h4>
+                    <p className="text-xs text-supet-text/60 mt-1 leading-tight">Proteção de compra: Receba seu pedido perfeitamente ou seu dinheiro de volta.</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
+        </div>
+      </div>
+    </Layout>
+  );
+}
