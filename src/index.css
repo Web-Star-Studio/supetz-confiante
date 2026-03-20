@@ -128,11 +128,11 @@
   }
 
   .hero-jar {
-    @apply bottom-[-30px] left-[36%] w-[clamp(340px,30vw,480px)] -translate-x-1/2;
+    @apply bottom-[-30px] left-[34%] w-[clamp(340px,30vw,480px)] -translate-x-1/2;
   }
 
   .hero-lid {
-    @apply left-[44%] top-[clamp(-10px,1vh,20px)] w-[clamp(260px,22vw,360px)] -translate-x-1/2 rotate-[-13deg];
+    @apply left-[46%] top-[clamp(-70px,-5vh,-15px)] w-[clamp(200px,17vw,280px)] -translate-x-1/2 rotate-[-13deg];
   }
 
   .hero-dog {
@@ -140,11 +140,11 @@
   }
 
   .hero-jar-mobile {
-    @apply left-[49%] top-[53%] w-[clamp(280px,80vw,400px)] -translate-x-1/2 -translate-y-1/2;
+    @apply left-[47.5%] top-[53%] w-[clamp(280px,80vw,400px)] -translate-x-1/2 -translate-y-1/2;
   }
 
   .hero-lid-mobile {
-    @apply left-[50%] top-[4%] w-[clamp(240px,65vw,320px)] -translate-x-1/2 rotate-[-13deg];
+    @apply left-[51%] top-[-5%] w-[clamp(180px,50vw,240px)] -translate-x-1/2 rotate-[-13deg];
   }
 
   .hero-dog-mobile {

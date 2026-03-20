@@ -50,7 +50,7 @@ export default function TreatmentPlansSection() {
               }`}
             >
               {plan.badge && (
-                <span className="absolute -top-3 left-6 rounded-full bg-white px-3 py-1 text-xs font-bold uppercase tracking-wide text-supet-orange">
+                <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-white px-3 py-1 text-xs font-bold uppercase tracking-wide text-supet-orange">
                   {plan.badge}
                 </span>
               )}

@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import { socialLinks } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
-import supetHeaderLogo from "/images/supet-header-logo.png";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
@@ -55,10 +54,8 @@ export default function Header() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.img
-              src={supetHeaderLogo}
-              alt="Supet - Suplemento Animal"
-              className="block h-[46px] w-auto md:h-[56px]"
+            <motion.div
+              className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]"
               animate={
                 shouldReduceMotion
                   ? undefined
@@ -95,7 +92,13 @@ export default function Header() {
                     },
                   }
               }
-            />
+            >
+              <img
+                src="/images/supet_Logos/Supet - logo (5).svg"
+                alt="SUPET"
+                className="absolute left-0 top-1/2 w-full h-auto -translate-y-1/2 object-cover"
+              />
+            </motion.div>
           </motion.div>
         </Link>
 

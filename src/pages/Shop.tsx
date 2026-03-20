@@ -19,7 +19,7 @@ const mainProduct: Product = {
   pricePerUnit: "R$ 149,90/pote",
   quantity: 1,
   category: "combo",
-  image: "/images/product-bottle-closed.png"
+  image: "/images/PoteNovo2.png"
 };
 
 const productDetails = [
