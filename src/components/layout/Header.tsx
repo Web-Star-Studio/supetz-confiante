@@ -9,9 +9,11 @@ import {
   Youtube,
   Music2,
   ShoppingBag,
+  UserCircle,
 } from "lucide-react";
 import { socialLinks } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
@@ -32,6 +34,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { totalItems, openCart } = useCart();
+  const { user } = useAuth();
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     setMobileOpen(false);
@@ -94,6 +97,15 @@ export default function Header() {
               );
             })}
           </div>
+
+          {/* User icon */}
+          <Link
+            to={user ? "/perfil" : "/login"}
+            className="p-2 text-supet-text hover:text-supet-orange transition-colors"
+            aria-label={user ? "Meu Perfil" : "Entrar"}
+          >
+            <UserCircle className="w-5 h-5" />
+          </Link>
 
           {/* Cart Toggle */}
           <button 
