@@ -14,6 +14,38 @@ interface Pet {
   photo_url: string | null;
 }
 
+function PetSkeleton() {
+  return (
+    <div className="mt-6 space-y-4">
+      {[1].map((i) => (
+        <div key={i} className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6 flex items-center gap-4 animate-pulse">
+          <div className="h-16 w-16 rounded-full bg-border flex-shrink-0" />
+          <div className="flex-1 space-y-2">
+            <div className="h-4 w-24 rounded-full bg-border" />
+            <div className="h-3 w-32 rounded-full bg-border" />
+            <div className="h-3 w-20 rounded-full bg-border" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DeleteConfirmation({ name, onConfirm, onCancel }: { name: string; onConfirm: () => void; onCancel: () => void }) {
+  return (
+    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
+      <div className="rounded-3xl bg-supet-bg-alt p-6 max-w-sm w-full shadow-xl">
+        <p className="text-base font-bold text-foreground mb-1">Remover {name}?</p>
+        <p className="text-sm text-muted-foreground mb-5">Os dados do pet serão removidos permanentemente.</p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 rounded-full bg-supet-bg py-2.5 text-sm font-bold text-foreground hover:bg-border transition-colors">Cancelar</button>
+          <button onClick={onConfirm} className="flex-1 rounded-full bg-destructive py-2.5 text-sm font-bold text-destructive-foreground hover:bg-destructive/90 transition-colors">Remover</button>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 export default function PetProfileTab() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -24,6 +56,7 @@ export default function PetProfileTab() {
   const [uploading, setUploading] = useState(false);
   const [editingPet, setEditingPet] = useState<Partial<Pet> | null>(null);
   const [isNew, setIsNew] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Pet | null>(null);
 
   useEffect(() => {
     if (user) loadPets();
@@ -31,93 +64,43 @@ export default function PetProfileTab() {
 
   const loadPets = async () => {
     setLoading(true);
-    const { data } = await supabase
-      .from("pets")
-      .select("*")
-      .eq("user_id", user!.id)
-      .order("created_at", { ascending: true });
+    const { data } = await supabase.from("pets").select("*").eq("user_id", user!.id).order("created_at", { ascending: true });
     setPets((data as Pet[]) || []);
     setLoading(false);
   };
 
-  const handleAdd = () => {
-    setEditingPet({ name: "", breed: "", weight_kg: null, birth_date: null, photo_url: null });
-    setIsNew(true);
-  };
-
-  const handleEdit = (pet: Pet) => {
-    setEditingPet({ ...pet });
-    setIsNew(false);
-  };
-
-  const handleCancel = () => {
-    setEditingPet(null);
-    setIsNew(false);
-  };
+  const handleAdd = () => { setEditingPet({ name: "", breed: "", weight_kg: null, birth_date: null, photo_url: null }); setIsNew(true); };
+  const handleEdit = (pet: Pet) => { setEditingPet({ ...pet }); setIsNew(false); };
+  const handleCancel = () => { setEditingPet(null); setIsNew(false); };
 
   const handleSave = async () => {
     if (!editingPet?.name?.trim() || !user) return;
     setSaving(true);
-
     if (isNew) {
-      const { error } = await supabase.from("pets").insert({
-        user_id: user.id,
-        name: editingPet.name,
-        breed: editingPet.breed || null,
-        weight_kg: editingPet.weight_kg || null,
-        birth_date: editingPet.birth_date || null,
-        photo_url: editingPet.photo_url || null,
-      });
-      if (error) toast.error("Erro ao adicionar pet");
-      else toast.success("Pet adicionado!");
+      const { error } = await supabase.from("pets").insert({ user_id: user.id, name: editingPet.name, breed: editingPet.breed || null, weight_kg: editingPet.weight_kg || null, birth_date: editingPet.birth_date || null, photo_url: editingPet.photo_url || null });
+      if (error) toast.error("Erro ao adicionar pet"); else toast.success("Pet adicionado!");
     } else {
-      const { error } = await supabase
-        .from("pets")
-        .update({
-          name: editingPet.name,
-          breed: editingPet.breed || null,
-          weight_kg: editingPet.weight_kg || null,
-          birth_date: editingPet.birth_date || null,
-          photo_url: editingPet.photo_url || null,
-        })
-        .eq("id", editingPet.id!);
-      if (error) toast.error("Erro ao atualizar pet");
-      else toast.success("Pet atualizado!");
+      const { error } = await supabase.from("pets").update({ name: editingPet.name, breed: editingPet.breed || null, weight_kg: editingPet.weight_kg || null, birth_date: editingPet.birth_date || null, photo_url: editingPet.photo_url || null }).eq("id", editingPet.id!);
+      if (error) toast.error("Erro ao atualizar pet"); else toast.success("Pet atualizado!");
     }
-
-    setSaving(false);
-    setEditingPet(null);
-    setIsNew(false);
-    loadPets();
+    setSaving(false); setEditingPet(null); setIsNew(false); loadPets();
   };
 
-  const handleDelete = async (petId: string) => {
-    const { error } = await supabase.from("pets").delete().eq("id", petId);
-    if (error) toast.error("Erro ao remover pet");
-    else {
-      toast.success("Pet removido");
-      loadPets();
-    }
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { error } = await supabase.from("pets").delete().eq("id", deleteTarget.id);
+    if (error) toast.error("Erro ao remover pet"); else { toast.success("Pet removido"); loadPets(); }
+    setDeleteTarget(null);
   };
 
   const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user) return;
     setUploading(true);
-
     const ext = file.name.split(".").pop();
     const path = `${user.id}/${Date.now()}.${ext}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from("pet-photos")
-      .upload(path, file, { upsert: true });
-
-    if (uploadError) {
-      toast.error("Erro ao enviar foto");
-      setUploading(false);
-      return;
-    }
-
+    const { error: uploadError } = await supabase.storage.from("pet-photos").upload(path, file, { upsert: true });
+    if (uploadError) { toast.error("Erro ao enviar foto"); setUploading(false); return; }
     const { data: urlData } = supabase.storage.from("pet-photos").getPublicUrl(path);
     setEditingPet((prev) => prev ? { ...prev, photo_url: urlData.publicUrl } : prev);
     setUploading(false);
@@ -127,27 +110,18 @@ export default function PetProfileTab() {
     if (!birthDate) return null;
     const birth = new Date(birthDate);
     const now = new Date();
-    const years = now.getFullYear() - birth.getFullYear();
-    const months = now.getMonth() - birth.getMonth();
-    const totalMonths = years * 12 + months;
+    const totalMonths = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
     if (totalMonths < 12) return `${totalMonths} meses`;
     const y = Math.floor(totalMonths / 12);
     const m = totalMonths % 12;
     return m > 0 ? `${y} ano${y > 1 ? "s" : ""} e ${m} mês${m > 1 ? "es" : ""}` : `${y} ano${y > 1 ? "s" : ""}`;
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
-  }
+  if (loading) return <PetSkeleton />;
 
   if (editingPet) {
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-3xl bg-supet-bg-alt p-6 sm:p-8 space-y-5">
-        {/* Photo */}
         <div className="flex justify-center">
           <div className="relative h-24 w-24">
             {editingPet.photo_url ? (
@@ -157,71 +131,33 @@ export default function PetProfileTab() {
                 <PawPrint className="h-10 w-10 text-primary/40" />
               </div>
             )}
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              disabled={uploading}
-              className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-colors"
-            >
+            <button onClick={() => fileInputRef.current?.click()} disabled={uploading} className="absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-md hover:bg-primary/90 transition-colors">
               {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Camera className="h-4 w-4" />}
             </button>
             <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
           </div>
         </div>
-
         <div>
-          <label className="mb-1.5 flex items-center gap-2 text-sm font-semibold text-foreground">
-            <PawPrint className="h-4 w-4 text-primary" /> Nome do pet *
-          </label>
-          <input
-            value={editingPet.name || ""}
-            onChange={(e) => setEditingPet((p) => p ? { ...p, name: e.target.value } : p)}
-            className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
-            placeholder="Ex: Thor"
-          />
+          <label className="mb-1.5 flex items-center gap-2 text-sm font-semibold text-foreground"><PawPrint className="h-4 w-4 text-primary" /> Nome do pet *</label>
+          <input value={editingPet.name || ""} onChange={(e) => setEditingPet((p) => p ? { ...p, name: e.target.value } : p)} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" placeholder="Ex: Thor" />
         </div>
-
         <div>
           <label className="mb-1.5 text-sm font-semibold text-foreground">Raça</label>
-          <input
-            value={editingPet.breed || ""}
-            onChange={(e) => setEditingPet((p) => p ? { ...p, breed: e.target.value } : p)}
-            className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
-            placeholder="Ex: Golden Retriever"
-          />
+          <input value={editingPet.breed || ""} onChange={(e) => setEditingPet((p) => p ? { ...p, breed: e.target.value } : p)} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" placeholder="Ex: Golden Retriever" />
         </div>
-
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="mb-1.5 text-sm font-semibold text-foreground">Peso (kg)</label>
-            <input
-              type="number"
-              step="0.1"
-              value={editingPet.weight_kg ?? ""}
-              onChange={(e) => setEditingPet((p) => p ? { ...p, weight_kg: e.target.value ? Number(e.target.value) : null } : p)}
-              className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
-              placeholder="0.0"
-            />
+            <input type="number" step="0.1" value={editingPet.weight_kg ?? ""} onChange={(e) => setEditingPet((p) => p ? { ...p, weight_kg: e.target.value ? Number(e.target.value) : null } : p)} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" placeholder="0.0" />
           </div>
           <div>
             <label className="mb-1.5 text-sm font-semibold text-foreground">Data de nascimento</label>
-            <input
-              type="date"
-              value={editingPet.birth_date || ""}
-              onChange={(e) => setEditingPet((p) => p ? { ...p, birth_date: e.target.value || null } : p)}
-              className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
-            />
+            <input type="date" value={editingPet.birth_date || ""} onChange={(e) => setEditingPet((p) => p ? { ...p, birth_date: e.target.value || null } : p)} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" />
           </div>
         </div>
-
         <div className="flex gap-3">
-          <button onClick={handleCancel} className="flex-1 rounded-full bg-supet-bg py-3 text-sm font-bold text-foreground hover:bg-border transition-colors">
-            Cancelar
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={saving || !editingPet.name?.trim()}
-            className="flex-1 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          >
+          <button onClick={handleCancel} className="flex-1 rounded-full bg-supet-bg py-3 text-sm font-bold text-foreground hover:bg-border transition-colors">Cancelar</button>
+          <button onClick={handleSave} disabled={saving || !editingPet.name?.trim()} className="flex-1 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}
             {saving ? "Salvando..." : "Salvar"}
           </button>
@@ -231,55 +167,44 @@ export default function PetProfileTab() {
   }
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
-      {pets.length === 0 ? (
-        <div className="rounded-3xl bg-supet-bg-alt p-10 text-center">
-          <PawPrint className="mx-auto h-12 w-12 text-primary/40 mb-3" />
-          <p className="text-lg font-semibold text-foreground">Nenhum pet cadastrado</p>
-          <p className="text-sm text-muted-foreground mt-1">Cadastre seu pet para personalizar recomendações.</p>
-        </div>
-      ) : (
-        pets.map((pet, i) => (
-          <motion.div
-            key={pet.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6 flex items-center gap-4"
-          >
-            {pet.photo_url ? (
-              <img src={pet.photo_url} alt={pet.name} className="h-16 w-16 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
-            ) : (
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/20 flex-shrink-0">
-                <PawPrint className="h-7 w-7 text-primary/40" />
+    <>
+      {deleteTarget && <DeleteConfirmation name={deleteTarget.name} onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />}
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-4">
+        {pets.length === 0 ? (
+          <div className="rounded-3xl bg-supet-bg-alt p-10 text-center">
+            <PawPrint className="mx-auto h-12 w-12 text-primary/40 mb-3" />
+            <p className="text-lg font-semibold text-foreground">Nenhum pet cadastrado</p>
+            <p className="text-sm text-muted-foreground mt-1">Cadastre seu pet para personalizar recomendações.</p>
+          </div>
+        ) : (
+          pets.map((pet, i) => (
+            <motion.div key={pet.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6 flex items-center gap-4">
+              {pet.photo_url ? (
+                <img src={pet.photo_url} alt={pet.name} className="h-16 w-16 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
+              ) : (
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/20 flex-shrink-0">
+                  <PawPrint className="h-7 w-7 text-primary/40" />
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="text-base font-bold text-foreground truncate">{pet.name}</p>
+                {pet.breed && <p className="text-sm text-muted-foreground">{pet.breed}</p>}
+                <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
+                  {pet.weight_kg && <span>{pet.weight_kg} kg</span>}
+                  {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
+                </div>
               </div>
-            )}
-            <div className="flex-1 min-w-0">
-              <p className="text-base font-bold text-foreground truncate">{pet.name}</p>
-              {pet.breed && <p className="text-sm text-muted-foreground">{pet.breed}</p>}
-              <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
-                {pet.weight_kg && <span>{pet.weight_kg} kg</span>}
-                {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
+              <div className="flex gap-2 flex-shrink-0">
+                <button onClick={() => handleEdit(pet)} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">Editar</button>
+                <button onClick={() => setDeleteTarget(pet)} className="rounded-full bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20 transition-colors"><Trash2 className="h-4 w-4" /></button>
               </div>
-            </div>
-            <div className="flex gap-2 flex-shrink-0">
-              <button onClick={() => handleEdit(pet)} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">
-                Editar
-              </button>
-              <button onClick={() => handleDelete(pet.id)} className="rounded-full bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20 transition-colors">
-                <Trash2 className="h-4 w-4" />
-              </button>
-            </div>
-          </motion.div>
-        ))
-      )}
-
-      <button
-        onClick={handleAdd}
-        className="w-full rounded-full border-2 border-dashed border-primary/30 py-3 text-sm font-bold text-primary hover:border-primary/60 hover:bg-primary/5 transition-colors flex items-center justify-center gap-2"
-      >
-        <Plus className="h-4 w-4" /> Adicionar pet
-      </button>
-    </motion.div>
+            </motion.div>
+          ))
+        )}
+        <button onClick={handleAdd} className="w-full rounded-full border-2 border-dashed border-primary/30 py-3 text-sm font-bold text-primary hover:border-primary/60 hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
+          <Plus className="h-4 w-4" /> Adicionar pet
+        </button>
+      </motion.div>
+    </>
   );
 }

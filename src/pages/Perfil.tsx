@@ -193,7 +193,7 @@ export default function Perfil() {
                 <label className="mb-1.5 flex items-center gap-2 text-sm font-semibold text-foreground">
                   <Phone className="h-4 w-4 text-primary" /> Telefone
                 </label>
-                <input value={phone} onChange={(e) => setPhone(e.target.value)} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" placeholder="(00) 00000-0000" />
+                <input value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" placeholder="(00) 00000-0000" />
               </div>
               <button onClick={handleSaveProfile} disabled={saving} className="w-full rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
                 {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <CheckCircle2 className="h-4 w-4" />}

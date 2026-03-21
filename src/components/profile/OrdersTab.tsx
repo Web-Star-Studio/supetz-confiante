@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Loader2, ShoppingBag, RefreshCw } from "lucide-react";
+import { ShoppingBag, RefreshCw } from "lucide-react";
 import OrderTrackingTimeline from "./OrderTrackingTimeline";
 
 interface OrderItem {
@@ -41,6 +41,42 @@ const statusLabels: Record<string, string> = {
   delivered: "Entregue",
   cancelled: "Cancelado",
 };
+
+function OrdersSkeleton() {
+  return (
+    <div className="mt-6 space-y-4">
+      {[1, 2].map((i) => (
+        <div key={i} className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6 animate-pulse">
+          <div className="flex items-start justify-between mb-3">
+            <div className="space-y-2">
+              <div className="h-3 w-28 rounded-full bg-border" />
+              <div className="h-3 w-16 rounded-full bg-border" />
+            </div>
+            <div className="h-6 w-20 rounded-full bg-border" />
+          </div>
+          <div className="space-y-1.5">
+            <div className="h-3 w-40 rounded-full bg-border" />
+            <div className="h-3 w-32 rounded-full bg-border" />
+          </div>
+          <div className="mt-4 flex justify-between items-center">
+            <div className="flex gap-6">
+              {[1, 2, 3, 4].map((j) => (
+                <div key={j} className="flex flex-col items-center gap-1">
+                  <div className="h-7 w-7 rounded-full bg-border" />
+                  <div className="h-2 w-10 rounded-full bg-border" />
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="mt-3 border-t border-border/50 pt-3 flex justify-between items-center">
+            <div className="h-8 w-36 rounded-full bg-border" />
+            <div className="h-5 w-20 rounded-full bg-border" />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export default function OrdersTab() {
   const { user } = useAuth();
@@ -88,13 +124,7 @@ export default function OrdersTab() {
     }
   };
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-12">
-        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-      </div>
-    );
-  }
+  if (loading) return <OrdersSkeleton />;
 
   if (orders.length === 0) {
     return (
@@ -113,25 +143,13 @@ export default function OrdersTab() {
       {orders.map((order, i) => {
         const items = Array.isArray(order.items) ? (order.items as OrderItem[]) : [];
         return (
-          <motion.div
-            key={order.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6"
-          >
+          <motion.div key={order.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6">
             <div className="flex items-start justify-between gap-3 mb-3">
               <div>
                 <p className="text-xs text-muted-foreground">
-                  {new Date(order.created_at).toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "long",
-                    year: "numeric",
-                  })}
+                  {new Date(order.created_at).toLocaleDateString("pt-BR", { day: "2-digit", month: "long", year: "numeric" })}
                 </p>
-                <p className="text-sm font-mono text-muted-foreground/60 mt-0.5">
-                  #{order.id.slice(0, 8)}
-                </p>
+                <p className="text-sm font-mono text-muted-foreground/60 mt-0.5">#{order.id.slice(0, 8)}</p>
               </div>
               <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusColors[order.status] || "bg-muted text-muted-foreground"}`}>
                 {statusLabels[order.status] || order.status}
@@ -139,25 +157,16 @@ export default function OrdersTab() {
             </div>
             <div className="space-y-1 text-sm text-foreground/80">
               {items.slice(0, 3).map((item, j) => (
-                <p key={j}>
-                  {item.quantity || 1}x {item.title || "Produto"}
-                </p>
+                <p key={j}>{item.quantity || 1}x {item.title || "Produto"}</p>
               ))}
-              {items.length > 3 && (
-                <p className="text-muted-foreground">+{items.length - 3} itens</p>
-              )}
+              {items.length > 3 && <p className="text-muted-foreground">+{items.length - 3} itens</p>}
             </div>
             <OrderTrackingTimeline status={order.status} />
             <div className="mt-3 border-t border-border/50 pt-3 flex items-center justify-between">
-              <button
-                onClick={() => handleReorder(order)}
-                className="flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors"
-              >
+              <button onClick={() => handleReorder(order)} className="flex items-center gap-1.5 rounded-full bg-primary/10 px-4 py-2 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">
                 <RefreshCw className="h-3.5 w-3.5" /> Comprar novamente
               </button>
-              <span className="text-lg font-bold text-primary">
-                R$ {Number(order.total).toFixed(2).replace(".", ",")}
-              </span>
+              <span className="text-lg font-bold text-primary">R$ {Number(order.total).toFixed(2).replace(".", ",")}</span>
             </div>
           </motion.div>
         );
