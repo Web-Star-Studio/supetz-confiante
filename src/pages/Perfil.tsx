@@ -85,9 +85,25 @@ export default function Perfil() {
 
   if (authLoading || !user) {
     return (
-      <div className="flex min-h-[60vh] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
+      <section className="relative min-h-screen bg-supet-bg py-10 px-4">
+        <div className="mx-auto max-w-3xl space-y-6">
+          {/* Avatar skeleton */}
+          <div className="flex flex-col items-center gap-3">
+            <div className="h-24 w-24 rounded-full bg-supet-bg-alt animate-pulse" />
+            <div className="h-5 w-40 rounded-full bg-supet-bg-alt animate-pulse" />
+            <div className="h-3 w-52 rounded-full bg-supet-bg-alt animate-pulse" />
+          </div>
+          {/* Tabs skeleton */}
+          <div className="h-10 rounded-full bg-supet-bg-alt animate-pulse" />
+          {/* Content skeleton */}
+          <div className="rounded-3xl bg-supet-bg-alt p-6 space-y-4">
+            <div className="h-4 w-1/3 rounded-full bg-border animate-pulse" />
+            <div className="h-10 w-full rounded-full bg-border animate-pulse" />
+            <div className="h-4 w-1/4 rounded-full bg-border animate-pulse" />
+            <div className="h-10 w-full rounded-full bg-border animate-pulse" />
+          </div>
+        </div>
+      </section>
     );
   }
 
