@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronRight, Beaker, ShieldCheck, Sparkles, Activity } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { motionTokens } from "@/lib/motion";
 
 const ingredients = [

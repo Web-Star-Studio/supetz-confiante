@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, MessageCircleQuestion } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import SEOHead, { buildFAQSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 
 const faqs = [

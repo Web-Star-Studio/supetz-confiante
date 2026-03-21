@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Clock, ArrowRight } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { blogPreviews, blogPosts } from "@/services/mockData";
 import { motionTokens } from "@/lib/motion";
 
