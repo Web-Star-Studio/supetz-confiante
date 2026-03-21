@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from "react";
+import { forwardRef, ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
@@ -16,7 +16,7 @@ const navItems = [
   { label: "Configurações", path: "/admin/configuracoes", icon: Settings },
 ];
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+const AdminLayout = forwardRef<HTMLDivElement, { children: ReactNode }>(({ children }, ref) => {
   const { pathname } = useLocation();
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
@@ -54,7 +54,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-supet-bg flex">
+    <div ref={ref} className="min-h-screen bg-supet-bg flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
@@ -154,4 +154,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       </div>
     </div>
   );
-}
+});
+
+AdminLayout.displayName = "AdminLayout";
+
+export default AdminLayout;
