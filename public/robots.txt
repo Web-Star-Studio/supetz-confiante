@@ -12,3 +12,5 @@ Allow: /
 
 User-agent: *
 Allow: /
+
+Sitemap: https://supetz-playful-trust.lovable.app/sitemap.xml
