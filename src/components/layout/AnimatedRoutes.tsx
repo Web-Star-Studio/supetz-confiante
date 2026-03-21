@@ -11,6 +11,17 @@ import Ciencia from "../../pages/Ciencia";
 import FAQ from "../../pages/FAQ";
 import Checkout from "../../pages/Checkout";
 import Success from "../../pages/Success";
+import Login from "../../pages/Login";
+import Cadastro from "../../pages/Cadastro";
+import RecuperarSenha from "../../pages/RecuperarSenha";
+import ResetPassword from "../../pages/ResetPassword";
+
+import AdminRoute from "../../components/admin/AdminRoute";
+import AdminDashboard from "../../pages/admin/Dashboard";
+import AdminPedidos from "../../pages/admin/Pedidos";
+import AdminProdutos from "../../pages/admin/Produtos";
+import AdminClientes from "../../pages/admin/Clientes";
+import AdminConfiguracoes from "../../pages/admin/Configuracoes";
 
 import PageTransition from "./PageTransition";
 
@@ -27,9 +38,22 @@ export default function AnimatedRoutes() {
         <Route path="/blog" element={<PageTransition><Blog /></PageTransition>} />
         <Route path="/blog/:slug" element={<PageTransition><BlogPost /></PageTransition>} />
         <Route path="/sobre" element={<PageTransition><Sobre /></PageTransition>} />
-
         <Route path="/ciencia" element={<PageTransition><Ciencia /></PageTransition>} />
         <Route path="/faq" element={<PageTransition><FAQ /></PageTransition>} />
+
+        {/* Auth */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/cadastro" element={<Cadastro />} />
+        <Route path="/recuperar-senha" element={<RecuperarSenha />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+
+        {/* Admin */}
+        <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        <Route path="/admin/pedidos" element={<AdminRoute><AdminPedidos /></AdminRoute>} />
+        <Route path="/admin/produtos" element={<AdminRoute><AdminProdutos /></AdminRoute>} />
+        <Route path="/admin/clientes" element={<AdminRoute><AdminClientes /></AdminRoute>} />
+        <Route path="/admin/configuracoes" element={<AdminRoute><AdminConfiguracoes /></AdminRoute>} />
+
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
     </AnimatePresence>
