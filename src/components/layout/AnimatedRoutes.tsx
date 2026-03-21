@@ -23,6 +23,7 @@ import AdminPedidos from "../../pages/admin/Pedidos";
 import AdminProdutos from "../../pages/admin/Produtos";
 import AdminClientes from "../../pages/admin/Clientes";
 import AdminConfiguracoes from "../../pages/admin/Configuracoes";
+import AdminFidelizacao from "../../pages/admin/Fidelizacao";
 
 import PageTransition from "./PageTransition";
 
