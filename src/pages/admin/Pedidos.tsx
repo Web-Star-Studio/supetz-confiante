@@ -1,8 +1,25 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Filter, Copy, CheckCircle, X } from "lucide-react";
+import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+
+function PedidosSkeleton() {
+  return (
+    <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
+      <div className="p-6 space-y-0">
+        {[1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex items-center gap-4 py-4 animate-pulse border-b border-border/30 last:border-0">
+            <div className="h-4 w-16 rounded-full bg-border" />
+            <div className="h-4 w-28 rounded-full bg-border" />
+            <div className="h-6 w-20 rounded-full bg-border" />
+            <div className="h-4 w-20 rounded-full bg-border ml-auto" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 export default function AdminPedidos() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -46,12 +63,47 @@ export default function AdminPedidos() {
     !search || (o.customer_name || "").toLowerCase().includes(search.toLowerCase()) || o.id.includes(search)
   );
 
+  // Summary counts
+  const pendingCount = orders.filter(o => o.status === "pending").length;
+  const shippedCount = orders.filter(o => o.status === "shipped").length;
+
+  const formatAddress = (addr: any) => {
+    if (!addr || typeof addr !== "object") return null;
+    const parts = [addr.street, addr.number && `nº ${addr.number}`, addr.complement, addr.neighborhood, addr.city && addr.state && `${addr.city}/${addr.state}`, addr.zip].filter(Boolean);
+    return parts.length > 0 ? parts.join(", ") : null;
+  };
+
   return (
     <AdminLayout>
       <div className="mb-8">
         <h1 className="text-3xl font-extrabold text-foreground font-display">Pedidos</h1>
         <p className="text-muted-foreground mt-1">Gerencie os pedidos da loja</p>
       </div>
+
+      {/* Quick stats */}
+      {!loading && (
+        <div className="flex gap-3 mb-6 flex-wrap">
+          <div className="flex items-center gap-2 rounded-2xl bg-supet-bg-alt px-4 py-2.5">
+            <ShoppingCart className="w-4 h-4 text-primary" />
+            <span className="text-sm font-bold text-foreground">{orders.length}</span>
+            <span className="text-xs text-muted-foreground">total</span>
+          </div>
+          {pendingCount > 0 && (
+            <div className="flex items-center gap-2 rounded-2xl bg-amber-50 px-4 py-2.5">
+              <Clock className="w-4 h-4 text-amber-600" />
+              <span className="text-sm font-bold text-amber-700">{pendingCount}</span>
+              <span className="text-xs text-amber-600">pendentes</span>
+            </div>
+          )}
+          {shippedCount > 0 && (
+            <div className="flex items-center gap-2 rounded-2xl bg-violet-50 px-4 py-2.5">
+              <Truck className="w-4 h-4 text-violet-600" />
+              <span className="text-sm font-bold text-violet-700">{shippedCount}</span>
+              <span className="text-xs text-violet-600">em trânsito</span>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <div className="relative flex-1">
@@ -73,58 +125,58 @@ export default function AdminPedidos() {
         </div>
       </div>
 
-      <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
-        {loading ? (
-          <div className="p-10 text-center text-muted-foreground text-sm">Carregando...</div>
-        ) : filtered.length === 0 ? (
-          <div className="p-10 text-center text-muted-foreground text-sm">Nenhum pedido encontrado.</div>
-        ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-supet-bg/60">
-                  <th className="text-left px-6 py-3 font-semibold text-muted-foreground">ID</th>
-                  <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Cliente</th>
-                  <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Status</th>
-                  <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Total</th>
-                  <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Data</th>
-                  <th className="text-center px-6 py-3 font-semibold text-muted-foreground">Ações</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((order, i) => {
-                  const status = statusLabels[order.status] || { label: order.status, className: "bg-muted text-muted-foreground" };
-                  return (
-                    <tr key={order.id} className={`transition-colors hover:bg-primary/5 cursor-pointer ${i % 2 === 1 ? "bg-supet-bg/30" : ""}`}
-                      onClick={() => setSelectedOrder(order)}>
-                      <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{order.id.slice(0, 8)}</td>
-                      <td className="px-6 py-4 font-medium text-foreground">{order.customer_name || "—"}</td>
-                      <td className="px-6 py-4">
-                        <span className={`px-3 py-1 rounded-full text-xs font-bold ${status.className}`}>{status.label}</span>
-                      </td>
-                      <td className="px-6 py-4 text-right font-semibold text-foreground">R$ {Number(order.total).toFixed(2)}</td>
-                      <td className="px-6 py-4 text-right text-muted-foreground text-xs">{new Date(order.created_at).toLocaleDateString("pt-BR")}</td>
-                      <td className="px-6 py-4 text-center" onClick={e => e.stopPropagation()}>
-                        <select
-                          value={order.status}
-                          onChange={e => updateStatus(order.id, e.target.value)}
-                          className="px-3 py-1.5 rounded-xl bg-supet-bg text-xs text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30"
-                        >
-                          <option value="pending">Pendente</option>
-                          <option value="confirmed">Confirmado</option>
-                          <option value="shipped">Enviado</option>
-                          <option value="delivered">Entregue</option>
-                          <option value="cancelled">Cancelado</option>
-                        </select>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-        )}
-      </div>
+      {loading ? <PedidosSkeleton /> : (
+        <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
+          {filtered.length === 0 ? (
+            <div className="p-10 text-center text-muted-foreground text-sm">Nenhum pedido encontrado.</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="bg-supet-bg/60">
+                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground">ID</th>
+                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Cliente</th>
+                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Status</th>
+                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Total</th>
+                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Data</th>
+                    <th className="text-center px-6 py-3 font-semibold text-muted-foreground">Ações</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filtered.map((order, i) => {
+                    const status = statusLabels[order.status] || { label: order.status, className: "bg-muted text-muted-foreground" };
+                    return (
+                      <tr key={order.id} className={`transition-colors hover:bg-primary/5 cursor-pointer ${i % 2 === 1 ? "bg-supet-bg/30" : ""}`}
+                        onClick={() => setSelectedOrder(order)}>
+                        <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{order.id.slice(0, 8)}</td>
+                        <td className="px-6 py-4 font-medium text-foreground">{order.customer_name || "—"}</td>
+                        <td className="px-6 py-4">
+                          <span className={`px-3 py-1 rounded-full text-xs font-bold ${status.className}`}>{status.label}</span>
+                        </td>
+                        <td className="px-6 py-4 text-right font-semibold text-foreground">R$ {Number(order.total).toFixed(2)}</td>
+                        <td className="px-6 py-4 text-right text-muted-foreground text-xs">{new Date(order.created_at).toLocaleDateString("pt-BR")}</td>
+                        <td className="px-6 py-4 text-center" onClick={e => e.stopPropagation()}>
+                          <select
+                            value={order.status}
+                            onChange={e => updateStatus(order.id, e.target.value)}
+                            className="px-3 py-1.5 rounded-xl bg-supet-bg text-xs text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30"
+                          >
+                            <option value="pending">Pendente</option>
+                            <option value="confirmed">Confirmado</option>
+                            <option value="shipped">Enviado</option>
+                            <option value="delivered">Entregue</option>
+                            <option value="cancelled">Cancelado</option>
+                          </select>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Order Detail Modal */}
       <AnimatePresence>
@@ -184,19 +236,42 @@ export default function AdminPedidos() {
                   </div>
                 </div>
 
-                {/* Shipping */}
+                {/* Shipping Address - formatted */}
                 {selectedOrder.shipping_address && (
                   <div>
                     <label className="text-xs text-muted-foreground font-medium mb-2 block">Endereço de Entrega</label>
-                    <div className="bg-supet-bg-alt rounded-2xl p-4 text-sm text-foreground">
-                      {typeof selectedOrder.shipping_address === "object" ? (
-                        <pre className="whitespace-pre-wrap text-xs">{JSON.stringify(selectedOrder.shipping_address, null, 2)}</pre>
-                      ) : (
-                        <p>{String(selectedOrder.shipping_address)}</p>
-                      )}
+                    <div className="bg-supet-bg-alt rounded-2xl p-4 text-sm text-foreground flex items-start gap-3">
+                      <MapPin className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
+                      <div>
+                        {(() => {
+                          const addr = selectedOrder.shipping_address;
+                          const formatted = formatAddress(addr);
+                          if (formatted) return <p>{formatted}</p>;
+                          return <pre className="whitespace-pre-wrap text-xs">{JSON.stringify(addr, null, 2)}</pre>;
+                        })()}
+                      </div>
                     </div>
                   </div>
                 )}
+
+                {/* Status update */}
+                <div>
+                  <label className="text-xs text-muted-foreground font-medium mb-2 block">Atualizar status</label>
+                  <select
+                    value={selectedOrder.status}
+                    onChange={(e) => {
+                      updateStatus(selectedOrder.id, e.target.value);
+                      setSelectedOrder({ ...selectedOrder, status: e.target.value });
+                    }}
+                    className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer"
+                  >
+                    <option value="pending">Pendente</option>
+                    <option value="confirmed">Confirmado</option>
+                    <option value="shipped">Enviado</option>
+                    <option value="delivered">Entregue</option>
+                    <option value="cancelled">Cancelado</option>
+                  </select>
+                </div>
               </div>
             </motion.div>
           </motion.div>
