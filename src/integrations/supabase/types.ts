@@ -94,6 +94,42 @@ export type Database = {
         }
         Relationships: []
       }
+      pets: {
+        Row: {
+          birth_date: string | null
+          breed: string | null
+          created_at: string
+          id: string
+          name: string
+          photo_url: string | null
+          updated_at: string
+          user_id: string
+          weight_kg: number | null
+        }
+        Insert: {
+          birth_date?: string | null
+          breed?: string | null
+          created_at?: string
+          id?: string
+          name: string
+          photo_url?: string | null
+          updated_at?: string
+          user_id: string
+          weight_kg?: number | null
+        }
+        Update: {
+          birth_date?: string | null
+          breed?: string | null
+          created_at?: string
+          id?: string
+          name?: string
+          photo_url?: string | null
+          updated_at?: string
+          user_id?: string
+          weight_kg?: number | null
+        }
+        Relationships: []
+      }
       products: {
         Row: {
           active: boolean | null
@@ -190,6 +226,54 @@ export type Database = {
           key?: string
           updated_at?: string
           value?: Json
+        }
+        Relationships: []
+      }
+      user_addresses: {
+        Row: {
+          city: string
+          complement: string | null
+          created_at: string
+          id: string
+          is_default: boolean
+          label: string
+          neighborhood: string
+          number: string
+          state: string
+          street: string
+          updated_at: string
+          user_id: string
+          zip: string
+        }
+        Insert: {
+          city: string
+          complement?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          neighborhood: string
+          number: string
+          state: string
+          street: string
+          updated_at?: string
+          user_id: string
+          zip: string
+        }
+        Update: {
+          city?: string
+          complement?: string | null
+          created_at?: string
+          id?: string
+          is_default?: boolean
+          label?: string
+          neighborhood?: string
+          number?: string
+          state?: string
+          street?: string
+          updated_at?: string
+          user_id?: string
+          zip?: string
         }
         Relationships: []
       }
