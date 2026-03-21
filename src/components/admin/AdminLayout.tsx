@@ -21,6 +21,32 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [newOrderCount, setNewOrderCount] = useState(0);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("admin-orders")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "orders" },
+        (payload) => {
+          const order = payload.new as { customer_name?: string; total?: number };
+          setNewOrderCount((c) => c + 1);
+          toast.success("🎉 Novo pedido recebido!", {
+            description: `${order.customer_name || "Cliente"} — R$ ${Number(order.total || 0).toFixed(2)}`,
+            action: {
+              label: "Ver pedidos",
+              onClick: () => navigate("/admin/pedidos"),
+            },
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [navigate]);
 
   const handleSignOut = async () => {
     await signOut();
