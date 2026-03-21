@@ -60,7 +60,11 @@ export default function Checkout() {
   // Points state
   const [totalPoints, setTotalPoints] = useState(0);
   const [pointsToUse, setPointsToUse] = useState(0);
-  const pointsValue = pointsToUse * 0.01; // 1 point = R$ 0.01
+  const pointsValue = pointsToUse * 0.01;
+
+  // Saved addresses state
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
   // Calculate discounts
   const couponDiscount = appliedCoupon
