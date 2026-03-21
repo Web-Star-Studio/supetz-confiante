@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useState, useEffect, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,10 +10,12 @@ import {
   Music2,
   ShoppingBag,
   UserCircle,
+  Bell,
 } from "lucide-react";
 import { socialLinks } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
