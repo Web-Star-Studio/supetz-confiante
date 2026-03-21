@@ -42,6 +42,9 @@ export default function AnimatedRoutes() {
         <Route path="/ciencia" element={<PageTransition><Ciencia /></PageTransition>} />
         <Route path="/faq" element={<PageTransition><FAQ /></PageTransition>} />
 
+        {/* Profile */}
+        <Route path="/perfil" element={<PageTransition><Perfil /></PageTransition>} />
+
         {/* Auth */}
         <Route path="/login" element={<Login />} />
         <Route path="/cadastro" element={<Cadastro />} />
