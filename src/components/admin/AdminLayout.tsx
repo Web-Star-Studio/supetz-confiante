@@ -54,7 +54,7 @@ const AdminLayout = forwardRef<HTMLDivElement, { children: ReactNode }>(({ child
   };
 
   return (
-    <div className="min-h-screen bg-supet-bg flex">
+    <div ref={ref} className="min-h-screen bg-supet-bg flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
         <div className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
