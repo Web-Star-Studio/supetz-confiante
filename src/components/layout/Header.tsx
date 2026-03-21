@@ -118,13 +118,18 @@ export default function Header() {
             })}
           </div>
 
-          {/* User icon */}
+          {/* User icon with restock badge */}
           <Link
             to={user ? "/perfil" : "/login"}
-            className="p-2 text-supet-text hover:text-supet-orange transition-colors"
+            className="relative p-2 text-supet-text hover:text-supet-orange transition-colors"
             aria-label={user ? "Meu Perfil" : "Entrar"}
           >
             <UserCircle className="w-5 h-5" />
+            {restockCount > 0 && (
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
+                {restockCount}
+              </span>
+            )}
           </Link>
 
           {/* Cart Toggle */}

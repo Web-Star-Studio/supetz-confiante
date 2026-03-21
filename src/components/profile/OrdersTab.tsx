@@ -5,6 +5,7 @@ import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 import { Loader2, ShoppingBag, RefreshCw } from "lucide-react";
+import OrderTrackingTimeline from "./OrderTrackingTimeline";
 
 interface OrderItem {
   id?: string;
