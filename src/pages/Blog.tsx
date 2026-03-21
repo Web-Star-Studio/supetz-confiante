@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Clock, ArrowRight } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { blogPreviews, blogPosts } from "@/services/mockData";
 import { motionTokens } from "@/lib/motion";
 
@@ -45,6 +46,15 @@ export default function Blog() {
 
   return (
     <Layout>
+      <SEOHead
+        title="Blog — Dicas de Saúde para Seu Pet"
+        description="Artigos, dicas e guias sobre saúde da pele, imunidade, nutrição e bem-estar canino. Conteúdo escrito por especialistas em saúde animal."
+        path="/blog"
+        jsonLd={buildBreadcrumbSchema([
+          { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+          { name: "Blog", url: "https://supetz-playful-trust.lovable.app/blog" },
+        ])}
+      />
       {/* Hero + Featured */}
       <section className="bg-supet-bg pt-28 pb-0 md:pt-36">
         <div className="mx-auto max-w-6xl px-6">

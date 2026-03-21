@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowRight, ChevronRight, Beaker, ShieldCheck, Sparkles, Activity } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { motionTokens } from "@/lib/motion";
 
 const ingredients = [
@@ -38,6 +39,15 @@ const ingredients = [
 export default function Ciencia() {
   return (
     <Layout>
+      <SEOHead
+        title="A Ciência por Trás da Supet"
+        description="Descubra a fórmula científica Supet: Ômega 3, Colágeno, Biotina e Zinco Quelato. Desenvolvida por veterinários dermatologistas para tratar alergias e coceira de dentro para fora."
+        path="/ciencia"
+        jsonLd={buildBreadcrumbSchema([
+          { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+          { name: "Ciência", url: "https://supetz-playful-trust.lovable.app/ciencia" },
+        ])}
+      />
       <div className="bg-supet-bg min-h-screen pt-24 pb-20 overflow-hidden relative">
         <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-supet-orange/5 rounded-full blur-[120px] pointer-events-none" />
 

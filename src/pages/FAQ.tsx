@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, MessageCircleQuestion } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import SEOHead, { buildFAQSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 
 const faqs = [
@@ -67,6 +68,20 @@ export default function FAQ() {
 
   return (
     <Layout>
+      <SEOHead
+        title="Perguntas Frequentes"
+        description="Tire todas suas dúvidas sobre as gomas naturais Supet: ingredientes, dosagem, resultados, garantia de 30 dias, prazo de entrega e mais."
+        path="/faq"
+        jsonLd={[
+          buildFAQSchema(
+            faqs.flatMap(cat => cat.questions.map(q => ({ question: q.q, answer: q.a })))
+          ),
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+            { name: "FAQ", url: "https://supetz-playful-trust.lovable.app/faq" },
+          ]),
+        ]}
+      />
       <div className="bg-supet-bg min-h-screen">
         
         {/* Header Section */}

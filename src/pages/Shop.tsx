@@ -2,6 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, Star, ShieldCheck, Leaf, PackageCheck, Check } from "lucide-react";
 import Layout from "@/components/layout/Layout";
+import SEOHead, { buildProductSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
 import PricingSection from "@/components/landing/PricingSection";
 import ExtrasSection from "@/components/landing/ExtrasSection";
 import FAQStandaloneSection from "@/components/landing/FAQStandaloneSection";
@@ -68,6 +69,24 @@ export default function Shop() {
 
   return (
     <Layout>
+      <SEOHead
+        title="Loja — Gomas Naturais Supet"
+        description="Compre as gomas naturais Supet para seu cão. Ômega 3, biotina e colágeno para acabar com coceira, alergia e queda de pelo. Frete grátis e garantia de 30 dias."
+        path="/shop"
+        jsonLd={[
+          buildProductSchema({
+            name: "Supet Gomas Naturais — O Queridinho",
+            description: "1 pote com 30 gomas naturais para tratamento de coceira, alergia e queda de pelo em cães.",
+            price: 149.90,
+            rating: 4.9,
+            reviewCount: 2847,
+          }),
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+            { name: "Loja", url: "https://supetz-playful-trust.lovable.app/shop" },
+          ]),
+        ]}
+      />
       <section className="bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative">
         <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
           {/* Breadcrumb / Top label */}
