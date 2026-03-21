@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail, PawPrint, MapPin, Bell, BookOpen } from "lucide-react";
+import { Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail, PawPrint, MapPin, Bell, BookOpen, Star, Ticket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
