@@ -34,9 +34,27 @@ const iconByPlatform = {
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [restockCount, setRestockCount] = useState(0);
   const location = useLocation();
   const { totalItems, openCart } = useCart();
   const { user } = useAuth();
+
+  // Check for upcoming restock reminders
+  useEffect(() => {
+    if (!user) { setRestockCount(0); return; }
+    const checkReminders = async () => {
+      const today = new Date();
+      const soon = new Date();
+      soon.setDate(today.getDate() + 5);
+      const { data } = await supabase
+        .from("restock_reminders")
+        .select("id")
+        .eq("user_id", user.id)
+        .lte("estimated_end_date", soon.toISOString().split("T")[0]);
+      setRestockCount(data?.length || 0);
+    };
+    checkReminders();
+  }, [user]);
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     setMobileOpen(false);
