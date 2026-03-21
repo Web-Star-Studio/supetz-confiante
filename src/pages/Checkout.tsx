@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
-import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check } from "lucide-react";
+import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check, MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -16,6 +16,19 @@ interface Coupon {
   min_order_value: number | null;
   used: boolean;
   expires_at: string | null;
+}
+
+interface SavedAddress {
+  id: string;
+  label: string;
+  street: string;
+  number: string;
+  complement: string | null;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zip: string;
+  is_default: boolean;
 }
 
 export default function Checkout() {
@@ -47,7 +60,11 @@ export default function Checkout() {
   // Points state
   const [totalPoints, setTotalPoints] = useState(0);
   const [pointsToUse, setPointsToUse] = useState(0);
-  const pointsValue = pointsToUse * 0.01; // 1 point = R$ 0.01
+  const pointsValue = pointsToUse * 0.01;
+
+  // Saved addresses state
+  const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
   // Calculate discounts
   const couponDiscount = appliedCoupon
@@ -62,6 +79,7 @@ export default function Checkout() {
     if (user) {
       loadCoupons();
       loadPoints();
+      loadSavedAddresses();
     }
   }, [user]);
 
@@ -87,6 +105,35 @@ export default function Checkout() {
       .eq("user_id", user.id);
     const total = ((data as { points: number }[]) || []).reduce((sum, e) => sum + e.points, 0);
     setTotalPoints(total);
+  };
+
+  const loadSavedAddresses = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("user_addresses")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("is_default", { ascending: false });
+    const addresses = (data as SavedAddress[]) || [];
+    setSavedAddresses(addresses);
+    // Auto-select default address
+    const defaultAddr = addresses.find((a) => a.is_default);
+    if (defaultAddr) {
+      applyAddress(defaultAddr);
+    }
+  };
+
+  const applyAddress = (addr: SavedAddress) => {
+    setSelectedAddressId(addr.id);
+    setFormData((prev) => ({
+      ...prev,
+      zipCode: addr.zip,
+      address: addr.street,
+      number: addr.number,
+      complement: addr.complement || "",
+      city: addr.city,
+      state: addr.state,
+    }));
   };
 
   const handleApplyCoupon = async () => {
@@ -271,6 +318,63 @@ export default function Checkout() {
                       <Truck className="w-5 h-5 text-supet-orange" />
                       Entrega
                     </h2>
+
+                    {/* Saved Addresses Selector */}
+                    {user && savedAddresses.length > 0 && (
+                      <div className="mb-6 space-y-2">
+                        <p className="text-xs font-bold text-supet-text/40 uppercase tracking-widest mb-3">Endereços salvos</p>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {savedAddresses.map((addr) => (
+                            <button
+                              key={addr.id}
+                              type="button"
+                              onClick={() => applyAddress(addr)}
+                              className={`text-left border-2 rounded-xl p-4 transition-all duration-300 ${
+                                selectedAddressId === addr.id
+                                  ? "border-supet-orange bg-supet-orange/5 scale-[1.01] shadow-sm"
+                                  : "border-supet-text/10 hover:border-supet-orange/50"
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-1">
+                                <MapPin className={`w-4 h-4 flex-shrink-0 ${selectedAddressId === addr.id ? "text-supet-orange" : "text-supet-text/40"}`} />
+                                <span className={`text-sm font-bold ${selectedAddressId === addr.id ? "text-supet-orange" : "text-supet-text"}`}>
+                                  {addr.label}
+                                </span>
+                                {addr.is_default && (
+                                  <span className="text-[10px] font-bold bg-supet-orange/10 text-supet-orange px-1.5 py-0.5 rounded-full">Padrão</span>
+                                )}
+                                {selectedAddressId === addr.id && (
+                                  <Check className="w-4 h-4 text-supet-orange ml-auto flex-shrink-0" />
+                                )}
+                              </div>
+                              <p className="text-xs text-supet-text/60 truncate pl-6">
+                                {addr.street}, {addr.number} · {addr.city}/{addr.state}
+                              </p>
+                            </button>
+                          ))}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedAddressId(null);
+                              setFormData((prev) => ({ ...prev, zipCode: "", address: "", number: "", complement: "", city: "", state: "" }));
+                            }}
+                            className={`text-left border-2 border-dashed rounded-xl p-4 transition-all duration-300 ${
+                              selectedAddressId === null
+                                ? "border-supet-orange bg-supet-orange/5"
+                                : "border-supet-text/10 hover:border-supet-orange/50"
+                            }`}
+                          >
+                            <div className="flex items-center gap-2">
+                              <MapPin className={`w-4 h-4 ${selectedAddressId === null ? "text-supet-orange" : "text-supet-text/40"}`} />
+                              <span className={`text-sm font-bold ${selectedAddressId === null ? "text-supet-orange" : "text-supet-text/60"}`}>
+                                Novo endereço
+                              </span>
+                            </div>
+                            <p className="text-xs text-supet-text/40 pl-6 mt-1">Preencher manualmente</p>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
                       <div className="md:col-span-4">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">CEP</label>
