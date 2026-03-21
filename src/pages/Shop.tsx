@@ -68,6 +68,7 @@ export default function Shop() {
   };
 
   return (
+    <Layout>
       <SEOHead
         title="Loja — Gomas Naturais Supet"
         description="Compre as gomas naturais Supet para seu cão. Ômega 3, biotina e colágeno para acabar com coceira, alergia e queda de pelo. Frete grátis e garantia de 30 dias."

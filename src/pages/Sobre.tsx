@@ -93,6 +93,7 @@ export default function Sobre() {
   ];
 
   return (
+    <Layout>
       <SEOHead
         title="Sobre a Supet"
         description="Conheça a missão da Supet: criar suplementos 100% naturais e aprovados por veterinários para acabar com coceiras, alergias e queda de pelo nos cães."
