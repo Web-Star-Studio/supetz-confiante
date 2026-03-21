@@ -184,6 +184,16 @@ export default function Perfil() {
             <OrdersTab />
           </TabsContent>
 
+          {/* Lembretes de Reposição */}
+          <TabsContent value="lembretes">
+            <RestockRemindersTab />
+          </TabsContent>
+
+          {/* Diário de Tratamento */}
+          <TabsContent value="diario">
+            <TreatmentDiaryTab />
+          </TabsContent>
+
           {/* Segurança */}
           <TabsContent value="seguranca">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-3xl bg-supet-bg-alt p-6 sm:p-8 space-y-5">
