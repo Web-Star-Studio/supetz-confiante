@@ -48,22 +48,14 @@ const GUMMY_BONES = [
   { left: "88%", top: "56%", size: 135, rotate: 25, delay: 0.3, zIndex: 15, blur: 3 },
 
   // Mid layer (behind lid, above jar, mostly sharp) -> size 140-190
-  { left: "38%", top: "22%", size: 180, rotate: -30, delay: 0.1, zIndex: 25 },
-  { left: "52%", top: "16%", size: 200, rotate: 20, delay: 0.15, zIndex: 25 },
   { left: "32%", top: "32%", size: 160, rotate: 55, delay: 0.18, zIndex: 25 },
   { left: "58%", top: "28%", size: 170, rotate: -50, delay: 0.12, zIndex: 25 },
-  { left: "44%", top: "12%", size: 190, rotate: -15, delay: 0.08, zIndex: 25 },
   { left: "64%", top: "36%", size: 150, rotate: 35, delay: 0.22, zIndex: 25 },
   { left: "26%", top: "16%", size: 165, rotate: 40, delay: 0.14, zIndex: 25 },
-  { left: "48%", top: "30%", size: 140, rotate: -65, delay: 0.2, zIndex: 25 },
   { left: "36%", top: "42%", size: 155, rotate: 10, delay: 0.17, zIndex: 25 },
-
-  // Extra cluster between SEU and PET (Mid Depth)
-  { left: "42%", top: "14%", size: 160, rotate: 25, delay: 0.09, zIndex: 25 },
-  { left: "50%", top: "20%", size: 175, rotate: -35, delay: 0.11, zIndex: 25 },
-  { left: "46%", top: "26%", size: 145, rotate: 50, delay: 0.13, zIndex: 25 },
-  { left: "54%", top: "12%", size: 155, rotate: -10, delay: 0.07, zIndex: 25 },
-  { left: "40%", top: "18%", size: 135, rotate: 60, delay: 0.16, zIndex: 25 },
+  { left: "44%", top: "14%", size: 150, rotate: -15, delay: 0.08, zIndex: 25 },
+  { left: "52%", top: "20%", size: 140, rotate: 20, delay: 0.15, zIndex: 25 },
+  { left: "48%", top: "34%", size: 130, rotate: -40, delay: 0.2, zIndex: 25 },
 
   // Foreground layer (in front, slightly blurry/fast) -> size 125-155
   { left: "16%", top: "40%", size: 145, rotate: 70, delay: 0.16, zIndex: 45, blur: 1.5 },
