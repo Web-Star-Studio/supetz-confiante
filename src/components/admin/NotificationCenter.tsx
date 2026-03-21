@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Check, CheckCheck, ShoppingCart, X, Filter } from "lucide-react";
+import { Bell, Check, CheckCheck, ShoppingCart, X, Filter, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
@@ -17,7 +17,7 @@ interface Notification {
 }
 
 type StatusFilter = "all" | "unread" | "read";
-type TypeFilter = "all" | "order";
+type TypeFilter = "all" | "order" | "restock";
 
 export default function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -102,6 +102,7 @@ export default function NotificationCenter() {
   const getIcon = (type: string) => {
     switch (type) {
       case "order": return <ShoppingCart className="w-4 h-4 text-primary" />;
+      case "restock": return <Clock className="w-4 h-4 text-amber-600" />;
       default: return <Bell className="w-4 h-4 text-primary" />;
     }
   };
@@ -164,6 +165,7 @@ export default function NotificationCenter() {
               <span className="w-px h-5 bg-border self-center mx-1" />
               <button className={chipClass(typeFilter === "all")} onClick={() => setTypeFilter("all")}>Todos tipos</button>
               <button className={chipClass(typeFilter === "order")} onClick={() => setTypeFilter("order")}>Pedidos</button>
+              <button className={chipClass(typeFilter === "restock" as any)} onClick={() => setTypeFilter("restock" as any)}>Reposição</button>
             </div>
 
             {/* List */}
