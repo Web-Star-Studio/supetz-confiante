@@ -1,14 +1,14 @@
-import { forwardRef, ReactNode } from "react";
+import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { Loader2 } from "lucide-react";
 
-const AdminRoute = forwardRef<HTMLDivElement, { children: ReactNode }>(({ children }, ref) => {
+export default function AdminRoute({ children }: { children: ReactNode }) {
   const { user, isAdmin, isLoading } = useAuth();
 
   if (isLoading) {
     return (
-      <div ref={ref} className="min-h-screen bg-background flex items-center justify-center">
+      <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="w-8 h-8 text-primary animate-spin" />
       </div>
     );
@@ -17,9 +17,5 @@ const AdminRoute = forwardRef<HTMLDivElement, { children: ReactNode }>(({ childr
   if (!user) return <Navigate to="/login" replace />;
   if (!isAdmin) return <Navigate to="/" replace />;
 
-  return <div ref={ref}>{children}</div>;
-});
-
-AdminRoute.displayName = "AdminRoute";
-
-export default AdminRoute;
+  return <>{children}</>;
+}
