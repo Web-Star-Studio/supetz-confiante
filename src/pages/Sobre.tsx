@@ -40,7 +40,7 @@ const narrativeSteps = [
     text: "Por anos, o mercado pet se contentou em mascarar os sintomas. Pomadas que aliviam por horas, injeções com efeitos colaterais terríveis a longo prazo. Sabíamos que a pele não é o problema; ela é o alarme de que algo interno não está bem."
   },
   {
-    image: "/images/product-laboratory.png",
+    image: "/images/product-laboratory-v3.png",
     title: "Nossa",
     highlight: "obsessão.",
     text: "Mergulhamos em pesquisas imersivas com dermatologistas veterinários de ponta. A imunidade intestinal e a barreira protetora da pele precisavam ser nossa base. O objetivo nunca foi apenas parar a coceira, mas devolver a paz profunda ao animal."
@@ -49,7 +49,7 @@ const narrativeSteps = [
     image: "/images/pet-healthy-coat.png",
     title: "Poder",
     highlight: "natural.",
-    text: "Chegamos a uma matriz exata: Ômega 3 hiper-concentrado, Zinco quelatado e Biotina ativa, todos extraídos de fontes rigorosamente limpas. O resultado é orgânico, visível e definitivo. A saúde reconstruída de dentro para fora."
+    text: "Chegamos a uma matriz exata: Ômega 3 hiper-concentrado, Zinco quelato e Biotina ativa, todos extraídos de fontes rigorosamente limpas. O resultado é orgânico, visível e definitivo. A saúde reconstruída de dentro para fora."
   }
 ];
 
@@ -85,10 +85,10 @@ export default function Sobre() {
   const [activeExpert, setActiveExpert] = useState<number | null>(null);
 
   const ingredients = [
-    { id: "omega3", title: "Ômega 3 Puro", desc: "Extraído de águas profundas, age implacavelmente contra inflamações celulares.", img: "/images/product-ingredients.png" },
-    { id: "biotina", title: "Biotina Ativa", desc: "Reconstrói a queratina danificada, devolvendo brilho e espessura à pelagem.", img: "/images/dog-closeup.png" },
-    { id: "zinco", title: "Zinco Quelatado", desc: "A base biológica para a rápida cicatrização de feridas e hot spots.", img: "/images/product-gummy.png" },
-    { id: "vitamina-e", title: <>Vitamina E<br />D-Alpha</>, altText: "Vitamina E D-Alpha", desc: "O escudo antioxidante natural que previne o envelhecimento celular precoce.", img: "/images/hero-dog.png" }
+    { id: "omega3", title: "Ômega 3 Puro", desc: "Extraído de águas profundas, age implacavelmente contra inflamações celulares.", img: "/images/omega3-v2.png" },
+    { id: "biotina", title: "Biotina Ativa", desc: "Reconstrói a queratina danificada, devolvendo brilho e espessura à pelagem.", img: "/images/biotina-v3.png" },
+    { id: "zinco", title: "Zinco Quelato", desc: "A base biológica para a rápida cicatrização de feridas e hot spots.", img: "/images/zinco-v4.png" },
+    { id: "vitamina-e", title: <>Vitamina E<br />D-Alpha</>, altText: "Vitamina E D-Alpha", desc: "O escudo antioxidante natural que previne o envelhecimento celular precoce.", img: "/images/vitamina-e-v2.png" }
   ];
 
   return (
@@ -277,7 +277,7 @@ export default function Sobre() {
             <div className="flex flex-col md:flex-row items-center gap-12 md:gap-24 relative">
               <span className="absolute -right-4 md:-right-12 -top-12 md:-top-24 text-[10rem] md:text-[20rem] font-serif italic text-supet-orange/5 font-black leading-none select-none z-0">02</span>
               <div className="w-full md:w-1/2 h-[400px] md:h-[600px] rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] relative z-10 border border-supet-text/5">
-                 <img src="/images/product-laboratory.png" alt="Laboratório" className="w-full h-full object-cover object-center" />
+                 <img src="/images/product-laboratory-v3.png" alt="Laboratório" className="w-full h-full object-cover object-center" />
                  <div className="absolute inset-0 bg-supet-text/5 mix-blend-overlay pointer-events-none" />
               </div>
               <motion.div 

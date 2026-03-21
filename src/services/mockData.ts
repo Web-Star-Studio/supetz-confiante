@@ -276,7 +276,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        content: "O Zinco quelatado desempenha papel fundamental na cicatrização e regeneração dessas áreas, acelerando a recuperação quando fornecido nas doses adequadas."
+        content: "O Zinco quelato desempenha papel fundamental na cicatrização e regeneração dessas áreas, acelerando a recuperação quando fornecido nas doses adequadas."
       },
       {
         type: "heading",
@@ -921,7 +921,7 @@ export const blogPosts: BlogPost[] = [
       },
       {
         type: "paragraph",
-        content: "O Zinco quelatado fortalece a barreira cutânea em nível celular, compensando parcialmente a deficiência genética de filagrina. A Biotina acelera a renovação epidérmica, ajudando a manter a pele íntegra e resistente."
+        content: "O Zinco quelato fortalece a barreira cutânea em nível celular, compensando parcialmente a deficiência genética de filagrina. A Biotina acelera a renovação epidérmica, ajudando a manter a pele íntegra e resistente."
       },
       {
         type: "quote",
