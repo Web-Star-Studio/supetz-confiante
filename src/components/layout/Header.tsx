@@ -55,7 +55,7 @@ export default function Header() {
         <Link to="/" onClick={handleLogoClick} className="relative z-10 flex shrink-0 items-center">
           <div className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]">
             <img
-              src="/images/supet-logos/supet-logo-5.svg"
+              src="/supetNewLogo.svg"
               alt="SUPET"
               className="absolute left-0 top-1/2 w-full h-auto -translate-y-1/2 object-contain"
             />
