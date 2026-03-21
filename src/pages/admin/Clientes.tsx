@@ -32,10 +32,10 @@ export default function AdminClientes() {
       <div className="relative max-w-md mb-6">
         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
         <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome..."
-          className="w-full pl-11 pr-4 py-3 rounded-2xl bg-card border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm" />
+          className="w-full pl-11 pr-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm" />
       </div>
 
-      <div className="bg-card rounded-3xl border border-border overflow-hidden">
+      <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
         {loading ? (
           <div className="p-10 text-center text-muted-foreground text-sm">Carregando...</div>
         ) : filtered.length === 0 ? (
@@ -43,16 +43,16 @@ export default function AdminClientes() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-accent/50">
-                <tr>
+              <thead>
+                <tr className="bg-supet-bg/60">
                   <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Nome</th>
                   <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Telefone</th>
                   <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Cadastrado em</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
-                {filtered.map(p => (
-                  <tr key={p.id} className="hover:bg-accent/30 transition-colors">
+              <tbody>
+                {filtered.map((p, i) => (
+                  <tr key={p.id} className={`transition-colors hover:bg-primary/5 ${i % 2 === 1 ? "bg-supet-bg/30" : ""}`}>
                     <td className="px-6 py-4 font-medium text-foreground">{p.full_name || "—"}</td>
                     <td className="px-6 py-4 text-muted-foreground">{p.phone || "—"}</td>
                     <td className="px-6 py-4 text-right text-muted-foreground text-xs">{new Date(p.created_at).toLocaleDateString("pt-BR")}</td>
