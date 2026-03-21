@@ -107,6 +107,35 @@ export default function Checkout() {
     setTotalPoints(total);
   };
 
+  const loadSavedAddresses = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("user_addresses")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("is_default", { ascending: false });
+    const addresses = (data as SavedAddress[]) || [];
+    setSavedAddresses(addresses);
+    // Auto-select default address
+    const defaultAddr = addresses.find((a) => a.is_default);
+    if (defaultAddr) {
+      applyAddress(defaultAddr);
+    }
+  };
+
+  const applyAddress = (addr: SavedAddress) => {
+    setSelectedAddressId(addr.id);
+    setFormData((prev) => ({
+      ...prev,
+      zipCode: addr.zip,
+      address: addr.street,
+      number: addr.number,
+      complement: addr.complement || "",
+      city: addr.city,
+      state: addr.state,
+    }));
+  };
+
   const handleApplyCoupon = async () => {
     if (!couponCode.trim() || !user) return;
     setCouponLoading(true);
