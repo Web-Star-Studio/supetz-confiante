@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import PetProfileTab from "@/components/profile/PetProfileTab";
 import AddressesTab from "@/components/profile/AddressesTab";
 import OrdersTab from "@/components/profile/OrdersTab";
+import RestockRemindersTab from "@/components/profile/RestockRemindersTab";
+import TreatmentDiaryTab from "@/components/profile/TreatmentDiaryTab";
 
 export default function Perfil() {
   const { user, isLoading: authLoading, resetPassword } = useAuth();
