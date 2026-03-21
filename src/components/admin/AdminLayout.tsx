@@ -26,21 +26,22 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   };
 
   return (
-    <div className="min-h-screen bg-background flex">
+    <div className="min-h-screen bg-supet-bg flex">
       {/* Mobile overlay */}
       {sidebarOpen && (
-        <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
+        <div className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
 
       {/* Sidebar */}
-      <aside className={`fixed lg:sticky top-0 left-0 h-screen w-72 bg-card border-r border-border z-50 flex flex-col transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        {/* Logo */}
-        <div className="p-6 flex items-center justify-between border-b border-border">
-          <Link to="/admin" className="flex items-center gap-3">
+      <aside className={`fixed lg:sticky top-0 left-0 h-screen w-72 bg-supet-bg-alt z-50 flex flex-col transition-transform duration-300 ${sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        {/* Logo with orange gradient top */}
+        <div className="relative p-6 flex items-center justify-between overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
+          <Link to="/admin" className="flex items-center gap-3 relative z-10">
             <img src="/supetNewLogo.svg" alt="Supet" className="h-8" />
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground bg-primary/10 text-primary px-2 py-0.5 rounded-full">Admin</span>
+            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground bg-primary/15 text-primary px-2.5 py-1 rounded-full">Admin</span>
           </Link>
-          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground">
+          <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground relative z-10">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -56,8 +57,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
                 onClick={() => setSidebarOpen(false)}
                 className={`flex items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
                   isActive
-                    ? "bg-primary text-primary-foreground"
-                    : "text-muted-foreground hover:bg-accent hover:text-foreground"
+                    ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                    : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
                 }`}
               >
                 <item.icon className="w-5 h-5 shrink-0" />
@@ -69,10 +70,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </nav>
 
         {/* User / Logout */}
-        <div className="p-4 border-t border-border">
+        <div className="p-4">
           <div className="flex items-center gap-3 mb-4 px-2">
-            <div className="w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm">
-              {user?.email?.charAt(0).toUpperCase()}
+            <div className="relative">
+              <div className="absolute -inset-1 rounded-full bg-primary/20" />
+              <div className="w-9 h-9 rounded-full bg-primary/15 flex items-center justify-center text-primary font-bold text-sm relative">
+                {user?.email?.charAt(0).toUpperCase()}
+              </div>
             </div>
             <div className="overflow-hidden">
               <p className="text-sm font-semibold text-foreground truncate">{user?.email}</p>
@@ -91,7 +95,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
         {/* Top bar (mobile) */}
-        <header className="lg:hidden sticky top-0 z-30 bg-card/80 backdrop-blur-xl border-b border-border px-4 py-3 flex items-center justify-between">
+        <header className="lg:hidden sticky top-0 z-30 bg-supet-bg/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
           <button onClick={() => setSidebarOpen(true)} className="text-foreground">
             <Menu className="w-6 h-6" />
           </button>

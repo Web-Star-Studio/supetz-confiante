@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
+import RevenueChart from "@/components/admin/RevenueChart";
 import { supabase } from "@/integrations/supabase/client";
 import { ShoppingCart, Package, Users, TrendingUp } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Stats {
   totalOrders: number;
@@ -10,9 +12,15 @@ interface Stats {
   totalCustomers: number;
 }
 
-function StatsCard({ icon: Icon, label, value, color }: { icon: any; label: string; value: string; color: string }) {
+function StatsCard({ icon: Icon, label, value, color, delay }: { icon: any; label: string; value: string; color: string; delay: number }) {
   return (
-    <div className="bg-card rounded-3xl p-6 border border-border">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay, duration: 0.4 }}
+      whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
+      className="bg-supet-bg-alt rounded-3xl p-6 cursor-default"
+    >
       <div className="flex items-center gap-4">
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${color}`}>
           <Icon className="w-6 h-6" />
@@ -22,18 +30,19 @@ function StatsCard({ icon: Icon, label, value, color }: { icon: any; label: stri
           <p className="text-2xl font-extrabold text-foreground font-display">{value}</p>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({ totalOrders: 0, totalRevenue: 0, totalProducts: 0, totalCustomers: 0 });
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
+  const [chartData, setChartData] = useState<{ day: string; revenue: number; orders: number }[]>([]);
 
   useEffect(() => {
     async function fetchStats() {
       const [ordersRes, productsRes, profilesRes] = await Promise.all([
-        supabase.from("orders").select("id, total, status, customer_name, created_at").order("created_at", { ascending: false }).limit(10),
+        supabase.from("orders").select("id, total, status, customer_name, created_at").order("created_at", { ascending: false }),
         supabase.from("products").select("id", { count: "exact" }),
         supabase.from("profiles").select("id", { count: "exact" }),
       ]);
@@ -48,16 +57,34 @@ export default function AdminDashboard() {
         totalCustomers: profilesRes.count || 0,
       });
       setRecentOrders(orders.slice(0, 5));
+
+      // Build chart data for last 7 days
+      const days: { day: string; revenue: number; orders: number }[] = [];
+      for (let i = 6; i >= 0; i--) {
+        const d = new Date();
+        d.setDate(d.getDate() - i);
+        const dayStr = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+        const dayOrders = orders.filter(o => {
+          const od = new Date(o.created_at);
+          return od.toDateString() === d.toDateString();
+        });
+        days.push({
+          day: dayStr,
+          revenue: dayOrders.reduce((s, o) => s + Number(o.total), 0),
+          orders: dayOrders.length,
+        });
+      }
+      setChartData(days);
     }
     fetchStats();
   }, []);
 
   const statusLabels: Record<string, { label: string; className: string }> = {
-    pending: { label: "Pendente", className: "bg-yellow-100 text-yellow-800" },
-    confirmed: { label: "Confirmado", className: "bg-blue-100 text-blue-800" },
-    shipped: { label: "Enviado", className: "bg-purple-100 text-purple-800" },
-    delivered: { label: "Entregue", className: "bg-green-100 text-green-800" },
-    cancelled: { label: "Cancelado", className: "bg-red-100 text-red-800" },
+    pending: { label: "Pendente", className: "bg-amber-100 text-amber-700" },
+    confirmed: { label: "Confirmado", className: "bg-sky-100 text-sky-700" },
+    shipped: { label: "Enviado", className: "bg-violet-100 text-violet-700" },
+    delivered: { label: "Entregue", className: "bg-emerald-100 text-emerald-700" },
+    cancelled: { label: "Cancelado", className: "bg-rose-100 text-rose-700" },
   };
 
   return (
@@ -68,15 +95,20 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
-        <StatsCard icon={ShoppingCart} label="Pedidos" value={String(stats.totalOrders)} color="bg-primary/10 text-primary" />
-        <StatsCard icon={TrendingUp} label="Receita Total" value={`R$ ${stats.totalRevenue.toFixed(2)}`} color="bg-green-500/10 text-green-600" />
-        <StatsCard icon={Package} label="Produtos" value={String(stats.totalProducts)} color="bg-blue-500/10 text-blue-600" />
-        <StatsCard icon={Users} label="Clientes" value={String(stats.totalCustomers)} color="bg-purple-500/10 text-purple-600" />
+        <StatsCard icon={ShoppingCart} label="Pedidos" value={String(stats.totalOrders)} color="bg-primary/15 text-primary" delay={0} />
+        <StatsCard icon={TrendingUp} label="Receita Total" value={`R$ ${stats.totalRevenue.toFixed(2)}`} color="bg-emerald-500/15 text-emerald-600" delay={0.05} />
+        <StatsCard icon={Package} label="Produtos" value={String(stats.totalProducts)} color="bg-sky-500/15 text-sky-600" delay={0.1} />
+        <StatsCard icon={Users} label="Clientes" value={String(stats.totalCustomers)} color="bg-violet-500/15 text-violet-600" delay={0.15} />
+      </div>
+
+      {/* Charts */}
+      <div className="mb-10">
+        <RevenueChart data={chartData} />
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-card rounded-3xl border border-border overflow-hidden">
-        <div className="p-6 border-b border-border">
+      <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
+        <div className="p-6">
           <h2 className="text-lg font-bold text-foreground font-display">Pedidos Recentes</h2>
         </div>
         {recentOrders.length === 0 ? (
@@ -84,8 +116,8 @@ export default function AdminDashboard() {
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
-              <thead className="bg-accent/50">
-                <tr>
+              <thead>
+                <tr className="bg-supet-bg/60">
                   <th className="text-left px-6 py-3 font-semibold text-muted-foreground">ID</th>
                   <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Cliente</th>
                   <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Status</th>
@@ -93,11 +125,11 @@ export default function AdminDashboard() {
                   <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Data</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-border">
-                {recentOrders.map(order => {
+              <tbody>
+                {recentOrders.map((order, i) => {
                   const status = statusLabels[order.status] || { label: order.status, className: "bg-muted text-muted-foreground" };
                   return (
-                    <tr key={order.id} className="hover:bg-accent/30 transition-colors">
+                    <tr key={order.id} className={`transition-colors hover:bg-primary/5 ${i % 2 === 1 ? "bg-supet-bg/30" : ""}`}>
                       <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{order.id.slice(0, 8)}</td>
                       <td className="px-6 py-4 font-medium text-foreground">{order.customer_name || "—"}</td>
                       <td className="px-6 py-4">
