@@ -79,6 +79,7 @@ export default function Checkout() {
     if (user) {
       loadCoupons();
       loadPoints();
+      loadSavedAddresses();
     }
   }, [user]);
 
