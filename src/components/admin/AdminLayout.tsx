@@ -1,12 +1,11 @@
-import { ReactNode, useState, useEffect } from "react";
+import { ReactNode, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
-import { motion, AnimatePresence } from "framer-motion";
-import { toast } from "sonner";
+import { motion } from "framer-motion";
 import {
-  LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight, Bell,
+  LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight,
 } from "lucide-react";
+import NotificationCenter from "./NotificationCenter";
 
 const navItems = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
@@ -21,32 +20,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [newOrderCount, setNewOrderCount] = useState(0);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("admin-orders")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "orders" },
-        (payload) => {
-          const order = payload.new as { customer_name?: string; total?: number };
-          setNewOrderCount((c) => c + 1);
-          toast.success("🎉 Novo pedido recebido!", {
-            description: `${order.customer_name || "Cliente"} — R$ ${Number(order.total || 0).toFixed(2)}`,
-            action: {
-              label: "Ver pedidos",
-              onClick: () => navigate("/admin/pedidos"),
-            },
-          });
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [navigate]);
 
   const handleSignOut = async () => {
     await signOut();
@@ -122,28 +95,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-h-screen">
-        {/* Top bar (mobile) */}
-        <header className="lg:hidden sticky top-0 z-30 bg-supet-bg/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
-          <button onClick={() => setSidebarOpen(true)} className="text-foreground">
+        {/* Top bar */}
+        <header className="sticky top-0 z-30 bg-supet-bg/80 backdrop-blur-xl px-4 py-3 flex items-center justify-between">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden text-foreground">
             <Menu className="w-6 h-6" />
           </button>
-          <img src="/supetNewLogo.svg" alt="Supet" className="h-7" />
-          <button
-            className="relative text-foreground"
-            onClick={() => { setNewOrderCount(0); navigate("/admin/pedidos"); }}
-          >
-            <Bell className="w-5 h-5" />
-            <AnimatePresence>
-              {newOrderCount > 0 && (
-                <motion.span
-                  initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center"
-                >
-                  {newOrderCount}
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </button>
+          <img src="/supetNewLogo.svg" alt="Supet" className="h-7 lg:hidden" />
+          <div className="hidden lg:block" />
+          <div className="ml-auto">
+            <NotificationCenter />
+          </div>
         </header>
 
         <main className="flex-1 p-6 md:p-8 lg:p-10">
