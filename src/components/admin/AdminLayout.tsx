@@ -103,8 +103,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Menu className="w-6 h-6" />
           </button>
           <img src="/supetNewLogo.svg" alt="Supet" className="h-7 lg:hidden" />
-          <div className="hidden lg:block" />
-          <div className="ml-auto">
+          <div className="hidden lg:block">
+            <AdminGlobalSearch />
+          </div>
+          <div className="flex items-center gap-2 ml-auto">
+            <div className="lg:hidden">
+              <AdminGlobalSearch />
+            </div>
             <NotificationCenter />
           </div>
         </header>
