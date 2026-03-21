@@ -16,7 +16,7 @@ const navItems = [
   { label: "Configurações", path: "/admin/configuracoes", icon: Settings },
 ];
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+const AdminLayout = forwardRef<HTMLDivElement, { children: ReactNode }>(({ children }, ref) => {
   const { pathname } = useLocation();
   const { signOut, user } = useAuth();
   const navigate = useNavigate();
