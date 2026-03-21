@@ -9,9 +9,11 @@ import {
   Youtube,
   Music2,
   ShoppingBag,
+  UserCircle,
 } from "lucide-react";
 import { socialLinks } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
