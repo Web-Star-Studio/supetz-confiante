@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Check, CheckCheck, ShoppingCart, X, Filter } from "lucide-react";
+import { Bell, Check, CheckCheck, ShoppingCart, X, Filter, Clock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
