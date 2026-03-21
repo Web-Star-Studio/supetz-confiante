@@ -1,12 +1,26 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
+import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
-import { ShieldCheck, CreditCard, Truck, User, ArrowRight, Lock, LayoutGrid, AlertCircle, Loader2 } from "lucide-react";
+import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check } from "lucide-react";
 import { motion } from "framer-motion";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
+
+interface Coupon {
+  id: string;
+  code: string;
+  discount_type: string;
+  discount_value: number;
+  min_order_value: number | null;
+  used: boolean;
+  expires_at: string | null;
+}
 
 export default function Checkout() {
   const { items, totalPrice } = useCart();
+  const { user } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -24,6 +38,111 @@ export default function Checkout() {
 
   const [isProcessing, setIsProcessing] = useState(false);
 
+  // Coupon state
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<Coupon | null>(null);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]);
+
+  // Points state
+  const [totalPoints, setTotalPoints] = useState(0);
+  const [pointsToUse, setPointsToUse] = useState(0);
+  const pointsValue = pointsToUse * 0.01; // 1 point = R$ 0.01
+
+  // Calculate discounts
+  const couponDiscount = appliedCoupon
+    ? appliedCoupon.discount_type === "percentage"
+      ? totalPrice * (appliedCoupon.discount_value / 100)
+      : appliedCoupon.discount_value
+    : 0;
+  const totalDiscount = couponDiscount + pointsValue;
+  const finalPrice = Math.max(0, totalPrice - totalDiscount);
+
+  useEffect(() => {
+    if (user) {
+      loadCoupons();
+      loadPoints();
+    }
+  }, [user]);
+
+  const loadCoupons = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("user_coupons")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("used", false)
+      .order("created_at", { ascending: false });
+    const valid = ((data as Coupon[]) || []).filter(
+      (c) => !c.expires_at || new Date(c.expires_at) >= new Date()
+    );
+    setAvailableCoupons(valid);
+  };
+
+  const loadPoints = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("loyalty_points")
+      .select("points")
+      .eq("user_id", user.id);
+    const total = ((data as { points: number }[]) || []).reduce((sum, e) => sum + e.points, 0);
+    setTotalPoints(total);
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim() || !user) return;
+    setCouponLoading(true);
+
+    const { data } = await supabase
+      .from("user_coupons")
+      .select("*")
+      .eq("user_id", user.id)
+      .eq("code", couponCode.trim().toUpperCase())
+      .eq("used", false)
+      .maybeSingle();
+
+    const coupon = data as Coupon | null;
+
+    if (!coupon) {
+      toast.error("Cupom inválido ou já utilizado");
+      setCouponLoading(false);
+      return;
+    }
+
+    if (coupon.expires_at && new Date(coupon.expires_at) < new Date()) {
+      toast.error("Este cupom expirou");
+      setCouponLoading(false);
+      return;
+    }
+
+    if (coupon.min_order_value && totalPrice < coupon.min_order_value) {
+      toast.error(`Pedido mínimo de R$ ${Number(coupon.min_order_value).toFixed(2).replace(".", ",")} para este cupom`);
+      setCouponLoading(false);
+      return;
+    }
+
+    setAppliedCoupon(coupon);
+    toast.success("Cupom aplicado!");
+    setCouponLoading(false);
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponCode("");
+  };
+
+  const handleSelectCoupon = (coupon: Coupon) => {
+    if (coupon.min_order_value && totalPrice < coupon.min_order_value) {
+      toast.error(`Pedido mínimo de R$ ${Number(coupon.min_order_value).toFixed(2).replace(".", ",")} para este cupom`);
+      return;
+    }
+    setAppliedCoupon(coupon);
+    setCouponCode(coupon.code);
+    toast.success("Cupom aplicado!");
+  };
+
+  const maxPointsForOrder = Math.min(totalPoints, Math.floor((totalPrice - couponDiscount) / 0.01));
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -32,21 +151,16 @@ export default function Checkout() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-    // Simulate secure processing delay
     setTimeout(() => {
       navigate("/success");
     }, 2000);
   };
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: { 
       opacity: 1,
-      transition: { 
-        staggerChildren: 0.15,
-        delayChildren: 0.2
-      }
+      transition: { staggerChildren: 0.15, delayChildren: 0.2 }
     }
   };
 
@@ -88,7 +202,6 @@ export default function Checkout() {
     <Layout>
       <div className="min-h-screen bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative overflow-hidden">
         
-        {/* Decorative elements */}
         <div className="absolute top-40 left-0 w-96 h-96 bg-supet-orange/5 rounded-full blur-[100px] pointer-events-none" />
         
         <div className="mx-auto max-w-[1200px] px-6 lg:px-12 relative z-10">
@@ -288,7 +401,7 @@ export default function Checkout() {
                   </div>
                 </h2>
                 
-                <div className="space-y-4 mb-6 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-supet-orange/20">
+                <div className="space-y-4 mb-6 max-h-[30vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-supet-orange/20">
                   {items.map((item, i) => (
                     <motion.div 
                       key={item.product.id} 
@@ -309,11 +422,121 @@ export default function Checkout() {
                   ))}
                 </div>
 
-                <div className="border-t border-supet-text/10 pt-6 space-y-4">
+                {/* Coupon Section */}
+                {user && (
+                  <div className="border-t border-supet-text/10 pt-5 mb-5 space-y-3">
+                    <h3 className="text-sm font-black text-supet-text uppercase tracking-widest flex items-center gap-2">
+                      <Ticket className="w-4 h-4 text-supet-orange" /> Cupom de desconto
+                    </h3>
+
+                    {appliedCoupon ? (
+                      <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                        <div className="flex items-center gap-2">
+                          <Check className="w-4 h-4 text-green-600" />
+                          <span className="font-bold text-sm text-green-800">{appliedCoupon.code}</span>
+                          <span className="text-xs text-green-600">
+                            (-{appliedCoupon.discount_type === "percentage" ? `${appliedCoupon.discount_value}%` : `R$ ${appliedCoupon.discount_value}`})
+                          </span>
+                        </div>
+                        <button onClick={handleRemoveCoupon} className="text-green-600 hover:text-red-500 transition-colors">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex gap-2">
+                          <input
+                            value={couponCode}
+                            onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                            placeholder="Digite o código"
+                            className="flex-1 bg-white border border-supet-text/10 rounded-xl px-4 py-2.5 text-sm font-mono font-bold text-supet-text focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all uppercase tracking-wider"
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyCoupon}
+                            disabled={couponLoading || !couponCode.trim()}
+                            className="bg-supet-orange text-white rounded-xl px-5 py-2.5 text-sm font-bold uppercase tracking-wider hover:bg-supet-orange-dark transition-colors disabled:opacity-50 flex items-center gap-1.5"
+                          >
+                            {couponLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : "Aplicar"}
+                          </button>
+                        </div>
+
+                        {availableCoupons.length > 0 && (
+                          <div className="space-y-2">
+                            <p className="text-xs text-supet-text/40 font-bold">Seus cupons disponíveis:</p>
+                            {availableCoupons.map((c) => (
+                              <button
+                                key={c.id}
+                                type="button"
+                                onClick={() => handleSelectCoupon(c)}
+                                className="w-full flex items-center justify-between bg-white border border-dashed border-supet-orange/30 rounded-xl px-4 py-2.5 hover:border-supet-orange hover:bg-supet-orange/5 transition-all group"
+                              >
+                                <div className="flex items-center gap-2">
+                                  <Ticket className="w-3.5 h-3.5 text-supet-orange/60 group-hover:text-supet-orange transition-colors" />
+                                  <span className="font-mono font-bold text-xs text-supet-text tracking-wider">{c.code}</span>
+                                </div>
+                                <span className="text-xs font-bold text-supet-orange">
+                                  {c.discount_type === "percentage" ? `${c.discount_value}% OFF` : `R$ ${c.discount_value} OFF`}
+                                </span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
+
+                {/* Points Section */}
+                {user && totalPoints > 0 && (
+                  <div className="border-t border-supet-text/10 pt-5 mb-5 space-y-3">
+                    <h3 className="text-sm font-black text-supet-text uppercase tracking-widest flex items-center gap-2">
+                      <Star className="w-4 h-4 text-supet-orange" /> Usar pontos
+                    </h3>
+                    <div className="bg-white border border-supet-text/10 rounded-xl p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm text-supet-text/60 font-medium">Saldo disponível</span>
+                        <span className="font-bold text-sm text-supet-text">{totalPoints} pts</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={0}
+                        max={maxPointsForOrder}
+                        value={pointsToUse}
+                        onChange={(e) => setPointsToUse(Number(e.target.value))}
+                        className="w-full accent-supet-orange h-2 rounded-full"
+                      />
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-supet-text/40">0 pts</span>
+                        <span className="text-sm font-bold text-supet-orange">
+                          {pointsToUse > 0 ? `-R$ ${pointsValue.toFixed(2).replace(".", ",")}` : "Nenhum ponto"}
+                        </span>
+                        <span className="text-xs text-supet-text/40">{maxPointsForOrder} pts</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <div className="border-t border-supet-text/10 pt-6 space-y-3">
                   <div className="flex justify-between items-center text-supet-text/60 font-bold">
                     <span>Subtotal</span>
                     <span>R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
                   </div>
+
+                  {couponDiscount > 0 && (
+                    <div className="flex justify-between items-center text-green-600 font-bold text-sm">
+                      <span className="flex items-center gap-1"><Ticket className="w-3.5 h-3.5" /> Cupom</span>
+                      <span>-R$ {couponDiscount.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                  )}
+
+                  {pointsValue > 0 && (
+                    <div className="flex justify-between items-center text-green-600 font-bold text-sm">
+                      <span className="flex items-center gap-1"><Star className="w-3.5 h-3.5" /> Pontos</span>
+                      <span>-R$ {pointsValue.toFixed(2).replace('.', ',')}</span>
+                    </div>
+                  )}
+
                   <div className="flex justify-between items-center text-supet-text/60 font-bold">
                     <span>Frete</span>
                     {totalPrice > 299.80 ? (
@@ -324,11 +547,17 @@ export default function Checkout() {
                   </div>
                   <div className="border-t border-supet-text/10 pt-4 flex justify-between items-center text-supet-text font-black text-xl">
                     <span>Total</span>
-                    <span className="text-supet-orange">R$ {totalPrice.toFixed(2).replace('.', ',')}</span>
+                    <span className="text-supet-orange">R$ {finalPrice.toFixed(2).replace('.', ',')}</span>
                   </div>
+
+                  {totalDiscount > 0 && (
+                    <p className="text-xs text-green-600 font-bold text-right">
+                      Você economizou R$ {totalDiscount.toFixed(2).replace(".", ",")} 🎉
+                    </p>
+                  )}
                 </div>
 
-                {/* Additional Trust Badges */}
+                {/* Trust Badge */}
                 <div className="mt-8 bg-white border border-supet-text/5 rounded-xl p-4 flex items-start gap-3 transform hover:-translate-y-1 transition-transform cursor-default">
                   <ShieldCheck className="w-6 h-6 text-green-500 shrink-0 mt-0.5" />
                   <div>
