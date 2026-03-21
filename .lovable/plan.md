@@ -1,37 +1,70 @@
 
 
-# Supetz — E-commerce DTC Premium
+# Melhorias no Painel Admin Supetz
 
-## 1. Configuração Base
-- Estender Tailwind com cores customizadas (`supetz-orange`, `supetz-orange-dark`, `supetz-bg`, `supetz-bg-alt`)
-- Importar fonte Nunito (Google Fonts) no `index.html`
-- Instalar Framer Motion para animações
-- Instalar e configurar `vite-plugin-pwa` com manifesto (nome "Supetz", theme_color `#ff7603`, background_color `#f6f1ec`), service worker GenerateSW, e meta tags PWA no `index.html` (incluindo iOS)
-- Criar ícones placeholder PWA em `public/`
+## Escopo
+Aplicar a estética "Playful Trust" ao admin, adicionar funcionalidades e preparar para testes.
 
-## 2. Arquitetura de Dados e Estado
-- `src/types/` — interfaces TypeScript (Product, CartItem, FAQ, Benefit, etc.) estruturadas para futura integração Shopify
-- `src/services/mockData.ts` — dados mock dos 3 combos de preços, benefícios e FAQs
-- `src/context/CartContext.tsx` — gerenciamento de carrinho via React Context
+## 1. Design — Aplicar estética Supetz ao Admin
 
-## 3. Layout Global (componentes custom, zero shadcn/ui)
-- **Header**: Sticky, `bg-supetz-bg/80` com backdrop-blur, nav minimalista ("Início", "Benefícios", "Sobre Nós", "FAQ"), ícone de carrinho com badge laranja
-- **Footer**: Layout limpo com tema off-white quente
-- Todos os botões pill-shaped (`rounded-full`), cards `rounded-3xl`, animações Framer Motion no hover
+**AdminLayout.tsx**:
+- Trocar `bg-background` e `bg-card` por cores Supetz (`bg-supetz-bg`, `bg-supetz-bg-alt`)
+- Sidebar com gradiente sutil laranja no topo, nav items com hover laranja
+- Avatar com círculo laranja atrás (motif da marca)
+- Remover bordas duras (`border-border`) e usar separação por contraste de cor
 
-## 4. Landing Page (/)
-- **Hero**: Layout split — headline à esquerda ("Seu pet livre de coceiras e feridas em 30 dias") + CTA laranja. À direita: círculo laranja gigante atrás de placeholder de imagem de cachorro + placeholder Remotion
-- **Benefícios**: Grid com 4 itens ("Alívio em 7 dias", "100% Natural", "Pelagem Linda", "Fortalece a Imunidade")
-- **Preços**: 3 cards combo ("O Queridinho", "O Mais Vendido" com badge destaque, "O Recomendado") em `bg-supetz-bg-alt` com `rounded-3xl`
-- **FAQ**: Accordion borderless e clean
-- Pontos laranjas flutuantes como acentos lúdicos
+**StatsCards (Dashboard)**:
+- Fundo `bg-supetz-bg-alt`, ícones com círculos laranjas, sem bordas visíveis
+- Animação Framer Motion `whileHover={{ scale: 1.03 }}` nos cards
 
-## 5. Página Sobre Nós (/sobre)
-- Hero tipográfico: "Nossa Missão: Saúde de Dentro para Fora"
-- Seções sobre ingredientes naturais e ciência veterinária com motivo de círculos laranjas
+**Tabelas (Pedidos, Clientes)**:
+- Remover linhas duras, usar alternância de fundo (`even:bg-supetz-bg-alt/50`)
+- Status badges com cores mais quentes e suaves
+- Rounded-3xl no container da tabela
 
-## 6. Placeholder Remotion
-- Diretório `src/components/remotion-assets/` com placeholder estilizado e visível
+**Modal de Produtos**:
+- Fundo overlay com tom quente (`bg-[#3d2e1e]/30`)
+- Inputs com `bg-supetz-bg` em vez de `bg-background`
 
-## Todos os textos em pt-BR. Fundo off-white quente em toda a aplicação, sem preto absoluto.
+**Páginas de Auth (Login, Cadastro)**:
+- Adicionar círculos laranjas decorativos no fundo (como na landing)
+- Card de login com `bg-supetz-bg-alt`
+
+## 2. Funcionalidades Novas
+
+**Dashboard — Gráficos de Receita**:
+- Instalar `recharts`
+- Gráfico de barras: receita dos últimos 7 dias
+- Gráfico de linha: pedidos por dia
+- Cards animados com contagem incremental
+
+**Dashboard — Atividade Recente**:
+- Timeline de últimas ações (novo pedido, novo cliente, produto atualizado)
+- Badge de "Hoje" / "Ontem" / data
+
+**Pedidos — Detalhes do Pedido**:
+- Modal com itens do pedido, endereço de entrega, timeline de status
+- Botão de copiar ID do pedido
+
+**Produtos — Upload de Imagem**:
+- Criar bucket de storage para imagens de produtos
+- Campo de upload no modal de criar/editar produto
+- Preview da imagem no card do produto
+
+**Configurações — Dados da Loja**:
+- Seção para nome da loja, telefone, endereço
+- Tabela `store_settings` no banco (chave-valor)
+
+## 3. Preparação para Teste
+
+- Habilitar auto-confirm de e-mail (para facilitar testes)
+- Inserir produtos de seed no banco via migração (3 combos padrão)
+- Após login, redirecionar admin para `/admin` automaticamente
+
+## Detalhes Técnicos
+
+- **Banco**: Nova tabela `store_settings` (key TEXT PK, value JSONB) com RLS admin-only. Storage bucket `product-images` com política pública de leitura.
+- **Pacote**: Adicionar `recharts` como dependência
+- **Arquivos modificados**: `AdminLayout.tsx`, `Dashboard.tsx`, `Pedidos.tsx`, `Produtos.tsx`, `Clientes.tsx`, `Configuracoes.tsx`, `Login.tsx`, `Cadastro.tsx`, `AuthContext.tsx`
+- **Arquivos novos**: componente `RevenueChart.tsx`, componente `OrderDetailModal.tsx`
 
