@@ -102,6 +102,7 @@ export default function NotificationCenter() {
   const getIcon = (type: string) => {
     switch (type) {
       case "order": return <ShoppingCart className="w-4 h-4 text-primary" />;
+      case "restock": return <Clock className="w-4 h-4 text-amber-600" />;
       default: return <Bell className="w-4 h-4 text-primary" />;
     }
   };
