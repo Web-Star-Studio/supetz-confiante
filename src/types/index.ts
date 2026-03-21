@@ -70,7 +70,7 @@ export interface BlogPost extends BlogPostPreview {
 
 export interface BlogPostContent {
   type: "paragraph" | "heading" | "list" | "quote" | "image";
-  content: string;
+  content?: string;
   items?: string[]; // for list type
   alt?: string; // for image type
   level?: 2 | 3; // for heading type (h2 or h3)
