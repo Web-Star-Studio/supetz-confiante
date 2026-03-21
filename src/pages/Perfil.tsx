@@ -136,6 +136,12 @@ export default function Perfil() {
             <TabsTrigger value="compras" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
               <Package className="h-3.5 w-3.5" /> Compras
             </TabsTrigger>
+            <TabsTrigger value="lembretes" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
+              <Bell className="h-3.5 w-3.5" /> Reposição
+            </TabsTrigger>
+            <TabsTrigger value="diario" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
+              <BookOpen className="h-3.5 w-3.5" /> Diário
+            </TabsTrigger>
             <TabsTrigger value="seguranca" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
               <Shield className="h-3.5 w-3.5" /> Segurança
             </TabsTrigger>
