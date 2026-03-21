@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Loader2, Upload, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, ImageIcon } from "lucide-react";
 
 interface ProductForm {
   title: string;
@@ -18,6 +18,39 @@ interface ProductForm {
 
 const emptyForm: ProductForm = { title: "", subtitle: "", price: "", original_price: "", quantity: "1", badge: "", category: "combo", active: true, image_url: "" };
 
+function ProductsSkeleton() {
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+      {[1, 2, 3].map((i) => (
+        <div key={i} className="bg-supet-bg-alt rounded-3xl p-6 animate-pulse">
+          <div className="w-full h-36 rounded-2xl bg-border mb-4" />
+          <div className="h-4 w-3/4 rounded-full bg-border mb-2" />
+          <div className="h-3 w-1/2 rounded-full bg-border mb-4" />
+          <div className="h-6 w-24 rounded-full bg-border" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DeleteConfirmation({ name, onConfirm, onCancel }: { name: string; onConfirm: () => void; onCancel: () => void }) {
+  return (
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+      onClick={onCancel}>
+      <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
+        className="bg-supet-bg rounded-3xl p-6 max-w-sm w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+        <p className="text-base font-bold text-foreground mb-1">Excluir "{name}"?</p>
+        <p className="text-sm text-muted-foreground mb-5">O produto será removido permanentemente do catálogo.</p>
+        <div className="flex gap-3">
+          <button onClick={onCancel} className="flex-1 rounded-full bg-supet-bg-alt py-2.5 text-sm font-bold text-foreground hover:bg-primary/10 transition-colors">Cancelar</button>
+          <button onClick={onConfirm} className="flex-1 rounded-full bg-destructive py-2.5 text-sm font-bold text-destructive-foreground hover:bg-destructive/90 transition-colors">Excluir</button>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 export default function AdminProdutos() {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -26,6 +59,7 @@ export default function AdminProdutos() {
   const [form, setForm] = useState<ProductForm>(emptyForm);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -68,28 +102,31 @@ export default function AdminProdutos() {
       quantity: Number(form.quantity), badge: form.badge || null, category: form.category, active: form.active,
       image_url: form.image_url || null,
     };
-    if (editing) {
-      await supabase.from("products").update(payload).eq("id", editing);
-    } else {
-      await supabase.from("products").insert(payload);
-    }
+    if (editing) await supabase.from("products").update(payload).eq("id", editing);
+    else await supabase.from("products").insert(payload);
     setSaving(false);
     setShowModal(false);
     fetchProducts();
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-    await supabase.from("products").delete().eq("id", id);
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    await supabase.from("products").delete().eq("id", deleteTarget.id);
+    setDeleteTarget(null);
     fetchProducts();
   };
+
+  const activeCount = products.filter(p => p.active).length;
+  const inactiveCount = products.filter(p => !p.active).length;
 
   return (
     <AdminLayout>
       <div className="flex items-center justify-between mb-8">
         <div>
           <h1 className="text-3xl font-extrabold text-foreground font-display">Produtos</h1>
-          <p className="text-muted-foreground mt-1">Gerencie o catálogo de produtos</p>
+          <p className="text-muted-foreground mt-1">
+            {!loading && <>{activeCount} ativo{activeCount !== 1 ? "s" : ""}{inactiveCount > 0 && <> · {inactiveCount} inativo{inactiveCount !== 1 ? "s" : ""}</>}</>}
+          </p>
         </div>
         <motion.button whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }} onClick={openNew}
           className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity shadow-md shadow-primary/20">
@@ -97,15 +134,12 @@ export default function AdminProdutos() {
         </motion.button>
       </div>
 
-      {loading ? (
-        <div className="p-10 text-center text-muted-foreground text-sm">Carregando...</div>
-      ) : products.length === 0 ? (
+      {loading ? <ProductsSkeleton /> : products.length === 0 ? (
         <div className="bg-supet-bg-alt rounded-3xl p-10 text-center text-muted-foreground text-sm">Nenhum produto cadastrado.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {products.map(p => (
             <motion.div key={p.id} whileHover={{ y: -2 }} className="bg-supet-bg-alt rounded-3xl p-6 flex flex-col">
-              {/* Product Image */}
               {p.image_url && (
                 <div className="w-full h-36 rounded-2xl overflow-hidden mb-4 bg-supet-bg">
                   <img src={p.image_url} alt={p.title} className="w-full h-full object-cover" />
@@ -131,7 +165,7 @@ export default function AdminProdutos() {
                   <button onClick={() => openEdit(p)} className="p-2 rounded-xl hover:bg-primary/10 transition-colors text-muted-foreground hover:text-primary">
                     <Pencil className="w-4 h-4" />
                   </button>
-                  <button onClick={() => handleDelete(p.id)} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive">
+                  <button onClick={() => setDeleteTarget({ id: p.id, name: p.title })} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive">
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
@@ -141,7 +175,12 @@ export default function AdminProdutos() {
         </div>
       )}
 
-      {/* Modal */}
+      {/* Delete Confirmation */}
+      <AnimatePresence>
+        {deleteTarget && <DeleteConfirmation name={deleteTarget.name} onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />}
+      </AnimatePresence>
+
+      {/* Product Modal */}
       <AnimatePresence>
         {showModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -154,14 +193,12 @@ export default function AdminProdutos() {
                 <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
               </div>
               <div className="space-y-4">
-                {/* Image Upload */}
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Imagem</label>
                   {form.image_url ? (
                     <div className="relative w-full h-36 rounded-2xl overflow-hidden bg-supet-bg-alt mb-2">
                       <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
-                      <button onClick={() => setForm({ ...form, image_url: "" })}
-                        className="absolute top-2 right-2 p-1 rounded-full bg-supet-bg/80 text-muted-foreground hover:text-destructive">
+                      <button onClick={() => setForm({ ...form, image_url: "" })} className="absolute top-2 right-2 p-1 rounded-full bg-supet-bg/80 text-muted-foreground hover:text-destructive">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
@@ -179,7 +216,7 @@ export default function AdminProdutos() {
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Título *</label>
-                  <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} required
+                  <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
                     className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div>
@@ -190,7 +227,7 @@ export default function AdminProdutos() {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-semibold text-foreground mb-1 block">Preço *</label>
-                    <input type="number" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })} required
+                    <input type="number" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })}
                       className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
@@ -228,9 +265,7 @@ export default function AdminProdutos() {
                 </div>
               </div>
               <div className="flex gap-3 mt-8">
-                <button onClick={() => setShowModal(false)} className="flex-1 py-3 rounded-full bg-supet-bg-alt text-foreground font-semibold text-sm hover:bg-primary/10 transition-colors">
-                  Cancelar
-                </button>
+                <button onClick={() => setShowModal(false)} className="flex-1 py-3 rounded-full bg-supet-bg-alt text-foreground font-semibold text-sm hover:bg-primary/10 transition-colors">Cancelar</button>
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleSave} disabled={saving || !form.title || !form.price}
                   className="flex-1 py-3 rounded-full bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md shadow-primary/20">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : editing ? "Salvar" : "Criar"}
