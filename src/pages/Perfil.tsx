@@ -11,6 +11,8 @@ import AddressesTab from "@/components/profile/AddressesTab";
 import OrdersTab from "@/components/profile/OrdersTab";
 import RestockRemindersTab from "@/components/profile/RestockRemindersTab";
 import TreatmentDiaryTab from "@/components/profile/TreatmentDiaryTab";
+import LoyaltyPointsTab from "@/components/profile/LoyaltyPointsTab";
+import CouponsTab from "@/components/profile/CouponsTab";
 
 export default function Perfil() {
   const { user, isLoading: authLoading, resetPassword } = useAuth();
