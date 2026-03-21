@@ -6,6 +6,7 @@ import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight, Gift,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
+import AdminGlobalSearch from "./AdminGlobalSearch";
 
 const navItems = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
