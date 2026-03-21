@@ -202,6 +202,16 @@ export default function Perfil() {
             <TreatmentDiaryTab />
           </TabsContent>
 
+          {/* Pontos */}
+          <TabsContent value="pontos">
+            <LoyaltyPointsTab />
+          </TabsContent>
+
+          {/* Cupons */}
+          <TabsContent value="cupons">
+            <CouponsTab />
+          </TabsContent>
+
           {/* Segurança */}
           <TabsContent value="seguranca">
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 rounded-3xl bg-supet-bg-alt p-6 sm:p-8 space-y-5">
