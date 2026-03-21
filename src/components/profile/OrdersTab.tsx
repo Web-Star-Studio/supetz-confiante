@@ -147,6 +147,7 @@ export default function OrdersTab() {
                 <p className="text-muted-foreground">+{items.length - 3} itens</p>
               )}
             </div>
+            <OrderTrackingTimeline status={order.status} />
             <div className="mt-3 border-t border-border/50 pt-3 flex items-center justify-between">
               <button
                 onClick={() => handleReorder(order)}
