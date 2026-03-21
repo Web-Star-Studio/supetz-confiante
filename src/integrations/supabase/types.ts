@@ -211,6 +211,57 @@ export type Database = {
         }
         Relationships: []
       }
+      restock_reminders: {
+        Row: {
+          created_at: string
+          estimated_end_date: string
+          id: string
+          order_id: string | null
+          pet_id: string | null
+          product_title: string
+          purchased_at: string
+          reminded: boolean
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_end_date: string
+          id?: string
+          order_id?: string | null
+          pet_id?: string | null
+          product_title: string
+          purchased_at?: string
+          reminded?: boolean
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          estimated_end_date?: string
+          id?: string
+          order_id?: string | null
+          pet_id?: string | null
+          product_title?: string
+          purchased_at?: string
+          reminded?: boolean
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "restock_reminders_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "restock_reminders_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       store_settings: {
         Row: {
           key: string
@@ -228,6 +279,47 @@ export type Database = {
           value?: Json
         }
         Relationships: []
+      }
+      treatment_logs: {
+        Row: {
+          created_at: string
+          id: string
+          log_date: string
+          notes: string | null
+          pet_id: string | null
+          photo_url: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          notes?: string | null
+          pet_id?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          log_date?: string
+          notes?: string | null
+          pet_id?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "treatment_logs_pet_id_fkey"
+            columns: ["pet_id"]
+            isOneToOne: false
+            referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_addresses: {
         Row: {

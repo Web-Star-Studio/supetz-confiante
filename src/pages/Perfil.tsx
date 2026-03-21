@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail, PawPrint, MapPin } from "lucide-react";
+import { Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail, PawPrint, MapPin, Bell, BookOpen } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import PetProfileTab from "@/components/profile/PetProfileTab";
 import AddressesTab from "@/components/profile/AddressesTab";
 import OrdersTab from "@/components/profile/OrdersTab";
+import RestockRemindersTab from "@/components/profile/RestockRemindersTab";
+import TreatmentDiaryTab from "@/components/profile/TreatmentDiaryTab";
 
 export default function Perfil() {
   const { user, isLoading: authLoading, resetPassword } = useAuth();
@@ -134,6 +136,12 @@ export default function Perfil() {
             <TabsTrigger value="compras" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
               <Package className="h-3.5 w-3.5" /> Compras
             </TabsTrigger>
+            <TabsTrigger value="lembretes" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
+              <Bell className="h-3.5 w-3.5" /> Reposição
+            </TabsTrigger>
+            <TabsTrigger value="diario" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
+              <BookOpen className="h-3.5 w-3.5" /> Diário
+            </TabsTrigger>
             <TabsTrigger value="seguranca" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
               <Shield className="h-3.5 w-3.5" /> Segurança
             </TabsTrigger>
@@ -174,6 +182,16 @@ export default function Perfil() {
           {/* Compras */}
           <TabsContent value="compras">
             <OrdersTab />
+          </TabsContent>
+
+          {/* Lembretes de Reposição */}
+          <TabsContent value="lembretes">
+            <RestockRemindersTab />
+          </TabsContent>
+
+          {/* Diário de Tratamento */}
+          <TabsContent value="diario">
+            <TreatmentDiaryTab />
           </TabsContent>
 
           {/* Segurança */}
