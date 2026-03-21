@@ -154,4 +154,8 @@ const AdminLayout = forwardRef<HTMLDivElement, { children: ReactNode }>(({ child
       </div>
     </div>
   );
-}
+});
+
+AdminLayout.displayName = "AdminLayout";
+
+export default AdminLayout;
