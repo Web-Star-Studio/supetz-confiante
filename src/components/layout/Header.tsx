@@ -34,6 +34,7 @@ export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
   const { totalItems, openCart } = useCart();
+  const { user } = useAuth();
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     setMobileOpen(false);
