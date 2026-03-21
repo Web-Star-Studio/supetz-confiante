@@ -1,6 +1,6 @@
 import { useState, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Menu,
   X,
@@ -31,7 +31,6 @@ const iconByPlatform = {
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const location = useLocation();
-  const shouldReduceMotion = useReducedMotion();
   const { totalItems, openCart } = useCart();
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
@@ -54,19 +53,13 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-supet-bg/80 backdrop-blur-sm">
       <div className="relative mx-auto flex max-w-[1480px] items-center justify-between px-4 py-2 md:px-8 md:py-3">
         <Link to="/" onClick={handleLogoClick} className="relative z-10 flex shrink-0 items-center">
-          <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]">
-              <img
-                src="/images/supet-logos/supet-logo-5.svg"
-                alt="SUPET"
-                className="absolute left-0 top-1/2 w-full h-auto -translate-y-1/2 object-contain"
-              />
-            </div>
-          </motion.div>
+          <div className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]">
+            <img
+              src="/images/supet-logos/supet-logo-5.svg"
+              alt="SUPET"
+              className="absolute left-0 top-1/2 w-full h-auto -translate-y-1/2 object-contain"
+            />
+          </div>
         </Link>
 
         {/* Desktop nav — centered */}

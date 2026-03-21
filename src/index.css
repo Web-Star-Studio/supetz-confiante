@@ -140,11 +140,11 @@
   }
 
   .hero-jar-mobile {
-    @apply left-[47.5%] top-[51.5%] w-[clamp(300px,84vw,430px)] -translate-x-1/2 -translate-y-1/2;
+    @apply left-[47.5%] top-[50%] w-[clamp(260px,72vw,370px)] -translate-x-1/2 -translate-y-1/2;
   }
 
   .hero-lid-mobile {
-    @apply left-[51%] top-[-9%] w-[clamp(180px,50vw,240px)] -translate-x-1/2 rotate-[-13deg];
+    @apply left-[51%] top-[-7%] w-[clamp(150px,42vw,200px)] -translate-x-1/2 rotate-[-13deg];
   }
 
   .hero-dog-mobile {
@@ -152,7 +152,7 @@
   }
 
   .mobile-hero-desc {
-    @apply absolute bottom-[clamp(60px,10vh,120px)] left-[clamp(12px,4vw,24px)] max-w-[200px] pointer-events-none select-none text-[0.75rem] leading-snug;
+    @apply absolute bottom-[clamp(36px,6vh,72px)] left-[clamp(12px,4vw,24px)] max-w-[180px] pointer-events-none select-none text-[0.65rem] leading-snug;
   }
   .hero-desc-text {
     @apply absolute bottom-[clamp(48px,7vh,96px)] left-[clamp(16px,4.5vw,96px)] max-w-[280px] pointer-events-none select-none;

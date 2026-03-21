@@ -520,7 +520,7 @@ export default function HeroSection() {
               initial={reduceMotion ? undefined : { opacity: 0, y: 16 }}
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
               transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.45 }}
-              className="mobile-hero-desc z-[15]"
+              className="mobile-hero-desc z-[60]"
             >
               <p className="hero-desc-body text-balance">
                 Nosso suplemento em goma é
