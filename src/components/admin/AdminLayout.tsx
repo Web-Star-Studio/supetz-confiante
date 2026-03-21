@@ -1,4 +1,4 @@
-import { ReactNode, useState, useEffect } from "react";
+import { forwardRef, ReactNode, useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
