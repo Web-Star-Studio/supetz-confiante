@@ -141,35 +141,37 @@ export default function Perfil() {
         </motion.div>
 
         <Tabs defaultValue="dados" className="w-full">
-          <TabsList className="w-full rounded-full bg-supet-bg-alt p-1 flex-wrap h-auto gap-1">
-            <TabsTrigger value="dados" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <User className="h-3.5 w-3.5" /> Dados
-            </TabsTrigger>
-            <TabsTrigger value="pet" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <PawPrint className="h-3.5 w-3.5" /> Meu Pet
-            </TabsTrigger>
-            <TabsTrigger value="enderecos" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <MapPin className="h-3.5 w-3.5" /> Endereços
-            </TabsTrigger>
-            <TabsTrigger value="compras" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <Package className="h-3.5 w-3.5" /> Compras
-            </TabsTrigger>
-            <TabsTrigger value="lembretes" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <Bell className="h-3.5 w-3.5" /> Reposição
-            </TabsTrigger>
-            <TabsTrigger value="diario" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <BookOpen className="h-3.5 w-3.5" /> Diário
-            </TabsTrigger>
-            <TabsTrigger value="pontos" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <Star className="h-3.5 w-3.5" /> Pontos
-            </TabsTrigger>
-            <TabsTrigger value="cupons" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <Ticket className="h-3.5 w-3.5" /> Cupons
-            </TabsTrigger>
-            <TabsTrigger value="seguranca" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
-              <Shield className="h-3.5 w-3.5" /> Segurança
-            </TabsTrigger>
-          </TabsList>
+          <div className="overflow-x-auto -mx-4 px-4 scrollbar-hide">
+            <TabsList className="w-max min-w-full rounded-full bg-supet-bg-alt p-1 flex gap-1">
+              <TabsTrigger value="dados" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <User className="h-3.5 w-3.5" /> Dados
+              </TabsTrigger>
+              <TabsTrigger value="pet" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <PawPrint className="h-3.5 w-3.5" /> Meu Pet
+              </TabsTrigger>
+              <TabsTrigger value="enderecos" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <MapPin className="h-3.5 w-3.5" /> Endereços
+              </TabsTrigger>
+              <TabsTrigger value="compras" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <Package className="h-3.5 w-3.5" /> Compras
+              </TabsTrigger>
+              <TabsTrigger value="lembretes" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <Bell className="h-3.5 w-3.5" /> Reposição
+              </TabsTrigger>
+              <TabsTrigger value="diario" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <BookOpen className="h-3.5 w-3.5" /> Diário
+              </TabsTrigger>
+              <TabsTrigger value="pontos" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <Star className="h-3.5 w-3.5" /> Pontos
+              </TabsTrigger>
+              <TabsTrigger value="cupons" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <Ticket className="h-3.5 w-3.5" /> Cupons
+              </TabsTrigger>
+              <TabsTrigger value="seguranca" className="rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs whitespace-nowrap px-3">
+                <Shield className="h-3.5 w-3.5" /> Segurança
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           {/* Meus Dados */}
           <TabsContent value="dados">
