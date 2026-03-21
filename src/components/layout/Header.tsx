@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from "react";
+import { useState, useEffect, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -10,10 +10,12 @@ import {
   Music2,
   ShoppingBag,
   UserCircle,
+  Bell,
 } from "lucide-react";
 import { socialLinks } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
+import { supabase } from "@/integrations/supabase/client";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
@@ -32,9 +34,27 @@ const iconByPlatform = {
 
 export default function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [restockCount, setRestockCount] = useState(0);
   const location = useLocation();
   const { totalItems, openCart } = useCart();
   const { user } = useAuth();
+
+  // Check for upcoming restock reminders
+  useEffect(() => {
+    if (!user) { setRestockCount(0); return; }
+    const checkReminders = async () => {
+      const today = new Date();
+      const soon = new Date();
+      soon.setDate(today.getDate() + 5);
+      const { data } = await supabase
+        .from("restock_reminders")
+        .select("id")
+        .eq("user_id", user.id)
+        .lte("estimated_end_date", soon.toISOString().split("T")[0]);
+      setRestockCount(data?.length || 0);
+    };
+    checkReminders();
+  }, [user]);
 
   const handleNavClick = (event: MouseEvent<HTMLAnchorElement>, href: string) => {
     setMobileOpen(false);
@@ -98,13 +118,18 @@ export default function Header() {
             })}
           </div>
 
-          {/* User icon */}
+          {/* User icon with restock badge */}
           <Link
             to={user ? "/perfil" : "/login"}
-            className="p-2 text-supet-text hover:text-supet-orange transition-colors"
+            className="relative p-2 text-supet-text hover:text-supet-orange transition-colors"
             aria-label={user ? "Meu Perfil" : "Entrar"}
           >
             <UserCircle className="w-5 h-5" />
+            {restockCount > 0 && (
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
+                {restockCount}
+              </span>
+            )}
           </Link>
 
           {/* Cart Toggle */}
