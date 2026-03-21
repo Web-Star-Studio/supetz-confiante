@@ -55,8 +55,8 @@ export default function Header() {
       <div className="relative mx-auto flex max-w-[1480px] items-center justify-between px-4 py-2 md:px-8 md:py-3">
         <Link to="/" onClick={handleLogoClick} className="relative z-10 flex shrink-0 items-center">
           <motion.div
-            initial={shouldReduceMotion ? false : { opacity: 0, y: 4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
+            initial={shouldReduceMotion ? false : { opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]">
