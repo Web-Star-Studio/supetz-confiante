@@ -116,7 +116,7 @@
   }
 
   .mobile-hero-title {
-    @apply absolute inset-x-0 top-[clamp(60px,12vh,100px)] flex flex-col px-[clamp(8px,2vw,16px)];
+    @apply absolute inset-x-0 top-[clamp(40px,8vh,72px)] flex flex-col px-[clamp(8px,2vw,16px)];
     font-size: clamp(3rem, 17vw, 5.5rem);
     line-height: 0.85;
     letter-spacing: -0.045em;
