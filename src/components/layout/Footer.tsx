@@ -14,8 +14,8 @@ export default function Footer() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-b from-[#FE6D00] to-[#E56200] pt-20 pb-10 text-white">
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 h-[180px] overflow-hidden opacity-75 md:h-[240px]">
+    <footer className="relative overflow-hidden bg-gradient-to-b from-[#FE6D00] to-[#E56200] pt-20 pb-28 md:pb-10 text-white">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 hidden h-[180px] overflow-hidden opacity-75 md:block md:h-[240px]">
         <motion.div
           initial={reduceMotion ? undefined : { x: "calc(100vw + 420px)" }}
           animate={reduceMotion ? undefined : { x: "-420px" }}
@@ -57,9 +57,9 @@ export default function Footer() {
           <div className="lg:col-span-1">
             <Link to="/" className="inline-block relative w-56 md:w-64 h-20 overflow-hidden -ml-2 -mt-2 -mb-2 hover:scale-105 transition-transform duration-300">
               <img
-                src="/images/supet_Logos/Supet - logo (5).svg"
+                src="/images/supet-logos/supet-logo-5.svg"
                 alt="Supet - Suplemento Animal"
-                className="absolute top-1/2 left-0 w-full h-auto -translate-y-1/2 object-cover brightness-0 invert"
+                className="absolute top-1/2 left-0 w-full h-auto -translate-y-1/2 object-contain brightness-0 invert"
               />
             </Link>
             <p className="mt-6 text-sm text-white/90 leading-relaxed font-medium">
@@ -89,10 +89,11 @@ export default function Footer() {
           <div className="lg:col-span-1 lg:pl-12">
             <h4 className="text-sm font-bold uppercase tracking-wider text-white mb-6">Navegação</h4>
             <ul className="space-y-4 text-sm font-medium">
-              <li><Link to="/" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Início</Link></li>
-              <li><Link to="/shop" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Nossos Produtos</Link></li>
-              <li><Link to="/blog" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Blog Supet</Link></li>
-              <li><a href="/#faq" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Dúvidas Frequentes (FAQ)</a></li>
+              <li><Link to="/shop" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Shop</Link></li>
+              <li><Link to="/ciencia" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Ciência</Link></li>
+              <li><Link to="/sobre" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Sobre</Link></li>
+              <li><Link to="/blog" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Blog</Link></li>
+              <li><Link to="/faq" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">FAQ</Link></li>
             </ul>
           </div>
 
@@ -142,11 +143,21 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="mt-16 border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-white/70 font-medium">
-          <p>© {new Date().getFullYear()} Supet. Todos os direitos reservados.</p>
-          <div className="flex gap-6">
-            <Link to="/privacidade" className="hover:text-white transition-colors">Política de Privacidade</Link>
-            <Link to="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
+        <div className="mt-16 border-t border-white/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-6 text-[10px] md:text-xs text-white/50 font-medium uppercase tracking-widest">
+          <div className="flex flex-col md:flex-row items-center gap-4 md:gap-8">
+            <p>© {new Date().getFullYear()} Supet. Todos os direitos reservados.</p>
+            <div className="flex gap-6">
+              <Link to="/privacidade" className="hover:text-white transition-colors">Política de Privacidade</Link>
+              <Link to="/termos" className="hover:text-white transition-colors">Termos de Uso</Link>
+            </div>
+          </div>
+          
+          <div className="flex items-center gap-2 transition-all duration-300 group hover:text-white/90">
+            <span className="opacity-60">Made by</span>
+            <span className="font-bold text-white relative">
+              Web Star
+              <span className="absolute -bottom-0.5 left-0 w-0 h-px bg-white/40 transition-all duration-300 group-hover:w-full"></span>
+            </span>
           </div>
         </div>
       </div>

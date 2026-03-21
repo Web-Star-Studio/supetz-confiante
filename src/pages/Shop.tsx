@@ -81,7 +81,7 @@ export default function Shop() {
 
             {/* Left Column: Fixed Gallery */}
             <div className="relative">
-              <div className="sticky top-32 flex flex-col gap-6">
+              <div className="lg:sticky lg:top-32 flex flex-col gap-6">
                 {/* Main Big Image */}
                 <motion.div
                   initial={{ opacity: 0, y: 30 }}

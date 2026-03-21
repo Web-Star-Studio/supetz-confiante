@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls -la \"c:\\\\Users\\\\notto\\\\Documents\\\\GitHub\\\\supetz-confiante\\\\public\\\\hero-assets\"\" && echo \"---\" && ls -la \"c:UsersnottoDocumentsGitHubsupetz-confiantepublicimageshero \")",
+      "Bash(ls:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npx vite build)",
+      "Bash(powershell -command:*)",
+      "Bash(node -e \"const sharp = require\\(''sharp''\\); sharp\\(''public/images/supet-logo.png''\\).metadata\\(\\).then\\(m => console.log\\(m.width, m.height\\)\\).catch\\(\\(\\) => { const {execSync} = require\\(''child_process''\\); console.log\\(execSync\\(''npx image-size public/images/supet-logo.png''\\).toString\\(\\)\\); }\\)\")",
+      "Bash(node -e:*)",
+      "Bash(npx tailwindcss --help:*)"
+    ]
+  }
+}

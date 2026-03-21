@@ -38,7 +38,7 @@ export default function ExtrasSection() {
                             className="group flex flex-col"
                         >
                             {product.image && (
-                                <div className="relative h-[450px] w-full mb-8 rounded-[2.5rem] overflow-hidden bg-supet-bg">
+                                <div className="relative h-[320px] md:h-[400px] lg:h-[450px] w-full mb-8 rounded-[2.5rem] overflow-hidden bg-supet-bg">
                                     <motion.img
                                         whileHover={{ scale: 1.05 }}
                                         transition={{ duration: 0.6, ease: motionTokens.easeOut }}

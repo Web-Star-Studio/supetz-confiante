@@ -85,10 +85,10 @@ export default function Sobre() {
   const [activeExpert, setActiveExpert] = useState<number | null>(null);
 
   const ingredients = [
-    { title: "Ômega 3 Puro", desc: "Extraído de águas profundas, age implacavelmente contra inflamações celulares.", img: "/images/product-ingredients.png" },
-    { title: "Biotina Ativa", desc: "Reconstrói a queratina danificada, devolvendo brilho e espessura à pelagem.", img: "/images/dog-closeup.png" },
-    { title: "Zinco Quelatado", desc: "A base biológica para a rápida cicatrização de feridas e hot spots.", img: "/images/product-gummy.png" },
-    { title: "Vitamina E D-Alpha", desc: "O escudo antioxidante natural que previne o envelhecimento celular precoce.", img: "/images/hero-dog.png" }
+    { id: "omega3", title: "Ômega 3 Puro", desc: "Extraído de águas profundas, age implacavelmente contra inflamações celulares.", img: "/images/product-ingredients.png" },
+    { id: "biotina", title: "Biotina Ativa", desc: "Reconstrói a queratina danificada, devolvendo brilho e espessura à pelagem.", img: "/images/dog-closeup.png" },
+    { id: "zinco", title: "Zinco Quelatado", desc: "A base biológica para a rápida cicatrização de feridas e hot spots.", img: "/images/product-gummy.png" },
+    { id: "vitamina-e", title: <>Vitamina E<br />D-Alpha</>, altText: "Vitamina E D-Alpha", desc: "O escudo antioxidante natural que previne o envelhecimento celular precoce.", img: "/images/hero-dog.png" }
   ];
 
   return (
@@ -218,9 +218,9 @@ export default function Sobre() {
               <motion.div style={{ opacity: step1Opacity, pointerEvents: 'none' }} className="absolute w-full max-w-3xl md:right-6 md:text-right">
                 <h2 className="text-5xl md:text-8xl font-black text-white tracking-tight leading-[0.9] mb-8">
                   {narrativeSteps[1].title} <br/>
-                  <span className="text-[#f3aa2f] italic font-serif opacity-90">{narrativeSteps[1].highlight}</span>
+                  <span className="text-supet-orange italic font-serif opacity-90">{narrativeSteps[1].highlight}</span>
                 </h2>
-                <p className="text-xl md:text-3xl text-white/80 font-light leading-relaxed border-r-2 border-[#f3aa2f]/50 pr-6">
+                <p className="text-xl md:text-3xl text-white/80 font-light leading-relaxed border-r-2 border-supet-orange/50 pr-6">
                   {narrativeSteps[1].text}
                 </p>
               </motion.div>
@@ -331,8 +331,8 @@ export default function Sobre() {
                  const isDark = idx % 2 === 1; // 0: light, 1: dark, 2: light, 3: dark
                  
                  return (
-                  <div 
-                    key={item.title} 
+                  <div
+                    key={item.id}
                     className={`sticky w-full rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-[0_-15px_40px_-15px_rgba(0,0,0,0.15)] flex flex-col md:flex-row transition-transform duration-500 ease-out border border-black/5`}
                     style={{ 
                        top: `calc(10vh + ${idx * 30}px)`,
@@ -351,7 +351,7 @@ export default function Sobre() {
                          </p>
                      </div>
                      <div className="w-full md:w-[45%] h-1/2 md:h-full relative order-1 md:order-2">
-                         <img src={item.img} alt={item.title} className="absolute inset-0 w-full h-full object-cover" />
+                         <img src={item.img} alt={item.altText || (typeof item.title === 'string' ? item.title : item.id)} className="absolute inset-0 w-full h-full object-cover" />
                          {isDark && <div className="absolute inset-0 bg-black/20 mix-blend-overlay" />}
                      </div>
                   </div>
@@ -381,31 +381,41 @@ export default function Sobre() {
                  </p>
             </div>
               
-            <div className="flex flex-col md:flex-row h-[900px] md:h-[700px] gap-4 w-full group/accordion">
-              {teamData.map((expert, idx) => (
+            <div className="flex flex-col md:flex-row h-[900px] md:h-[700px] gap-4 w-full md:group/accordion">
+              {teamData.map((expert, idx) => {
+                const isActive = activeExpert === idx;
+                
+                return (
                 <div 
                   key={expert.name}
-                  className="relative overflow-hidden rounded-[2rem] h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] flex-[1] md:group-hover/accordion:flex-[1] hover:!flex-[8] md:hover:!flex-[8] group/card cursor-pointer border border-supet-text/5"
+                  onClick={() => setActiveExpert(isActive ? null : idx)}
+                  className={`relative overflow-hidden rounded-[2rem] h-full transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] cursor-pointer border border-supet-text/5 group/card md:group-hover/accordion:flex-[1] md:hover:!flex-[8] ${
+                    isActive ? "flex-[12]" : "flex-[2]"
+                  }`}
                 >
-                  <img src={expert.img} className="absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] group-hover/card:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80 group-hover/card:opacity-90 transition-opacity duration-500" />
+                  <img src={expert.img} className={`absolute inset-0 w-full h-full object-cover transition-transform duration-[2s] md:group-hover/card:scale-105 ${isActive ? 'scale-105' : ''}`} />
+                  <div className={`absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent transition-opacity duration-500 md:group-hover/card:opacity-90 ${isActive ? 'opacity-90' : 'opacity-80'}`} />
                   
                   {/* Minimized Content (Vertical text on desktop when inactive) */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-8 opacity-100 group-hover/card:opacity-0 transition-opacity duration-300 md:[writing-mode:vertical-lr] md:items-center">
+                  <div className={`absolute inset-0 flex flex-col justify-end p-8 transition-opacity duration-300 md:[writing-mode:vertical-lr] md:items-center md:group-hover/card:opacity-0 ${
+                    isActive ? 'opacity-0' : 'opacity-100'
+                  }`}>
                      <h3 className="text-3xl font-black text-white whitespace-nowrap">{expert.name}</h3>
                   </div>
 
                   {/* Expanded Content */}
-                  <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12 opacity-0 group-hover/card:opacity-100 transition-opacity duration-700 delay-100">
+                  <div className={`absolute inset-0 flex flex-col justify-end p-6 md:p-12 transition-opacity duration-700 delay-100 md:group-hover/card:opacity-100 ${
+                    isActive ? 'opacity-100' : 'opacity-0 pointer-events-none md:pointer-events-auto'
+                  }`}>
                     <div className="max-w-xl">
-                      <Heart className="w-8 h-8 text-supet-orange mb-6" fill="currentColor" />
+                      <Heart className="w-8 h-8 text-supet-orange mb-4 md:mb-6" fill="currentColor" />
                       <h3 className="text-4xl md:text-6xl font-black text-white mb-2 tracking-tight">{expert.name}</h3>
-                      <p className="text-supet-orange font-bold uppercase tracking-widest text-sm mb-6">{expert.role}</p>
-                      <p className="text-white/90 text-xl font-medium leading-relaxed border-l-2 border-supet-orange pl-4">&quot;{expert.bio}&quot;</p>
+                      <p className="text-supet-orange font-bold uppercase tracking-widest text-[10px] md:text-sm mb-4 md:mb-6">{expert.role}</p>
+                      <p className="text-white/90 text-sm md:text-xl font-medium leading-relaxed border-l-2 border-supet-orange pl-4">&quot;{expert.bio}&quot;</p>
                     </div>
                   </div>
                 </div>
-              ))}
+              )})}
             </div>
 
           </div>

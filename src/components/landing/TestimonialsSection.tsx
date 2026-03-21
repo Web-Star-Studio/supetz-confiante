@@ -35,30 +35,12 @@ export default function TestimonialsSection() {
       onFocusCapture={() => setIsPaused(true)}
       onBlurCapture={() => setIsPaused(false)}
     >
-      <div className="mb-8 flex items-center justify-between gap-5">
+      <div className="mb-8 flex flex-col gap-6 justify-between">
         <div>
-          <h2 className="text-3xl font-extrabold text-supet-text md:text-4xl text-balance">O que os tutores estao dizendo</h2>
-          <p className="mt-2 text-sm text-supet-text/60">
-            Centenas de tutores relatam melhora significativa nos sintomas apos o uso continuo do Supet.
+          <h2 className="text-3xl font-extrabold text-supet-text md:text-4xl text-balance leading-tight">O que os tutores estão dizendo</h2>
+          <p className="mt-3 text-[0.95rem] text-supet-text/70 leading-relaxed max-w-md">
+            Centenas de tutores relatam melhora significativa nos sintomas após o uso contínuo do Supet.
           </p>
-        </div>
-        <div className="flex gap-2">
-          <button
-            type="button"
-            onClick={goToPrev}
-            className="rounded-full border border-supet-text/15 bg-white/85 p-2 text-supet-text transition-colors hover:border-supet-orange hover:text-supet-orange"
-            aria-label="Depoimento anterior"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </button>
-          <button
-            type="button"
-            onClick={goToNext}
-            className="rounded-full border border-supet-text/15 bg-white/85 p-2 text-supet-text transition-colors hover:border-supet-orange hover:text-supet-orange"
-            aria-label="Próximo depoimento"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </button>
         </div>
       </div>
 
@@ -69,13 +51,14 @@ export default function TestimonialsSection() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: motionTokens.durationFast, ease: motionTokens.easeOut }}
-          className="rounded-[2rem] border border-supet-orange/15 bg-white p-4 md:p-5"
+          className="w-full flex cursor-pointer sm:cursor-auto"
+          onClick={goToNext}
         >
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
             <img
               src={active.image}
               alt={`Foto de ${active.petName}`}
-              className="h-28 w-full rounded-2xl object-cover sm:h-28 sm:w-28"
+              className="h-48 w-full rounded-2xl object-cover shrink-0 sm:h-32 sm:w-32"
             />
 
             <div className="flex-1">
@@ -110,7 +93,7 @@ export default function TestimonialsSection() {
 
       <div className="mt-6 grid gap-2 sm:grid-cols-3">
         <p className="rounded-full border border-supet-orange/20 bg-supet-orange/10 px-3 py-2 text-center text-xs font-bold uppercase tracking-wide text-supet-text/70">
-          Reducao das coceiras
+          Redução das coceiras
         </p>
         <p className="rounded-full border border-supet-orange/20 bg-supet-orange/10 px-3 py-2 text-center text-xs font-bold uppercase tracking-wide text-supet-text/70">
           Menos queda de pelos

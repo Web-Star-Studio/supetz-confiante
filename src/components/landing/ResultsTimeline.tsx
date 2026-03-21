@@ -70,16 +70,16 @@ export default function ResultsTimeline() {
           {/* Vertical Line Form Desktop */}
           <div className="hidden md:block absolute left-1/2 top-4 bottom-4 w-1 bg-gradient-to-b from-supet-orange/50 via-supet-orange/20 to-transparent -translate-x-1/2" />
 
-          <div className="space-y-12 md:space-y-0">
+          <div className="space-y-8 md:space-y-0">
             {timelineEvents.map((event, index) => {
               const isEven = index % 2 === 0;
               const Icon = event.icon;
 
               return (
                 <div key={event.day} className="relative flex flex-col md:flex-row items-center justify-between group">
-                  
+
                   {/* Left Content */}
-                  <div className={`md:w-5/12 ${isEven ? 'md:text-right md:pr-12' : 'md:order-3 md:text-left md:pl-12'} mb-8 md:mb-0 w-full`}>
+                  <div className={`md:w-5/12 ${isEven ? 'md:text-right md:pr-12' : 'md:order-3 md:text-left md:pl-12'} md:mb-0 w-full`}>
                     <motion.div
                       initial={{ opacity: 0, x: isEven ? -30 : 30 }}
                       whileInView={{ opacity: 1, x: 0 }}

@@ -41,9 +41,9 @@ export default function DosageCalculator() {
           </p>
         </div>
 
-        <div className="bg-white rounded-[2rem] shadow-xl shadow-supet-text/5 p-8 md:p-12 border border-supet-text/10">
-          
-          <div className="flex flex-col md:flex-row items-center gap-12">
+        <div className="bg-white rounded-[2rem] shadow-xl shadow-supet-text/5 p-5 md:p-8 lg:p-12 border border-supet-text/10">
+
+          <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
             
             {/* Left: Input Slider */}
             <div className="w-full md:w-1/2 flex flex-col items-center">

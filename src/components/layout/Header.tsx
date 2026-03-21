@@ -45,60 +45,27 @@ export default function Header() {
     }
   };
 
+  const handleLogoClick = () => {
+    setMobileOpen(false);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-supet-bg/80 backdrop-blur-sm">
       <div className="relative mx-auto flex max-w-[1480px] items-center justify-between px-4 py-2 md:px-8 md:py-3">
-        <Link to="/" className="relative z-10 flex shrink-0 items-center">
+        <Link to="/" onClick={handleLogoClick} className="relative z-10 flex shrink-0 items-center">
           <motion.div
             initial={shouldReduceMotion ? false : { opacity: 0, y: 4, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
           >
-            <motion.div
-              className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]"
-              animate={
-                shouldReduceMotion
-                  ? undefined
-                  : {
-                    y: [0, -1.25, 0],
-                    rotate: [0, -0.45, 0.25, 0],
-                    scale: [1, 1.01, 1],
-                  }
-              }
-              transition={
-                shouldReduceMotion
-                  ? undefined
-                  : {
-                    y: {
-                      duration: 3.6,
-                      ease: "easeInOut",
-                      times: [0, 0.5, 1],
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatDelay: 1.2,
-                    },
-                    rotate: {
-                      duration: 3.6,
-                      ease: "easeInOut",
-                      times: [0, 0.35, 0.7, 1],
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatDelay: 1.2,
-                    },
-                    scale: {
-                      duration: 3.6,
-                      ease: "easeInOut",
-                      times: [0, 0.5, 1],
-                      repeat: Number.POSITIVE_INFINITY,
-                      repeatDelay: 1.2,
-                    },
-                  }
-              }
-            >
+            <div className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]">
               <img
-                src="/images/supet_Logos/Supet - logo (5).svg"
+                src="/images/supet-logos/supet-logo-5.svg"
                 alt="SUPET"
-                className="absolute left-0 top-1/2 w-full h-auto -translate-y-1/2 object-cover"
+                className="absolute left-0 top-1/2 w-full h-auto -translate-y-1/2 object-contain"
               />
-            </motion.div>
+            </div>
           </motion.div>
         </Link>
 
@@ -143,7 +110,7 @@ export default function Header() {
           >
             <ShoppingBag className="w-5 h-5" />
             {totalItems > 0 && (
-              <span className="absolute 0 top-0 right-0 w-4 h-4 rounded-full bg-supet-orange text-white text-[9px] font-black flex items-center justify-center">
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-supet-orange text-white text-[9px] font-black flex items-center justify-center">
                 {totalItems}
               </span>
             )}

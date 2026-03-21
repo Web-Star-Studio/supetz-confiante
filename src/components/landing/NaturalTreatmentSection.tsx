@@ -6,9 +6,7 @@ import {
   useMotionTemplate,
   useMotionValue,
   useTransform,
-  AnimatePresence,
 } from "framer-motion";
-import { Sparkles, Heart, Shield, Award, Leaf, ChevronLeft, ChevronRight } from "lucide-react";
 import { motionTokens } from "@/lib/motion";
 import AnimatedSectionHeading from "@/components/landing/AnimatedSectionHeading";
 
@@ -91,65 +89,18 @@ const ingredients = [
 ];
 
 const dailyBenefits = [
-  {
-    icon: Sparkles,
-    title: "Alivio das coceiras",
-    description: "Resultados visiveis em poucos dias de uso",
-  },
-  {
-    icon: Heart,
-    title: "Pelagem bonita e saudavel",
-    description: "Pelos mais fortes e brilhantes",
-  },
-  {
-    icon: Shield,
-    title: "Imunidade fortalecida",
-    description: "Organismo mais resistente e protegido",
-  },
-  {
-    icon: Award,
-    title: "Pele resistente",
-    description: "Protecao contra alergias e irritacoes",
-  },
-  {
-    icon: Leaf,
-    title: "Formula natural",
-    description: "Sem dependencia quimica ou efeitos colaterais",
-  },
+  { num: "01", title: "Alívio das coceiras", description: "Resultados visíveis em poucos dias de uso" },
+  { num: "02", title: "Pelagem bonita e saudável", description: "Pelos mais fortes e brilhantes" },
+  { num: "03", title: "Imunidade fortalecida", description: "Organismo mais resistente e protegido" },
+  { num: "04", title: "Pele resistente", description: "Proteção contra alergias e irritações" },
+  { num: "05", title: "Fórmula natural", description: "Sem dependência química ou efeitos colaterais" },
 ];
 
 type Ingredient = (typeof ingredients)[number];
 
-// Motion Video Component for Daily Benefits
-function DailyBenefitsMotionVideo() {
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const isInView = useInView(sectionRef, { once: false, amount: 0.3 });
-
-  useEffect(() => {
-    if (!isInView) return;
-
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => (prev + 1) % dailyBenefits.length);
-    }, 4000); // Change every 4 seconds
-
-    return () => clearInterval(interval);
-  }, [isInView]);
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev - 1 + dailyBenefits.length) % dailyBenefits.length);
-  };
-
-  const handleNext = () => {
-    setCurrentIndex((prev) => (prev + 1) % dailyBenefits.length);
-  };
-
-  const currentBenefit = dailyBenefits[currentIndex];
-  const Icon = currentBenefit.icon;
-
+function DailyBenefitsGrid() {
   return (
-    <div ref={sectionRef} className="mt-16">
-      {/* Header */}
+    <div className="mt-16">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -166,189 +117,75 @@ function DailyBenefitsMotionVideo() {
           size="lg"
         />
         <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-supet-text/70 md:text-base">
-          Beneficios progressivos que melhoram a qualidade de vida do seu pet
+          Benefícios progressivos que melhoram a qualidade de vida do seu pet
         </p>
       </motion.div>
 
-      {/* Motion Video Container */}
-      <div className="relative mx-auto mt-12 max-w-4xl">
-        {/* Video-Style Display */}
-        <div className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-white via-supet-bg to-white p-5 shadow-2xl md:p-6">
-          {/* Navigation Arrows - Minimalist design */}
-          <button
-            onClick={handlePrev}
-            className="absolute left-4 top-1/2 z-20 -translate-y-1/2 transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-supet-orange/20 focus:ring-offset-2"
-            aria-label="Benefício anterior"
-          >
-            <ChevronLeft className="h-8 w-8 text-supet-orange/60 transition-colors hover:text-supet-orange" strokeWidth={2.5} />
-          </button>
-
-          <button
-            onClick={handleNext}
-            className="absolute right-4 top-1/2 z-20 -translate-y-1/2 transition-all hover:scale-110 focus:outline-none focus:ring-2 focus:ring-supet-orange/20 focus:ring-offset-2"
-            aria-label="Próximo benefício"
-          >
-            <ChevronRight className="h-8 w-8 text-supet-orange/60 transition-colors hover:text-supet-orange" strokeWidth={2.5} />
-          </button>
-
-          {/* Animated background orbs */}
-          <motion.div
-            className="pointer-events-none absolute -left-20 -top-20 h-64 w-64 rounded-full bg-supet-orange/10 blur-3xl"
-            animate={{
-              scale: [1, 1.2, 1],
-              x: [0, 20, 0],
-              y: [0, 15, 0],
-            }}
-            transition={{
-              duration: 8,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-          <motion.div
-            className="pointer-events-none absolute -bottom-20 -right-20 h-64 w-64 rounded-full bg-supet-orange/8 blur-3xl"
-            animate={{
-              scale: [1, 1.3, 1],
-              x: [0, -20, 0],
-              y: [0, -15, 0],
-            }}
-            transition={{
-              duration: 10,
-              repeat: Infinity,
-              ease: "easeInOut",
-            }}
-          />
-
-          {/* Content with slide transitions */}
-          <div className="relative z-10 flex min-h-[240px] flex-col px-12 py-6 md:px-16 md:py-8">
-            {/* Main content area - centered with more space */}
-            <div className="flex flex-1 items-center justify-center">
-              <AnimatePresence mode="wait">
-                <motion.div
-                  key={currentIndex}
-                  initial={{ opacity: 0, x: 100, filter: "blur(10px)" }}
-                  animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, x: -100, filter: "blur(10px)" }}
-                  transition={{
-                    duration: 0.6,
-                    ease: motionTokens.easeOut,
-                  }}
-                  className="flex w-full max-w-3xl items-center justify-center"
-                >
-                  {/* Main content row */}
-                  <div className="flex w-full flex-col items-center justify-center gap-5 text-center md:flex-row md:gap-8 md:text-left">
-                    {/* Animated Icon */}
-                    <motion.div
-                      className="relative shrink-0"
-                      initial={{ scale: 0.8, rotate: -10 }}
-                      animate={{ scale: 1, rotate: 0 }}
-                      transition={{ duration: 0.5, delay: 0.2 }}
-                    >
-                      <motion.div
-                        animate={{
-                          rotate: [0, -5, 5, -5, 5, 0],
-                        }}
-                        transition={{
-                          duration: 3,
-                          repeat: Infinity,
-                          ease: "easeInOut",
-                        }}
-                        className="relative"
-                      >
-                        {/* Icon with orange gradient */}
-                        <div className="relative rounded-[1.5rem] bg-gradient-to-br from-supet-orange to-orange-600 p-6 shadow-2xl md:p-7">
-                          <Icon className="h-14 w-14 text-white md:h-16 md:w-16" strokeWidth={2} />
-
-                          {/* Pulsing glow */}
-                          <motion.div
-                            className="absolute -inset-3 -z-10 rounded-[1.5rem] bg-gradient-to-br from-supet-orange to-orange-600 blur-2xl"
-                            animate={{
-                              opacity: [0.3, 0.6, 0.3],
-                              scale: [0.9, 1.1, 0.9],
-                            }}
-                            transition={{
-                              duration: 2,
-                              repeat: Infinity,
-                              ease: "easeInOut",
-                            }}
-                          />
-                        </div>
-                      </motion.div>
-                    </motion.div>
-
-                    {/* Text Content */}
-                    <div className="flex-1 space-y-2.5">
-                      <motion.h4
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 0.5 }}
-                        className="text-balance text-2xl font-black leading-tight text-supet-text md:text-3xl lg:text-4xl"
-                      >
-                        {currentBenefit.title}
-                      </motion.h4>
-
-                      <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4, duration: 0.5 }}
-                        className="text-balance text-base leading-relaxed text-supet-text/70 md:text-lg"
-                      >
-                        {currentBenefit.description}
-                      </motion.p>
-                    </div>
-                  </div>
-                </motion.div>
-              </AnimatePresence>
-            </div>
-
-            {/* Progress dots - positioned at bottom with more spacing */}
-            <div className="flex items-center justify-center gap-2 pb-2 pt-6">
-              {dailyBenefits.map((_, idx) => (
-                <motion.div
-                  key={idx}
-                  animate={{
-                    scale: currentIndex === idx ? 1 : 0.7,
-                    opacity: currentIndex === idx ? 1 : 0.3,
-                  }}
-                  transition={{ duration: 0.3 }}
-                  className="relative"
-                >
-                  <div
-                    className={`h-2 w-2 rounded-full ${
-                      currentIndex === idx
-                        ? "bg-supet-orange"
-                        : "bg-supet-text/30"
-                    }`}
-                  />
-                  {currentIndex === idx && (
-                    <motion.div
-                      className="absolute inset-0 rounded-full bg-supet-orange"
-                      initial={{ scale: 1 }}
-                      animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
-                      transition={{
-                        duration: 2,
-                        repeat: Infinity,
-                        ease: "easeInOut",
-                      }}
-                    />
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
+      <div className="mx-auto mt-12 max-w-6xl">
+        {/* Top row: 3 cards */}
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+          {dailyBenefits.slice(0, 3).map((benefit, i) => (
+            <motion.article
+              key={benefit.num}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, delay: i * 0.08, ease: motionTokens.easeOut }}
+              className="group relative overflow-hidden rounded-[1.6rem_2rem_1.4rem_1.8rem] border border-supet-text/10 bg-white p-7 md:p-8 shadow-[0_16px_34px_-24px_rgba(55,35,10,0.32)] transition-all duration-500 hover:border-supet-orange/30 hover:shadow-[0_20px_40px_-20px_rgba(255,107,43,0.2)]"
+            >
+              <div className="pointer-events-none absolute -right-3 -top-6 select-none text-[11rem] font-black leading-none text-supet-orange/[0.06] transition-colors duration-700 group-hover:text-supet-orange/[0.12]">
+                {benefit.num}
+              </div>
+              <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-supet-orange/5 blur-2xl transition-colors duration-700 group-hover:bg-supet-orange/10" />
+              <div className="relative z-10">
+                <h4 className="text-xl font-extrabold tracking-tight text-supet-text transition-colors duration-300 group-hover:text-supet-orange md:text-2xl">
+                  {benefit.title}
+                </h4>
+                <p className="mt-2.5 text-sm font-medium leading-relaxed text-supet-text/65 md:text-base">
+                  {benefit.description}
+                </p>
+              </div>
+            </motion.article>
+          ))}
         </div>
 
-        {/* Bottom text */}
-        <motion.p
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-          className="mt-6 text-center text-sm text-supet-text/60"
-        >
-          Resultados podem variar • Uso continuo recomendado para melhores resultados
-        </motion.p>
+        {/* Bottom row: 2 cards, centered */}
+        <div className="mx-auto mt-5 grid max-w-4xl grid-cols-1 gap-5 md:grid-cols-2 lg:mt-6 lg:gap-6">
+          {dailyBenefits.slice(3).map((benefit, i) => (
+            <motion.article
+              key={benefit.num}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-80px" }}
+              transition={{ duration: 0.7, delay: (i + 3) * 0.08, ease: motionTokens.easeOut }}
+              className="group relative overflow-hidden rounded-[1.6rem_2rem_1.4rem_1.8rem] border border-supet-text/10 bg-white p-7 md:p-8 shadow-[0_16px_34px_-24px_rgba(55,35,10,0.32)] transition-all duration-500 hover:border-supet-orange/30 hover:shadow-[0_20px_40px_-20px_rgba(255,107,43,0.2)]"
+            >
+              <div className="pointer-events-none absolute -right-3 -top-6 select-none text-[11rem] font-black leading-none text-supet-orange/[0.06] transition-colors duration-700 group-hover:text-supet-orange/[0.12]">
+                {benefit.num}
+              </div>
+              <div className="pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full bg-supet-orange/5 blur-2xl transition-colors duration-700 group-hover:bg-supet-orange/10" />
+              <div className="relative z-10">
+                <h4 className="text-xl font-extrabold tracking-tight text-supet-text transition-colors duration-300 group-hover:text-supet-orange md:text-2xl">
+                  {benefit.title}
+                </h4>
+                <p className="mt-2.5 text-sm font-medium leading-relaxed text-supet-text/65 md:text-base">
+                  {benefit.description}
+                </p>
+              </div>
+            </motion.article>
+          ))}
+        </div>
       </div>
+
+      <motion.p
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.5, duration: 0.6 }}
+        className="mt-8 text-center text-sm text-supet-text/60"
+      >
+        Resultados podem variar • Uso contínuo recomendado para melhores resultados
+      </motion.p>
     </div>
   );
 }
@@ -524,7 +361,7 @@ export default function NaturalTreatmentSection() {
   }, [orbitActive]);
 
   return (
-    <section ref={sectionRef} id="tratamento-natural" className="relative overflow-hidden bg-supet-bg py-20 md:py-24">
+    <section ref={sectionRef} id="tratamento-natural" className="relative overflow-hidden bg-supet-bg pt-20 pb-10 md:pt-24 md:pb-12">
       <div className="pointer-events-none absolute -left-20 top-16 h-56 w-56 rounded-full bg-supet-orange/14 blur-3xl" />
       <div className="pointer-events-none absolute -right-16 top-1/3 h-52 w-52 rounded-full bg-supet-orange/10 blur-3xl" />
 
@@ -635,17 +472,17 @@ export default function NaturalTreatmentSection() {
           ))}
         </div>
 
-        <div className="mt-8 grid gap-2 lg:hidden">
+        <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:hidden">
           {ingredients.map((item) => (
-            <div key={item.title} className="border-l-4 border-supet-orange/60 bg-white/75 px-4 py-3">
+            <div key={item.title} className="rounded-[1.2rem] border border-supet-orange/20 bg-white/90 p-4 shadow-[0_8px_24px_-16px_rgba(55,35,10,0.35)]">
               <p className="text-[11px] font-black uppercase tracking-[0.12em] text-supet-orange">{item.tag}</p>
-              <p className="text-lg font-extrabold text-supet-text">{item.title}</p>
-              <p className="text-sm leading-relaxed text-supet-text/72">{item.description}</p>
+              <p className="mt-1 text-base font-extrabold leading-tight text-supet-text">{item.title}</p>
+              <p className="mt-1.5 text-xs leading-relaxed text-supet-text/70">{item.description}</p>
             </div>
           ))}
         </div>
 
-        <DailyBenefitsMotionVideo />
+        <DailyBenefitsGrid />
       </div>
     </section>
   );

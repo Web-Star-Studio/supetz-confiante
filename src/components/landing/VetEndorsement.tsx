@@ -18,9 +18,9 @@ export default function VetEndorsement() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.8, ease: motionTokens.easeOut }}
-            className="relative"
+            className="relative mx-auto w-full max-w-[400px] lg:mx-0 lg:max-w-none"
           >
-            <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-supet-orange/10 z-10">
+            <div className="relative aspect-[4/5] sm:aspect-square lg:aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-2xl shadow-supet-orange/10 z-10 w-full">
               {/* Replace with a real high-quality vet photo */}
               <img 
                 src="/images/vet-clinic.png" 
@@ -29,7 +29,7 @@ export default function VetEndorsement() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
               
-              <div className="absolute bottom-8 left-8 text-white">
+              <div className="absolute bottom-8 left-8 text-white text-left">
                 <p className="font-extrabold text-2xl">Dra. Amanda Silva</p>
                 <p className="text-white/80 font-medium font-serif italic mb-1">Dermatologia Veterinária Avançada</p>
                 <p className="text-xs uppercase tracking-widest text-white/50 font-bold">CRMV-SP 45.892</p>
@@ -38,12 +38,12 @@ export default function VetEndorsement() {
           </motion.div>
 
           {/* Right: Editorial Quote & Science */}
-          <div className="flex flex-col justify-center">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-supet-orange flex items-center gap-4 mb-6">
-              <span className="w-8 h-[2px] bg-supet-orange/50"></span> Opinião Médica
+          <div className="flex flex-col justify-center items-center text-center lg:items-start lg:text-left">
+            <span className="text-xs font-black uppercase tracking-[0.2em] text-supet-orange flex items-center justify-center lg:justify-start gap-4 mb-6">
+              <span className="w-8 h-[2px] bg-supet-orange/50 hidden lg:block"></span> Opinião Médica
             </span>
             
-            <h2 className="text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold leading-[1] tracking-tight mb-8 text-balance">
+            <h2 className="text-[clamp(2.5rem,8vw,4.5rem)] font-extrabold leading-[1] tracking-tight mb-8 text-balance">
               "A verdadeira cura vem da <br />
               <span className="text-supet-orange italic font-serif">imunidade base.</span>"
             </h2>
@@ -57,7 +57,7 @@ export default function VetEndorsement() {
               </p>
             </div>
 
-            <div className="mt-12 space-y-4">
+            <div className="mt-12 space-y-4 max-w-lg mx-auto lg:mx-0 text-left">
               {[
                 "Ativos naturais que não sobrecarregam fígados ou rins.",
                 "Eficácia clínica na interrupção de lambeduras e focos de vermelhidão.",

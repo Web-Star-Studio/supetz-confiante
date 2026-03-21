@@ -1,4 +1,4 @@
-import { useRef, type CSSProperties, type MouseEvent, type ReactNode } from "react";
+import { useLayoutEffect, useRef, useState, type CSSProperties, type MouseEvent, type ReactNode } from "react";
 import {
   motion,
   useMotionValue,
@@ -119,6 +119,75 @@ function HeroParallaxLayer({
   );
 }
 
+type HeroFittedWordProps = {
+  word: string;
+  guide: ReactNode;
+  wrapperClassName?: string;
+  wordClassName?: string;
+  offsetX?: string;
+};
+
+function HeroFittedWord({
+  word,
+  guide,
+  wrapperClassName,
+  wordClassName,
+  offsetX = "0px",
+}: HeroFittedWordProps) {
+  const guideRef = useRef<HTMLDivElement>(null);
+  const wordRef = useRef<HTMLSpanElement>(null);
+  const [scaleX, setScaleX] = useState(1);
+
+  useLayoutEffect(() => {
+    const guideElement = guideRef.current;
+    const wordElement = wordRef.current;
+
+    if (!guideElement || !wordElement) return;
+
+    const updateScale = () => {
+      const guideWidth = guideElement.offsetWidth;
+      const wordWidth = wordElement.offsetWidth;
+
+      if (!guideWidth || !wordWidth) return;
+
+      setScaleX((guideWidth / wordWidth) * 0.995);
+    };
+
+    updateScale();
+
+    const resizeObserver = new ResizeObserver(updateScale);
+    resizeObserver.observe(guideElement);
+    resizeObserver.observe(wordElement);
+
+    window.addEventListener("resize", updateScale);
+
+    return () => {
+      resizeObserver.disconnect();
+      window.removeEventListener("resize", updateScale);
+    };
+  }, [word]);
+
+  return (
+    <div className={wrapperClassName}>
+      <div ref={guideRef} className="invisible inline-flex" aria-hidden="true">
+        {guide}
+      </div>
+      <div
+        className="absolute inset-0 flex items-center justify-center"
+        style={{ transform: `translateX(${offsetX})` }}
+      >
+        <span
+          ref={wordRef}
+          className={wordClassName}
+          style={{ transform: `scaleX(${scaleX})` }}
+        >
+          {word}
+        </span>
+      </div>
+    </div>
+  );
+}
+
 export default function HeroSection() {
   const sectionRef = useRef<HTMLElement>(null);
   const reduceMotion = useReducedMotion();
@@ -157,7 +226,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section ref={sectionRef} className="relative isolate min-h-[100svh] overflow-hidden bg-supet-bg pb-4 pt-4 md:pt-6">
+    <section ref={sectionRef} className="relative isolate min-h-[100svh] overflow-x-clip overflow-y-visible bg-supet-bg pb-4 pt-4 md:pt-6">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-supet-bg to-transparent" />
 
       <div className="hero-artboard px-4 md:px-8">
@@ -194,12 +263,21 @@ export default function HeroSection() {
                   transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
                   className="hero-title"
                 >
-                  <div className="flex w-full justify-between">
+                  <HeroFittedWord
+                    word="SUPLEMENTE"
+                    wrapperClassName="relative mx-auto mb-[0.02em] w-fit text-center md:mb-[0.05em]"
+                    wordClassName="block origin-center whitespace-nowrap text-[0.96em] tracking-[-0.05em] opacity-90"
+                    offsetX="-0.08em"
+                    guide={
+                      <div className="inline-flex gap-[18vw] md:gap-[22vw]">
+                        <span>SEU</span>
+                        <span>PET</span>
+                      </div>
+                    }
+                  />
+                  <div className="flex w-full justify-center gap-[18vw] md:gap-[22vw]">
                     <span>SEU</span>
                     <span>PET</span>
-                  </div>
-                  <div className="w-full">
-                    <span>AGRADECE</span>
                   </div>
                 </motion.h1>
               </HeroParallaxLayer>
@@ -353,13 +431,23 @@ export default function HeroSection() {
               animate={reduceMotion ? undefined : { opacity: 0.35, y: 0 }}
               transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
               className="hero-title mobile-hero-title z-[10]"
+              style={{ fontSize: "clamp(4.5rem, 19vw, 6.5rem)" }}
             >
-              <div className="flex w-full justify-between">
+              <HeroFittedWord
+                word="SUPLEMENTE"
+                wrapperClassName="relative mx-auto mb-[0.02em] w-fit text-center scale-[1.04] origin-center"
+                wordClassName="block origin-center whitespace-nowrap text-[0.86em] tracking-[-0.05em] opacity-90"
+                offsetX="-0.03em"
+                guide={
+                  <div className="inline-flex gap-[20vw] md:gap-[20vw]">
+                    <span>SEU</span>
+                    <span>PET</span>
+                  </div>
+                }
+              />
+              <div className="flex w-full justify-center gap-[20vw] md:gap-[20vw] -translate-x-[2vw]">
                 <span>SEU</span>
-                <span>PET</span>
-              </div>
-              <div className="w-full">
-                <span>AGRADECE</span>
+                <span className="translate-x-[2vw]">PET</span>
               </div>
             </motion.h1>
 
@@ -428,17 +516,6 @@ export default function HeroSection() {
               />
             </div>
 
-            <div className="hero-layer hero-dog-mobile z-50">
-              <motion.img
-                initial={reduceMotion ? undefined : { opacity: 0 }}
-                animate={reduceMotion ? undefined : { opacity: 1 }}
-                transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.28 }}
-                src="/images/hero/dog-golden.png"
-                alt="Golden retriever da Supet"
-                className="block w-full"
-              />
-            </div>
-
             <motion.div
               initial={reduceMotion ? undefined : { opacity: 0, y: 16 }}
               animate={reduceMotion ? undefined : { opacity: 1, y: 0 }}
@@ -455,6 +532,18 @@ export default function HeroSection() {
                 100% vegano, livre de crueldade.
               </p>
             </motion.div>
+          </div>
+
+          {/* Dog placed outside overflow-hidden so it can extend to the bottom edge */}
+          <div className="hero-layer hero-dog-mobile z-50">
+            <motion.img
+              initial={reduceMotion ? undefined : { opacity: 0 }}
+              animate={reduceMotion ? undefined : { opacity: 1 }}
+              transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.28 }}
+              src="/images/hero/dog-golden.png"
+              alt="Golden retriever da Supet"
+              className="block w-full"
+            />
           </div>
         </div>
       </div>

@@ -55,6 +55,27 @@ export interface BlogPostPreview {
   publishedAt: string;
 }
 
+export interface BlogPost extends BlogPostPreview {
+  author: {
+    name: string;
+    role: string;
+    avatar?: string;
+  };
+  category: string;
+  tags: string[];
+  readTime: number; // in minutes
+  content: BlogPostContent[];
+  relatedPosts?: string[]; // IDs of related posts
+}
+
+export interface BlogPostContent {
+  type: "paragraph" | "heading" | "list" | "quote" | "image";
+  content: string;
+  items?: string[]; // for list type
+  alt?: string; // for image type
+  level?: 2 | 3; // for heading type (h2 or h3)
+}
+
 export interface SocialLink {
   id: string;
   platform: "facebook" | "instagram" | "youtube" | "tiktok";

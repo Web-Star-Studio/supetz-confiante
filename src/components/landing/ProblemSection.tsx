@@ -172,7 +172,7 @@ export default function ProblemSection() {
           transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut, delay: 0.08 }}
           className="mx-auto max-w-7xl lg:px-8"
         >
-          <div className="mb-20 md:mb-32 relative text-center" onMouseMove={handlePawMove}>
+          <div className="mb-12 md:mb-20 lg:mb-32 relative text-center" onMouseMove={handlePawMove}>
             {/* Ambient texture paws — very faint, gentle float, behind text */}
             <div className="hidden lg:block absolute inset-0 pointer-events-none overflow-visible">
               {AMBIENT_PAWS.map((paw, i) => (
@@ -331,14 +331,14 @@ export default function ProblemSection() {
           </motion.div>
 
           {/* Visual Comparison Cards */}
-          <div className="mt-16 md:mt-24 grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-stretch">
+          <div className="mt-10 md:mt-16 lg:mt-24 grid lg:grid-cols-2 gap-8 md:gap-12 lg:gap-16 items-stretch">
             {/* Bad Approach Card */}
             <motion.div
               initial={{ opacity: 0, x: -30, rotateY: 10 }}
               whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: motionTokens.durationSlow, ease: motionTokens.easeOut }}
-              className="relative overflow-hidden rounded-[2.5rem] border border-supet-text/5 bg-white p-8 md:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.08)]"
+              className="relative overflow-hidden rounded-[2.5rem] border border-supet-text/5 bg-white p-6 md:p-8 lg:p-12 shadow-[0_20px_50px_rgba(0,0,0,0.08)]"
             >
               <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/5 rounded-bl-full pointer-events-none" />
 
@@ -374,7 +374,7 @@ export default function ProblemSection() {
               whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
               viewport={{ once: false, amount: 0.3 }}
               transition={{ duration: motionTokens.durationSlow, ease: motionTokens.easeOut, delay: 0.1 }}
-              className="relative overflow-hidden rounded-[2.5rem] border border-supet-orange/20 bg-supet-orange p-8 md:p-12 shadow-[0_30px_60px_-15px_rgba(255,122,0,0.4)] text-white group"
+              className="relative overflow-hidden rounded-[2.5rem] border border-supet-orange/20 bg-supet-orange p-6 md:p-8 lg:p-12 shadow-[0_30px_60px_-15px_rgba(255,122,0,0.4)] text-white group"
             >
               <motion.div
                 className="absolute inset-0 bg-gradient-to-br from-supet-orange-dark to-supet-orange opacity-0 group-hover:opacity-100 transition-opacity duration-700"

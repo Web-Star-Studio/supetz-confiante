@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@600;700;800&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -110,7 +110,7 @@
   }
 
   .desktop-hero-title {
-    @apply absolute inset-x-0 top-[clamp(60px,10vh,130px)] flex flex-col px-[clamp(16px,3vw,64px)] text-[clamp(6rem,13.5vw,16rem)] leading-[0.85];
+    @apply absolute inset-x-0 top-[clamp(70px,12vh,140px)] flex flex-col px-[clamp(16px,3vw,64px)] text-[clamp(6rem,13.5vw,16rem)] leading-[0.85];
     letter-spacing: -0.045em;
     opacity: 0.35;
   }
@@ -128,7 +128,7 @@
   }
 
   .hero-jar {
-    @apply bottom-[-30px] left-[34%] w-[clamp(340px,30vw,480px)] -translate-x-1/2;
+    @apply bottom-[-30px] left-[34%] w-[clamp(360px,32vw,520px)] -translate-x-1/2;
   }
 
   .hero-lid {
@@ -140,21 +140,20 @@
   }
 
   .hero-jar-mobile {
-    @apply left-[47.5%] top-[53%] w-[clamp(280px,80vw,400px)] -translate-x-1/2 -translate-y-1/2;
+    @apply left-[47.5%] top-[51.5%] w-[clamp(300px,84vw,430px)] -translate-x-1/2 -translate-y-1/2;
   }
 
   .hero-lid-mobile {
-    @apply left-[51%] top-[-5%] w-[clamp(180px,50vw,240px)] -translate-x-1/2 rotate-[-13deg];
+    @apply left-[51%] top-[-9%] w-[clamp(180px,50vw,240px)] -translate-x-1/2 rotate-[-13deg];
   }
 
   .hero-dog-mobile {
-    @apply bottom-[2%] right-[-6%] w-[clamp(200px,52vw,280px)];
+    @apply bottom-[-48px] right-[-16%] w-[clamp(260px,68vw,380px)];
   }
 
   .mobile-hero-desc {
     @apply absolute bottom-[clamp(60px,10vh,120px)] left-[clamp(12px,4vw,24px)] max-w-[200px] pointer-events-none select-none text-[0.75rem] leading-snug;
   }
-
   .hero-desc-text {
     @apply absolute bottom-[clamp(48px,7vh,96px)] left-[clamp(16px,4.5vw,96px)] max-w-[280px] pointer-events-none select-none;
   }

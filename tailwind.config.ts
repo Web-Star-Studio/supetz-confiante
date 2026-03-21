@@ -67,6 +67,7 @@ export default {
       fontFamily: {
         display: ["Bricolage Grotesque", "sans-serif"],
         body: ["Plus Jakarta Sans", "sans-serif"],
+        serif: ["Lora", "Georgia", "serif"],
         nunito: ["Nunito", "sans-serif"],
       },
       borderRadius: {
