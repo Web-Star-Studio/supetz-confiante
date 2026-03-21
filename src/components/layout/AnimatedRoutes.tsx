@@ -58,6 +58,7 @@ export default function AnimatedRoutes() {
         <Route path="/admin/produtos" element={<AdminRoute><AdminProdutos /></AdminRoute>} />
         <Route path="/admin/clientes" element={<AdminRoute><AdminClientes /></AdminRoute>} />
         <Route path="/admin/configuracoes" element={<AdminRoute><AdminConfiguracoes /></AdminRoute>} />
+        <Route path="/admin/fidelizacao" element={<AdminRoute><AdminFidelizacao /></AdminRoute>} />
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
