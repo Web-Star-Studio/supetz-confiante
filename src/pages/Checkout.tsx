@@ -18,6 +18,19 @@ interface Coupon {
   expires_at: string | null;
 }
 
+interface SavedAddress {
+  id: string;
+  label: string;
+  street: string;
+  number: string;
+  complement: string | null;
+  neighborhood: string;
+  city: string;
+  state: string;
+  zip: string;
+  is_default: boolean;
+}
+
 export default function Checkout() {
   const { items, totalPrice } = useCart();
   const { user } = useAuth();
