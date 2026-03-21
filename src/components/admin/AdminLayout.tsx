@@ -128,7 +128,22 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             <Menu className="w-6 h-6" />
           </button>
           <img src="/supetNewLogo.svg" alt="Supet" className="h-7" />
-          <div className="w-6" />
+          <button
+            className="relative text-foreground"
+            onClick={() => { setNewOrderCount(0); navigate("/admin/pedidos"); }}
+          >
+            <Bell className="w-5 h-5" />
+            <AnimatePresence>
+              {newOrderCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }} animate={{ scale: 1 }} exit={{ scale: 0 }}
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full flex items-center justify-center"
+                >
+                  {newOrderCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </button>
         </header>
 
         <main className="flex-1 p-6 md:p-8 lg:p-10">
