@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail, PawPrint, MapPin, Bell, BookOpen } from "lucide-react";
+import { Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail, PawPrint, MapPin, Bell, BookOpen, Star, Ticket } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -11,6 +11,8 @@ import AddressesTab from "@/components/profile/AddressesTab";
 import OrdersTab from "@/components/profile/OrdersTab";
 import RestockRemindersTab from "@/components/profile/RestockRemindersTab";
 import TreatmentDiaryTab from "@/components/profile/TreatmentDiaryTab";
+import LoyaltyPointsTab from "@/components/profile/LoyaltyPointsTab";
+import CouponsTab from "@/components/profile/CouponsTab";
 
 export default function Perfil() {
   const { user, isLoading: authLoading, resetPassword } = useAuth();
@@ -142,6 +144,12 @@ export default function Perfil() {
             <TabsTrigger value="diario" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
               <BookOpen className="h-3.5 w-3.5" /> Diário
             </TabsTrigger>
+            <TabsTrigger value="pontos" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
+              <Star className="h-3.5 w-3.5" /> Pontos
+            </TabsTrigger>
+            <TabsTrigger value="cupons" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
+              <Ticket className="h-3.5 w-3.5" /> Cupons
+            </TabsTrigger>
             <TabsTrigger value="seguranca" className="flex-1 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground gap-1 text-xs">
               <Shield className="h-3.5 w-3.5" /> Segurança
             </TabsTrigger>
@@ -192,6 +200,16 @@ export default function Perfil() {
           {/* Diário de Tratamento */}
           <TabsContent value="diario">
             <TreatmentDiaryTab />
+          </TabsContent>
+
+          {/* Pontos */}
+          <TabsContent value="pontos">
+            <LoyaltyPointsTab />
+          </TabsContent>
+
+          {/* Cupons */}
+          <TabsContent value="cupons">
+            <CouponsTab />
           </TabsContent>
 
           {/* Segurança */}
