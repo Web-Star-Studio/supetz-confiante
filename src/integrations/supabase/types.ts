@@ -158,6 +158,63 @@ export type Database = {
         }
         Relationships: []
       }
+      blog_posts: {
+        Row: {
+          author_name: string
+          author_role: string
+          category: string
+          content: Json
+          cover_image: string | null
+          created_at: string
+          excerpt: string
+          id: string
+          published_at: string | null
+          read_time: number
+          related_posts: string[] | null
+          slug: string
+          status: string
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_name?: string
+          author_role?: string
+          category?: string
+          content?: Json
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string
+          id?: string
+          published_at?: string | null
+          read_time?: number
+          related_posts?: string[] | null
+          slug: string
+          status?: string
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_name?: string
+          author_role?: string
+          category?: string
+          content?: Json
+          cover_image?: string | null
+          created_at?: string
+          excerpt?: string
+          id?: string
+          published_at?: string | null
+          read_time?: number
+          related_posts?: string[] | null
+          slug?: string
+          status?: string
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       campaign_recipients: {
         Row: {
           campaign_id: string

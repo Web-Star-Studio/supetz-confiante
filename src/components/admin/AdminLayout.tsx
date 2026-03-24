@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight,
-  Gift, Megaphone, Boxes, Wallet, ScrollText, PanelLeftClose, PanelLeft, BookOpen, Brain,
+  Gift, Megaphone, Boxes, Wallet, ScrollText, PanelLeftClose, PanelLeft, BookOpen, Brain, FileText,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import AdminGlobalSearch from "./AdminGlobalSearch";
@@ -17,6 +17,7 @@ const navItems = [
   { label: "Estoque", path: "/admin/estoque", icon: Boxes },
   { label: "Clientes", path: "/admin/crm", icon: Users },
   { label: "Fidelização", path: "/admin/fidelizacao", icon: Gift },
+  { label: "Blog", path: "/admin/blog", icon: FileText },
   { label: "Marketing", path: "/admin/marketing", icon: Megaphone },
   { label: "Financeiro", path: "/admin/financeiro", icon: Wallet },
   { label: "Auditoria", path: "/admin/auditoria", icon: ScrollText },
