@@ -101,7 +101,7 @@ export default function Blog() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={`shrink-0 rounded-full px-5 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                   activeCategory === cat
                     ? "bg-supet-orange text-white shadow-lg shadow-supet-orange/25"
