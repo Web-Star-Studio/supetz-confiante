@@ -66,7 +66,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
 
     const sixMonthsAgo = subMonths(new Date(), 6).toISOString();
 
-    const [ordersRes, pointsRes, couponsRes, remindersRes, petRes, diaryRes, notifRes, treatmentLogsRes, pointsHistRes] = await Promise.all([
+    const [ordersRes, pointsRes, couponsRes, remindersRes, petRes, diaryRes, notifRes, treatmentLogsRes, pointsHistRes, aiCreditsRes] = await Promise.all([
       supabase.from("orders").select("id, status, total, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
       supabase.from("loyalty_points").select("points").eq("user_id", user.id),
       supabase.from("user_coupons").select("id").eq("user_id", user.id).eq("used", false).gte("expires_at", new Date().toISOString()),
@@ -76,6 +76,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       supabase.from("user_notifications").select("id, title, message, type, created_at, read").eq("user_id", user.id).eq("read", false).order("created_at", { ascending: false }).limit(3),
       supabase.from("treatment_logs").select("log_date").eq("user_id", user.id).gte("log_date", sixMonthsAgo.split("T")[0]),
       supabase.from("loyalty_points").select("points, created_at").eq("user_id", user.id).gte("created_at", sixMonthsAgo),
+      supabase.from("ai_access_credits").select("expires_at").eq("user_id", user.id).order("expires_at", { ascending: false }).limit(1).maybeSingle(),
     ]);
 
     const orders = ordersRes.data || [];
