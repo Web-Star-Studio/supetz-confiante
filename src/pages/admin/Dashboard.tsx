@@ -232,30 +232,30 @@ export default function AdminDashboard() {
   if (loading) {
     return (
       <AdminLayout>
-        <div className="mb-8">
-          <h1 className="text-3xl font-extrabold text-foreground font-display">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">Visão executiva consolidada</p>
+        <div className="mb-6">
+          <h1 className="text-2xl font-extrabold text-foreground">Dashboard</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">Visão executiva consolidada</p>
         </div>
-        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-supet-bg-alt rounded-3xl p-5 animate-pulse">
+            <div key={i} className="bg-card rounded-2xl border border-border/50 p-5 animate-pulse">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-border" />
+                <div className="w-10 h-10 rounded-xl bg-border" />
                 <div className="space-y-2"><div className="h-3 w-16 rounded-full bg-border" /><div className="h-5 w-24 rounded-full bg-border" /></div>
               </div>
             </div>
           ))}
         </div>
-        <div className="bg-supet-bg-alt rounded-3xl p-6 mb-8 animate-pulse"><div className="h-48 rounded-2xl bg-border" /></div>
+        <div className="bg-card rounded-2xl border border-border/50 p-6 mb-6 animate-pulse"><div className="h-48 rounded-xl bg-border" /></div>
       </AdminLayout>
     );
   }
 
   return (
     <AdminLayout>
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-foreground font-display">Dashboard</h1>
-        <p className="text-muted-foreground mt-1">Visão executiva consolidada</p>
+      <div className="mb-6">
+        <h1 className="text-2xl font-extrabold text-foreground">Dashboard</h1>
+        <p className="text-sm text-muted-foreground mt-0.5">Visão executiva consolidada</p>
       </div>
 
       {/* Primary KPIs */}
