@@ -1110,19 +1110,37 @@ export default function BaseConhecimento() {
                         </div>
                       </div>
                     </div>
-                    {selectedArticle.isCustom && (
-                      <div className="flex items-center gap-1 shrink-0">
-                        <Button variant="ghost" size="sm" onClick={() => {
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        if (selectedArticle.isCustom) {
                           const dbArticle = customArticles.find(a => a.id === selectedArticle.id);
                           if (dbArticle) { setEditingArticle(dbArticle); setEditorOpen(true); }
-                        }}>
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteArticle(selectedArticle.id)}>
+                        } else {
+                          // Edit static article — open editor pre-filled, will create DB override
+                          const parentCat = knowledgeBase.find(c => c.articles.some(a => a.id === selectedArticle.id));
+                          setEditingArticle({
+                            id: null, // new record
+                            category: parentCat?.id || "",
+                            title: selectedArticle.title,
+                            tags: selectedArticle.tags,
+                            content: selectedArticle.content,
+                            icon: (selectedArticle as any).iconName || "FileText",
+                            staticId: (selectedArticle as any).staticId,
+                          });
+                          setEditorOpen(true);
+                        }
+                      }} title="Editar">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      {selectedArticle.isCustom && (
+                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteArticle(selectedArticle.id)} title="Excluir / Restaurar original">
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
-                      </div>
-                    )}
+                      )}
+                      {selectedArticle.isCustom && (selectedArticle as any).staticId && (
+                        <Badge variant="outline" className="text-[9px] ml-1">Editado</Badge>
+                      )}
+                    </div>
                   </div>
                   <div className="border-t border-border/50 pt-5">
                     <MarkdownRenderer content={selectedArticle.content} />
