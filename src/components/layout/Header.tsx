@@ -73,11 +73,11 @@ export default function Header() {
     <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/30 md:border-b-0">
       <div className="relative mx-auto flex max-w-[1480px] items-center justify-between px-3 py-1.5 md:px-8 md:py-3">
         <Link to="/" onClick={handleLogoClick} className="relative z-10 flex shrink-0 items-center">
-          <div className="relative h-[38px] w-[114px] overflow-hidden md:h-[56px] md:w-[168px]">
+          <div className="relative h-[32px] w-[100px] md:h-[42px] md:w-[130px]">
             <img
               src="/supetLogoNew.png"
               alt="SUPET"
-              className="absolute left-0 top-1/2 w-full h-auto -translate-y-1/2 object-contain"
+              className="w-full h-full object-contain"
             />
           </div>
         </Link>
