@@ -23,6 +23,8 @@ const App = () => (
               <ScrollToTop />
               <CartDrawer />
               <FloatingChatbot />
+              <PWAInstallPrompt />
+              <MobileBottomNav />
               <AnimatedRoutes />
             </SmoothScrollProvider>
           </CartProvider>
