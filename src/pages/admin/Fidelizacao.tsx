@@ -4,6 +4,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
 import { Star, Ticket, Users, TrendingUp, Plus, Loader2, Search, Gift, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface PointsEntry {
