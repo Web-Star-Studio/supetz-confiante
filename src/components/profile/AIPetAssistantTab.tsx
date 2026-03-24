@@ -14,10 +14,12 @@ type Msg = { role: "user" | "assistant"; content: string; isEmergency?: boolean 
 type AIMode = "assistant" | "tips" | "analysis" | "recipes" | "fun_facts" | "health_plan";
 
 interface PetInfo {
+  id: string;
   name: string;
   breed: string | null;
   weight_kg: number | null;
   birth_date: string | null;
+  photo_url: string | null;
 }
 
 interface Tip { emoji: string; title: string; description: string }
