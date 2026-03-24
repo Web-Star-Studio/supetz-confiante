@@ -56,6 +56,7 @@ function getPeriodStart(period: Period): Date | null {
 
 export default function AdminFinanceiro() {
   const { user } = useAuth();
+  const { log } = useAuditLog();
   const [orders, setOrders] = useState<Order[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
