@@ -24,6 +24,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 const navItems = [
+  { key: "dashboard", label: "Resumo", icon: LayoutDashboard },
   { key: "dados", label: "Meus Dados", icon: User },
   { key: "pet", label: "Meu Pet", icon: PawPrint },
   { key: "ia", label: "SuperPet AI", icon: Sparkles },
