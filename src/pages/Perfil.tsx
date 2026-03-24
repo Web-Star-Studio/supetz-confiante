@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail,
   PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, Store, Menu, X,
-  Sparkles, Trophy,
+  Sparkles, Trophy, LayoutDashboard,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -18,11 +18,13 @@ import LoyaltyPointsTab from "@/components/profile/LoyaltyPointsTab";
 import CouponsTab from "@/components/profile/CouponsTab";
 import AIPetAssistantTab from "@/components/profile/AIPetAssistantTab";
 import AchievementsTab from "@/components/profile/AchievementsTab";
+import ProfileDashboardTab from "@/components/profile/ProfileDashboardTab";
 import UserNotificationCenter from "@/components/profile/UserNotificationCenter";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 const navItems = [
+  { key: "dashboard", label: "Resumo", icon: LayoutDashboard },
   { key: "dados", label: "Meus Dados", icon: User },
   { key: "pet", label: "Meu Pet", icon: PawPrint },
   { key: "ia", label: "SuperPet AI", icon: Sparkles },
@@ -41,7 +43,7 @@ export default function Perfil() {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const [activeTab, setActiveTab] = useState("dados");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -217,6 +219,8 @@ export default function Perfil() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "dashboard":
+        return <ProfileDashboardTab setActiveTab={setActiveTab} />;
       case "dados":
         return (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-supet-bg-alt p-6 sm:p-8 space-y-5">
