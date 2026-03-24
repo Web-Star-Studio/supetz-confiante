@@ -168,7 +168,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     { label: "Compras", icon: ShoppingBag, tab: "compras", href: null },
   ];
 
-  const cardClass = "rounded-2xl bg-supet-bg-alt p-5 sm:p-6";
+  const cardClass = "rounded-2xl bg-supet-bg-alt p-4 sm:p-5 md:p-6 overflow-hidden";
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 sm:space-y-6 overflow-x-hidden">
