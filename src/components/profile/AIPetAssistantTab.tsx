@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Sparkles, Send, Loader2, BookOpen, ChefHat,
-  Activity, Brain, PawPrint, RefreshCw, Lightbulb, HeartPulse, Calendar,
+  Activity, Brain, PawPrint, RefreshCw, Lightbulb, HeartPulse, Calendar, AlertTriangle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
