@@ -83,7 +83,7 @@ function ContentBlock({ block, isFirst }: { block: BlogPostContentType; isFirst:
     case "image":
       return (
         <figure className="my-12 md:my-16 -mx-4 md:-mx-16">
-          <img src={block.content} alt={block.alt || ""} className="w-full rounded-xl md:rounded-2xl" />
+          <BlurImage src={block.content!} alt={block.alt || ""} wrapperClassName="rounded-xl md:rounded-2xl" className="w-full rounded-xl md:rounded-2xl" />
           {block.alt && <figcaption className="mt-4 text-center font-body text-[0.8rem] italic text-supet-text/40 tracking-wide">{block.alt}</figcaption>}
         </figure>
       );
