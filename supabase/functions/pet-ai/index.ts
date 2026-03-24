@@ -244,11 +244,26 @@ serve(async (req) => {
 
     const { mode, messages, petInfo } = await req.json();
 
-    // Server-side AI access credit check
     const authHeader = req.headers.get("Authorization");
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Load AI config from store_settings
+    const { data: configRow } = await supabaseAdmin
+      .from("store_settings")
+      .select("value")
+      .eq("key", "ai_config")
+      .maybeSingle();
+
+    const aiConfig = configRow?.value as any || {};
+    const model = aiConfig.model || "google/gemini-3-flash-preview";
+    const temperature = aiConfig.temperature ?? 0.4;
+    const extraKeywords: string[] = aiConfig.emergency_keywords_extra || [];
+    const customEmergencyResponse = aiConfig.emergency_response_custom || "";
+    const petAiPersona = aiConfig.pet_ai_persona || "";
+    const extraSafetyRules = aiConfig.safety_rules_extra || "";
+    const aiEnabled = aiConfig.enabled !== false;
 
     // Extract user from JWT
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
