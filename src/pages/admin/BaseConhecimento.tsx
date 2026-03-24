@@ -835,8 +835,6 @@ export default function BaseConhecimento() {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
-  const [customArticles, setCustomArticles] = useState<any[]>([]);
-
   const [dbArticles, setDbArticles] = useState<any[]>([]);
   const [isMigrating, setIsMigrating] = useState(false);
 
