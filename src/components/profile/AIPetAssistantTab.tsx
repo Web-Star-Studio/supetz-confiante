@@ -312,7 +312,10 @@ export default function AIPetAssistantTab() {
     setLoading(false);
   };
 
-  if (petsLoading) {
+  const hasActiveAccess = aiAccessExpiry && aiAccessExpiry > new Date();
+  const daysRemaining = hasActiveAccess ? Math.ceil((aiAccessExpiry!.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0;
+
+  if (petsLoading || aiAccessLoading) {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -327,6 +330,43 @@ export default function AIPetAssistantTab() {
         <PawPrint className="h-12 w-12 mx-auto text-muted-foreground" />
         <h3 className="text-lg font-bold text-foreground">Cadastre seu pet primeiro!</h3>
         <p className="text-sm text-muted-foreground">Para usar o assistente com IA, você precisa ter um pet cadastrado.</p>
+      </motion.div>
+    );
+  }
+
+  if (!hasActiveAccess) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl bg-gradient-to-br from-supet-bg-alt to-primary/5 p-8 text-center space-y-5">
+        <div className="mx-auto h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+          <Lock className="h-10 w-10 text-primary/60" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-bold text-foreground">SuperPet AI — Acesso Expirado</h3>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            {aiAccessExpiry
+              ? "Seu período de acesso ao SuperPet AI terminou. Cada compra concede 30 dias por produto!"
+              : "O SuperPet AI está disponível para clientes Supet! Cada compra concede 30 dias de acesso por produto."}
+          </p>
+        </div>
+        <div className="bg-card rounded-2xl p-4 max-w-sm mx-auto space-y-3">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <ShoppingBag className="h-5 w-5 text-primary" />
+            <span>1 produto = 30 dias de acesso</span>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Clock className="h-5 w-5 text-primary" />
+            <span>Dias acumulam entre compras</span>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <span>3 produtos = 90 dias de acesso</span>
+          </div>
+        </div>
+        <Link to="/shop"
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-bold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+          <ShoppingBag className="h-4 w-4" /> Comprar agora
+        </Link>
       </motion.div>
     );
   }
