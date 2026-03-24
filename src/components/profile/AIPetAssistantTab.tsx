@@ -432,7 +432,7 @@ export default function AIPetAssistantTab() {
               </div>
             )}
           </div>
-          <div className="min-w-0">
+            <div className="min-w-0 flex-1">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> Super Pet AI para {pet.name}
             </h3>
@@ -441,6 +441,14 @@ export default function AIPetAssistantTab() {
               {pet.weight_kg && <span>{pet.weight_kg}kg</span>}
               {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
             </div>
+          </div>
+          <div className="flex-shrink-0 text-right">
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+              daysRemaining <= 7 ? "bg-destructive/10 text-destructive" : daysRemaining <= 15 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+            }`}>
+              {daysRemaining}d restantes
+            </span>
+            <Progress value={Math.min(100, (daysRemaining / 30) * 100)} className="h-1 mt-1.5 w-20" />
           </div>
         </div>
       )}
