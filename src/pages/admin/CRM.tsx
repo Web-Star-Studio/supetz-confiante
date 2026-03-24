@@ -130,6 +130,26 @@ export default function AdminCRM() {
         <p className="text-muted-foreground mt-1">Gestão avançada de clientes e funil de vendas</p>
       </div>
 
+      {/* Stats overview */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <div className="bg-card rounded-2xl p-5 border border-border/50">
+          <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Total de clientes</p>
+          <p className="text-2xl font-extrabold text-foreground">{clients.length}</p>
+        </div>
+        <div className="bg-card rounded-2xl p-5 border border-border/50">
+          <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Com compras</p>
+          <p className="text-2xl font-extrabold text-foreground">{clients.filter(c => c.orderCount > 0).length}</p>
+        </div>
+        <div className="bg-card rounded-2xl p-5 border border-border/50">
+          <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">Gasto médio</p>
+          <p className="text-2xl font-extrabold text-foreground">
+            {clients.length > 0
+              ? `R$ ${(clients.reduce((s, c) => s + c.totalSpent, 0) / clients.length).toFixed(2)}`
+              : "R$ 0,00"}
+          </p>
+        </div>
+      </div>
+
       <CRMFunnelCards data={funnelData} selected={statusFilter} onSelect={setStatusFilter} />
 
       {/* Filters row */}

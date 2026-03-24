@@ -21,7 +21,6 @@ import AdminRoute from "../../components/admin/AdminRoute";
 import AdminDashboard from "../../pages/admin/Dashboard";
 import AdminPedidos from "../../pages/admin/Pedidos";
 import AdminProdutos from "../../pages/admin/Produtos";
-import AdminClientes from "../../pages/admin/Clientes";
 import AdminConfiguracoes from "../../pages/admin/Configuracoes";
 import AdminFidelizacao from "../../pages/admin/Fidelizacao";
 import AdminCRM from "../../pages/admin/CRM";
@@ -61,7 +60,6 @@ export default function AnimatedRoutes() {
         <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
         <Route path="/admin/pedidos" element={<AdminRoute><AdminPedidos /></AdminRoute>} />
         <Route path="/admin/produtos" element={<AdminRoute><AdminProdutos /></AdminRoute>} />
-        <Route path="/admin/clientes" element={<AdminRoute><AdminClientes /></AdminRoute>} />
         <Route path="/admin/configuracoes" element={<AdminRoute><AdminConfiguracoes /></AdminRoute>} />
         <Route path="/admin/fidelizacao" element={<AdminRoute><AdminFidelizacao /></AdminRoute>} />
         <Route path="/admin/crm" element={<AdminRoute><AdminCRM /></AdminRoute>} />
