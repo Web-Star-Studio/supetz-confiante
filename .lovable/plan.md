@@ -1,78 +1,35 @@
 
 
-# Plano: CRM Completo + Marketing & Campanhas no Admin
+# Plano: Unificar Clientes + CRM em um unico modulo
 
-## Resumo
+## Objetivo
+Eliminar a pagina `/admin/clientes` separada e manter apenas `/admin/crm` como modulo unico de gestao de clientes, combinando as stats da pagina Clientes (total, com compras, gasto medio) com as funcionalidades avancadas do CRM (funil, tags, drawer, notas).
 
-Implementar dois novos modulos completos no painel admin: um CRM para gestao avancada de clientes e um modulo de Marketing para campanhas e segmentacao.
+## Alteracoes
 
----
+### 1. Enriquecer a pagina CRM com stats da pagina Clientes
+- Adicionar os 3 cards de metricas (Total clientes, Com compras, Gasto medio) acima dos cards de funil no CRM
+- Os dados ja estao disponiveis no state `clients` do CRM
 
-## Fase 1 — CRM Completo
+### 2. Remover rota e sidebar de "Clientes"
+- **AdminLayout.tsx**: Remover o item `{ label: "Clientes", path: "/admin/clientes", icon: Users }` do array `navItems`
+- **AnimatedRoutes.tsx**: Remover import de `AdminClientes` e a rota `/admin/clientes`
 
-### Banco de dados (migracao)
+### 3. Renomear sidebar
+- Mudar o label do CRM de "CRM" para "Clientes" (com icone `Users` ou manter `ContactRound`) para ficar mais intuitivo
 
-- Tabela `customer_notes` — notas internas por cliente (user_id, admin_id, content, created_at)
-- Tabela `customer_tags` — tags para segmentacao (id, name, color)
-- Tabela `customer_tag_assignments` — relacao N:N entre profiles e tags
-- Tabela `customer_interactions` — historico de interacoes (tipo: compra, contato, suporte, nota; referencia ao cliente)
-- Coluna `status` na tabela `profiles` ou tabela separada `customer_status` para funil (lead, ativo, inativo, VIP)
-- RLS: admins podem ler/escrever tudo; usuarios comuns sem acesso
+### 4. Atualizar Dashboard
+- Qualquer link interno que aponte para `/admin/clientes` deve apontar para `/admin/crm`
 
-### Pagina /admin/crm
-
-- **Visao geral do funil**: cards com contagem por status (Lead, Ativo, Inativo, VIP) com drag-and-drop ou clique para alterar
-- **Lista de clientes enriquecida**: tabela com nome, tags (badges coloridos), total gasto, ultimo pedido, status no funil, pontos
-- **Filtros avancados**: por tag, status, faixa de gasto, periodo de cadastro
-- **Ficha do cliente (drawer/modal)**: ao clicar em um cliente abre painel lateral com:
-  - Dados do perfil + pets cadastrados
-  - Timeline de interacoes (pedidos, notas, mudancas de status)
-  - Notas internas (textarea para admin adicionar)
-  - Tags editaveis (adicionar/remover)
-  - Metricas individuais (LTV, frequencia de compra, ticket medio)
-
-### Sidebar do admin
-
-- Adicionar item "CRM" com icone `ContactRound` entre Clientes e Fidelizacao
+### 5. Limpar arquivo
+- Deletar `src/pages/admin/Clientes.tsx` (codigo morto)
 
 ---
 
-## Fase 2 — Marketing & Campanhas
-
-### Banco de dados (migracao)
-
-- Tabela `campaigns` — (id, name, type: coupon/notification, segment_filter jsonb, status: draft/active/completed, message, coupon_id nullable, created_at, sent_at)
-- Tabela `campaign_recipients` — (campaign_id, user_id, sent_at, opened boolean)
-
-### Pagina /admin/marketing
-
-- **Dashboard de campanhas**: lista de campanhas com status, destinatarios, taxa de abertura
-- **Criar campanha**:
-  - Selecionar segmento (por tag, status do funil, faixa de gasto, sem compra ha X dias)
-  - Preview de quantos clientes serao atingidos
-  - Tipo: enviar notificacao in-app e/ou gerar cupom automatico
-  - Agendar ou enviar imediatamente
-- **Metricas**: conversao (quantos usaram cupom), alcance (notificacoes lidas)
-
-### Sidebar do admin
-
-- Adicionar item "Marketing" com icone `Megaphone` apos Fidelizacao
-
----
-
-## Rotas
-
-- `/admin/crm` — nova rota protegida por AdminRoute
-- `/admin/marketing` — nova rota protegida por AdminRoute
-
----
-
-## Detalhes tecnicos
-
-- Todas as tabelas com RLS restrito a admins (usando `has_role`)
-- Segmentacao de clientes via queries dinamicas no Supabase (filtros compostos)
-- Notificacoes de campanhas inseridas em `user_notifications` em batch via edge function
-- Cupons de campanha criados em `user_coupons` vinculados a campanha
-- UI segue o design system existente: cards rounded-3xl, cores primary/emerald/violet, font-display, framer-motion animations
-- Componentes reutilizam padroes do AdminLayout, skeletons e motion existentes
+## Arquivos afetados
+- `src/components/admin/AdminLayout.tsx` — remover item Clientes, renomear CRM
+- `src/components/layout/AnimatedRoutes.tsx` — remover rota e import
+- `src/pages/admin/CRM.tsx` — adicionar stats cards (Total, Com compras, Gasto medio)
+- `src/pages/admin/Dashboard.tsx` — atualizar links para `/admin/crm`
+- `src/pages/admin/Clientes.tsx` — deletar
 
