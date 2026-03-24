@@ -88,7 +88,16 @@ export default function AIPetAssistantTab() {
       const err = await resp.json().catch(() => ({ error: "Erro de rede" }));
       throw new Error(err.error || "Erro ao conectar com IA");
     }
-    return resp;
+    // Check for emergency JSON response
+    const contentType = resp.headers.get("Content-Type") || "";
+    if (contentType.includes("application/json")) {
+      const data = await resp.json();
+      if (data.isEmergency) {
+        return { isEmergency: true, content: data.content, resp: null };
+      }
+      return { isEmergency: false, content: data.content, resp: null };
+    }
+    return { isEmergency: false, content: null, resp };
   };
 
   // Streaming chat
