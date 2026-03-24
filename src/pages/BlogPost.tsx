@@ -217,7 +217,6 @@ export default function BlogPost() {
             )}
 
             <SocialShare title={post.title} />
-            )}
 
             <div className="rounded-2xl border border-supet-text/6 bg-supet-bg/60 p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-start gap-5">
