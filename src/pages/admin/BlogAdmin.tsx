@@ -480,8 +480,31 @@ export default function BlogAdmin() {
               {/* Cover Image */}
               <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2"><Image className="w-4 h-4 text-primary" /> Capa</h3>
-                <Input value={editPost.cover_image || ""} onChange={(e) => { setEditPost(p => ({ ...p, cover_image: e.target.value })); markDirty(); }} placeholder="URL da imagem de capa..." className="text-xs" />
-                {editPost.cover_image && <img src={editPost.cover_image} alt="Capa" className="w-full aspect-video object-cover rounded-lg" />}
+                {editPost.cover_image ? (
+                  <div className="relative">
+                    <img src={editPost.cover_image} alt="Capa" className="w-full aspect-video object-cover rounded-lg" />
+                    <Button variant="destructive" size="sm" className="absolute top-2 right-2 h-7 w-7 p-0" onClick={() => { setEditPost(p => ({ ...p, cover_image: "" })); markDirty(); }}>
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full aspect-video rounded-lg bg-muted/30 border-2 border-dashed border-border cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                    {uploadingCover ? <Loader2 className="w-6 h-6 animate-spin text-primary" /> : (
+                      <>
+                        <Image className="w-6 h-6 text-muted-foreground mb-1" />
+                        <span className="text-xs text-muted-foreground">Clique para enviar</span>
+                      </>
+                    )}
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      setUploadingCover(true);
+                      const url = await uploadImage(file);
+                      if (url) { setEditPost(p => ({ ...p, cover_image: url })); markDirty(); }
+                      setUploadingCover(false);
+                    }} />
+                  </label>
+                )}
+                <Input value={editPost.cover_image || ""} onChange={(e) => { setEditPost(p => ({ ...p, cover_image: e.target.value })); markDirty(); }} placeholder="Ou cole a URL da imagem..." className="text-xs" />
               </div>
 
               {/* Category */}
