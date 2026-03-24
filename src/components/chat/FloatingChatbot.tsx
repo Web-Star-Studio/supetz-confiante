@@ -135,6 +135,18 @@ export default function FloatingChatbot() {
         throw new Error(err.error || `Erro ${resp.status}`);
       }
 
+      // Check for emergency JSON response (non-streaming)
+      const contentType = resp.headers.get("Content-Type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await resp.json();
+        if (data.isEmergency) {
+          assistantText = data.content;
+          setMessages((prev) => [...prev, { role: "assistant", content: assistantText, isEmergency: true }]);
+          setLoading(false);
+          return;
+        }
+      }
+
       const reader = resp.body!.getReader();
       const decoder = new TextDecoder();
       let buf = "";
