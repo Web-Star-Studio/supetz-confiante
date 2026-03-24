@@ -449,7 +449,13 @@ export default function Perfil() {
                 <h1 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h1>
                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
-              <UserNotificationCenter />
+              <button
+                onClick={handleLogout}
+                className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                aria-label="Sair"
+              >
+                <LogOut className="w-5 h-5" />
+              </button>
             </div>
             <MobileTabScroller activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>

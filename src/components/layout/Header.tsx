@@ -12,6 +12,7 @@ import { socialLinks } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import UserNotificationCenter from "@/components/profile/UserNotificationCenter";
 
 const navLinks = [
   { label: "Shop", href: "/shop" },
