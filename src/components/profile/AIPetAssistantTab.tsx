@@ -160,10 +160,17 @@ export default function AIPetAssistantTab() {
     if (loading) return;
     setLoading(true);
     try {
-      const resp = await callAI(aiMode);
+      const result = await callAI(aiMode);
+
+      if (result.isEmergency) {
+        // Emergency responses shouldn't happen for non-assistant modes, but handle gracefully
+        toast.error(result.content);
+        setLoading(false);
+        return;
+      }
 
       if (aiMode === "analysis") {
-        const reader = resp.body!.getReader();
+        const reader = result.resp!.body!.getReader();
         const decoder = new TextDecoder();
         let buf = "";
         let text = "";
@@ -189,8 +196,7 @@ export default function AIPetAssistantTab() {
           }
         }
       } else {
-        const data = await resp.json();
-        const content = data.content || "";
+        const content = result.content || "";
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
