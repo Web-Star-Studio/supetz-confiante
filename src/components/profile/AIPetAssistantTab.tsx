@@ -3,12 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Sparkles, Send, Loader2, BookOpen, ChefHat,
   Activity, Brain, PawPrint, RefreshCw, Lightbulb, HeartPulse, Calendar, AlertTriangle,
+  Lock, ShoppingBag, Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import supetIaAvatar from "@/assets/supet-ia-avatar.png";
+import { Link } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
 
 type Msg = { role: "user" | "assistant"; content: string; isEmergency?: boolean };
 type AIMode = "assistant" | "tips" | "analysis" | "recipes" | "fun_facts" | "health_plan";
