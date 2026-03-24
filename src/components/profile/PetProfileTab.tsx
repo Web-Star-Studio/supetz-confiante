@@ -3,7 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Camera, Loader2, PawPrint, Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { Camera, Check, ChevronDown, Loader2, PawPrint, Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { DOG_BREEDS } from "@/data/dogBreeds";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
 interface Pet {
   id: string;
@@ -43,6 +46,77 @@ function DeleteConfirmation({ name, onConfirm, onCancel }: { name: string; onCon
         </div>
       </div>
     </motion.div>
+  );
+}
+
+function BreedCombobox({ value, onChange }: { value: string; onChange: (val: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [showCustom, setShowCustom] = useState(false);
+
+  const isKnownBreed = !value || DOG_BREEDS.includes(value) || value === "Outra";
+  const displayValue = value || "Selecionar raça...";
+
+  if (showCustom || (!isKnownBreed && value)) {
+    return (
+      <div className="flex gap-2">
+        <input
+          value={value || ""}
+          onChange={(e) => onChange(e.target.value)}
+          className="flex-1 rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
+          placeholder="Digite a raça..."
+          autoFocus
+        />
+        <button
+          type="button"
+          onClick={() => { setShowCustom(false); onChange(""); }}
+          className="rounded-full bg-supet-bg px-3 py-2.5 text-xs font-semibold text-muted-foreground hover:bg-border transition-colors"
+        >
+          Lista
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-left outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all flex items-center justify-between"
+        >
+          <span className={value ? "text-foreground" : "text-muted-foreground"}>{displayValue}</span>
+          <ChevronDown className="h-4 w-4 text-muted-foreground" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command>
+          <CommandInput placeholder="Buscar raça..." />
+          <CommandList>
+            <CommandEmpty>Nenhuma raça encontrada.</CommandEmpty>
+            <CommandGroup>
+              {DOG_BREEDS.map((breed) => (
+                <CommandItem
+                  key={breed}
+                  value={breed}
+                  onSelect={(val) => {
+                    if (val === "Outra") {
+                      setShowCustom(true);
+                      onChange("");
+                    } else {
+                      onChange(val);
+                    }
+                    setOpen(false);
+                  }}
+                >
+                  <Check className={`mr-2 h-4 w-4 ${value === breed ? "opacity-100" : "opacity-0"}`} />
+                  {breed}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -142,8 +216,11 @@ export default function PetProfileTab() {
           <input value={editingPet.name || ""} onChange={(e) => setEditingPet((p) => p ? { ...p, name: e.target.value } : p)} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" placeholder="Ex: Thor" />
         </div>
         <div>
-          <label className="mb-1.5 text-sm font-semibold text-foreground">Raça</label>
-          <input value={editingPet.breed || ""} onChange={(e) => setEditingPet((p) => p ? { ...p, breed: e.target.value } : p)} className="w-full rounded-full bg-supet-bg px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" placeholder="Ex: Golden Retriever" />
+          <label className="mb-1.5 text-sm font-semibold text-foreground block">Raça</label>
+          <BreedCombobox
+            value={editingPet.breed || ""}
+            onChange={(val) => setEditingPet((p) => p ? { ...p, breed: val } : p)}
+          />
         </div>
         <div className="grid grid-cols-2 gap-4">
           <div>
