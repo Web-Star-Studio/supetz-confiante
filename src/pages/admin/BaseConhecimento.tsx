@@ -1163,7 +1163,7 @@ export default function BaseConhecimento() {
       <ArticleEditor
         open={editorOpen}
         onClose={() => { setEditorOpen(false); setEditingArticle(null); }}
-        article={editingArticle ? { id: editingArticle.id, category: editingArticle.category, title: editingArticle.title, tags: editingArticle.tags, content: editingArticle.content, icon: editingArticle.icon } : null}
+        article={editingArticle ? { id: editingArticle.id, category: editingArticle.category, title: editingArticle.title, tags: editingArticle.tags, content: editingArticle.content, icon: editingArticle.icon, staticId: editingArticle.staticId || editingArticle.static_id } : null}
         categories={knowledgeBase.map(c => c.id)}
         onSave={handleSaveArticle}
       />
