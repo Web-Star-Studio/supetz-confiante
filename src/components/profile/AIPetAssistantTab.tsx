@@ -269,7 +269,7 @@ export default function AIPetAssistantTab() {
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-primary-foreground">SuperPet AI</h3>
+              <h3 className="text-sm font-bold text-primary-foreground">Super Pet AI</h3>
               <p className="text-xs text-primary-foreground/70">Assistente virtual para {pet.name}</p>
             </div>
           </div>
