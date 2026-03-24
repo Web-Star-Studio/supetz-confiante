@@ -377,24 +377,7 @@ export default function Perfil() {
               </div>
               <UserNotificationCenter />
             </div>
-            <div className="overflow-x-auto px-3 pb-3 pt-2 scrollbar-hide scroll-snap-x">
-              <div className="w-max min-w-full rounded-full bg-supet-bg-alt p-1 flex gap-0.5">
-                {navItems.map((item) => (
-                  <button
-                    key={item.key}
-                    onClick={() => setActiveTab(item.key)}
-                    className={`rounded-full px-3 py-2 text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 transition-colors ${
-                      activeTab === item.key
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <item.icon className="h-3 w-3" />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <MobileTabScroller activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
           <main className="flex-1 p-3 md:p-6 lg:p-10">
