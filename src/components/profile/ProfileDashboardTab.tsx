@@ -246,7 +246,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
             <h3 className="text-sm font-bold text-foreground">Evolução do Tratamento</h3>
           </div>
           {data.treatmentChart.some((d) => d.registros > 0) ? (
-            <ChartContainer config={{ registros: { label: "Registros", color: "hsl(var(--primary))" } }} className="h-[180px] w-full">
+            <ChartContainer config={{ registros: { label: "Registros", color: "hsl(var(--primary))" } }} className="h-[150px] sm:h-[180px] w-full">
               <AreaChart data={data.treatmentChart}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
