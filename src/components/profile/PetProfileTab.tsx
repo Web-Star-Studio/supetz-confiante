@@ -322,29 +322,42 @@ export default function PetProfileTab() {
             <p className="text-sm text-muted-foreground mt-1">Cadastre seu pet para personalizar recomendações.</p>
           </div>
         ) : (
-          pets.map((pet, i) => (
-            <motion.div key={pet.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6 flex items-center gap-4">
-              {pet.photo_url ? (
-                <img src={pet.photo_url} alt={pet.name} className="h-16 w-16 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/20 flex-shrink-0">
-                  <PawPrint className="h-7 w-7 text-primary/40" />
+          pets.map((pet, i) => {
+            const breedInfo = pet.breed ? BREED_INFO[pet.breed] : null;
+            return (
+              <motion.div key={pet.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="rounded-3xl bg-supet-bg-alt overflow-hidden">
+                <div className="p-5 sm:p-6 flex items-center gap-4">
+                  {pet.photo_url ? (
+                    <img src={pet.photo_url} alt={pet.name} className="h-16 w-16 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/20 flex-shrink-0">
+                      <PawPrint className="h-7 w-7 text-primary/40" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-base font-bold text-foreground truncate">{pet.name}</p>
+                    {pet.breed && <p className="text-sm text-muted-foreground">{pet.breed}</p>}
+                    <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
+                      {pet.weight_kg && <span>{pet.weight_kg} kg</span>}
+                      {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
+                    </div>
+                    {breedInfo && (
+                      <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${getPorteColor(breedInfo.porte)}`}>{breedInfo.porte}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${getEnergiaColor(breedInfo.energia)}`}>⚡ {breedInfo.energia}</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-muted text-muted-foreground flex items-center gap-0.5"><Clock className="h-2.5 w-2.5" />{breedInfo.expectativaVida}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <button onClick={() => handleEdit(pet)} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">Editar</button>
+                    <button onClick={() => setDeleteTarget(pet)} className="rounded-full bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                  </div>
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-base font-bold text-foreground truncate">{pet.name}</p>
-                {pet.breed && <p className="text-sm text-muted-foreground">{pet.breed}</p>}
-                <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
-                  {pet.weight_kg && <span>{pet.weight_kg} kg</span>}
-                  {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
-                </div>
-              </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <button onClick={() => handleEdit(pet)} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">Editar</button>
-                <button onClick={() => setDeleteTarget(pet)} className="rounded-full bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20 transition-colors"><Trash2 className="h-4 w-4" /></button>
-              </div>
-            </motion.div>
-          ))
+                {breedInfo && <ExpandableBreedInfo info={breedInfo} />}
+              </motion.div>
+            );
+          })
         )}
         <button onClick={handleAdd} className="w-full rounded-full border-2 border-dashed border-primary/30 py-3 text-sm font-bold text-primary hover:border-primary/60 hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
           <Plus className="h-4 w-4" /> Adicionar pet
