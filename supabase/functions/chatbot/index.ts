@@ -21,10 +21,37 @@ ALIMENTAÇÃO: filhotes 2-6m 3-4 refeições/dia, 6-12m 2-3/dia, adultos 2/dia, 
 
 RAÇAS BRAQUICEFÁLICAS (Pug, Bulldog, Shih Tzu): sensíveis ao calor, problemas respiratórios, exercício leve, limpar dobras faciais.
 
+CUIDADOS SAZONAIS BRASIL: verão — passeios só antes das 8h ou após 18h, braquicefálicos e nórdicos precisam de ambiente climatizado, protetor solar para raças claras. Inverno — roupinha para pequenos/pelo curto, atenção a artrite em idosos. Chuvas — secar bem, atenção a leptospirose.
+
+DOENÇAS POR PORTE: pequenos — luxação patelar, problemas dentários, colapso traqueal. Médios — otite, alergias, epilepsia. Grandes — displasia, torção gástrica, osteossarcoma. Gigantes — torção gástrica, cardiomiopatia, vida curta.
+
 SINAIS DE ESTRESSE: lamber lábios, bocejar fora de contexto, orelhas para trás, destruir objetos, esconder-se.
 
 ENRIQUECIMENTO: brinquedos interativos, passeios com tempo para farejar, treinamento positivo, rodízio de brinquedos.
 `;
+
+const BREED_CONTEXT_MAP: Record<string, string> = {
+  "Pug": "Braquicefálico severo, muito sensível ao calor, propenso a problemas respiratórios e oculares, limpar dobras faciais diariamente",
+  "Bulldog Francês": "Braquicefálico, nunca exercitar em dias quentes, propenso a alergias de pele e problemas de coluna",
+  "Shih Tzu": "Braquicefálico, sensível ao calor, propenso a problemas oculares e respiratórios",
+  "Yorkshire": "Propenso a problemas dentários, luxação patelar, colapso traqueal. Usar peitoral, não coleira",
+  "Golden Retriever": "Propenso a displasia, câncer (alta incidência), obesidade. Exercício 60-90min/dia",
+  "Labrador": "MUITO propenso a obesidade. Come tudo. Propenso a displasia. Exercício 60-90min/dia",
+  "Pastor Alemão": "Estômago sensível, propenso a displasia e dermatite. Precisa de estímulo mental",
+  "Poodle": "Hipoalergênico, tosa obrigatória. Muito inteligente. Propenso a luxação patelar e epilepsia",
+  "Border Collie": "Raça mais inteligente, precisa de estímulo mental diário. Energia muito alta (90+min/dia)",
+  "Beagle": "Propenso a otite (orelhas longas) e obesidade. Limpar orelhas frequentemente",
+  "Dachshund": "Coluna extremamente sensível. Evitar saltos e escadas. Usar rampas. Controle de peso",
+  "Husky Siberiano": "Sofre MUITO com calor no Brasil. Nunca tosar. Artista de fuga. Energia muito alta",
+  "Chihuahua": "Menor raça, propenso a hipoglicemia e problemas dentários. Sensível ao frio",
+  "Pinscher": "Muito sensível ao frio (roupinha). Propenso a luxação patelar e problemas dentários",
+  "Pitbull": "Socialização extensiva desde filhote. Propenso a alergias de pele e displasia",
+  "Rottweiler": "Socialização precoce essencial. Propenso a displasia, osteossarcoma, cardiomiopatia",
+  "Schnauzer": "Propenso a pancreatite e hiperlipidemia. Dieta BAIXA em gordura",
+  "Lulu da Pomerânia": "NUNCA tosar rente (Alopecia X). Propenso a luxação patelar e colapso traqueal",
+  "Doberman": "Check-up cardíaco anual (cardiomiopatia dilatada). Sensível ao frio",
+  "Dogue Alemão": "Maior raça, vida curta (6-8 anos). Risco alto de torção gástrica",
+};
 
 const EMERGENCY_KEYWORDS = [
   "convulsao", "convulsão", "convulsoes", "convulsões",
@@ -118,7 +145,14 @@ serve(async (req) => {
           userContext += `\nNome do usuário: ${profile.full_name}.`;
         }
         if (pets.length > 0) {
-          userContext += `\nPets do usuário: ${pets.map(p => `${p.name} (${p.breed || "raça não informada"}, ${p.weight_kg ? p.weight_kg + "kg" : "peso não informado"})`).join(", ")}.`;
+          const petDescriptions = pets.map(p => {
+            let desc = `${p.name} (${p.breed || "raça não informada"}, ${p.weight_kg ? p.weight_kg + "kg" : "peso não informado"})`;
+            if (p.breed && BREED_CONTEXT_MAP[p.breed]) {
+              desc += ` [Info raça: ${BREED_CONTEXT_MAP[p.breed]}]`;
+            }
+            return desc;
+          });
+          userContext += `\nPets do usuário: ${petDescriptions.join("; ")}.`;
         }
         if (orders.length > 0) {
           userContext += `\nÚltimos pedidos: ${orders.map(o => `#${o.id.slice(0, 8)} - R$${o.total} (${o.status})`).join(", ")}.`;

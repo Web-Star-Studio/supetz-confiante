@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Camera, Check, ChevronDown, Loader2, PawPrint, Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { Camera, Check, ChevronDown, Loader2, PawPrint, Plus, Trash2, CheckCircle2, Heart, Zap, Clock, AlertTriangle, Scissors, Activity } from "lucide-react";
 import { DOG_BREEDS } from "@/data/dogBreeds";
+import { BREED_INFO, getPorteColor, getEnergiaColor } from "@/data/breedInfo";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
@@ -120,6 +121,37 @@ function BreedCombobox({ value, onChange }: { value: string; onChange: (val: str
   );
 }
 
+function BreedInfoCard({ breed }: { breed: string }) {
+  const info = BREED_INFO[breed];
+  if (!info) return null;
+
+  return (
+    <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="rounded-2xl bg-primary/5 border border-primary/10 p-4 space-y-3">
+      <div className="flex items-center gap-2 flex-wrap">
+        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${getPorteColor(info.porte)}`}>{info.porte}</span>
+        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${getEnergiaColor(info.energia)}`}>⚡ {info.energia}</span>
+        <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-muted text-muted-foreground flex items-center gap-1"><Clock className="h-3 w-3" />{info.expectativaVida}</span>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+        <div className="flex items-start gap-1.5"><Scissors className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Pelagem:</strong> {info.pelagem}</span></div>
+        <div className="flex items-start gap-1.5"><Activity className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Exercício:</strong> {info.exercicio}</span></div>
+      </div>
+      <div className="flex items-start gap-1.5 text-xs"><Heart className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Temperamento:</strong> {info.temperamento.join(", ")}</span></div>
+      {info.predisposicoes.length > 0 && (
+        <div className="flex items-start gap-1.5 text-xs"><AlertTriangle className="h-3.5 w-3.5 mt-0.5 text-amber-500 flex-shrink-0" /><span><strong>Atenção:</strong> {info.predisposicoes.join(", ")}</span></div>
+      )}
+      {info.cuidadosEspeciais.length > 0 && (
+        <div className="text-xs space-y-0.5">
+          <p className="font-semibold text-foreground flex items-center gap-1"><Zap className="h-3.5 w-3.5 text-primary" /> Cuidados especiais:</p>
+          <ul className="list-disc list-inside text-muted-foreground space-y-0.5 ml-1">
+            {info.cuidadosEspeciais.map((c, i) => <li key={i}>{c}</li>)}
+          </ul>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
 export default function PetProfileTab() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -222,6 +254,10 @@ export default function PetProfileTab() {
             onChange={(val) => setEditingPet((p) => p ? { ...p, breed: val } : p)}
           />
         </div>
+        {/* Breed Info Card */}
+        {editingPet.breed && BREED_INFO[editingPet.breed] && (
+          <BreedInfoCard breed={editingPet.breed} />
+        )}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="mb-1.5 text-sm font-semibold text-foreground">Peso (kg)</label>
