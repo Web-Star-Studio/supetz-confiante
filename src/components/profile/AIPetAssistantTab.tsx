@@ -371,6 +371,8 @@ export default function AIPetAssistantTab() {
           } catch { /* partial */ }
         }
       }
+      // Save analysis to cache
+      if (pet && text) saveToCache(pet.id, "analysis", { text });
     } catch (e: any) {
       toast.error(e.message);
     }
