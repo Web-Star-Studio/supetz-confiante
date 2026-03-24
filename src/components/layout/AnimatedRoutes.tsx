@@ -24,6 +24,8 @@ import AdminProdutos from "../../pages/admin/Produtos";
 import AdminClientes from "../../pages/admin/Clientes";
 import AdminConfiguracoes from "../../pages/admin/Configuracoes";
 import AdminFidelizacao from "../../pages/admin/Fidelizacao";
+import AdminCRM from "../../pages/admin/CRM";
+import AdminMarketing from "../../pages/admin/Marketing";
 
 import PageTransition from "./PageTransition";
 
