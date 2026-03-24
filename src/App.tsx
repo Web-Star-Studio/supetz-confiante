@@ -8,6 +8,8 @@ import ScrollToTop from "@/components/layout/ScrollToTop";
 import AnimatedRoutes from "@/components/layout/AnimatedRoutes";
 import CartDrawer from "@/components/layout/CartDrawer";
 import FloatingChatbot from "@/components/chat/FloatingChatbot";
+import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
+import MobileBottomNav from "@/components/pwa/MobileBottomNav";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +23,8 @@ const App = () => (
               <ScrollToTop />
               <CartDrawer />
               <FloatingChatbot />
+              <PWAInstallPrompt />
+              <MobileBottomNav />
               <AnimatedRoutes />
             </SmoothScrollProvider>
           </CartProvider>
