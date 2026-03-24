@@ -7,6 +7,7 @@ import SmoothScrollProvider from "@/components/layout/SmoothScrollProvider";
 import ScrollToTop from "@/components/layout/ScrollToTop";
 import AnimatedRoutes from "@/components/layout/AnimatedRoutes";
 import CartDrawer from "@/components/layout/CartDrawer";
+import FloatingChatbot from "@/components/chat/FloatingChatbot";
 
 const queryClient = new QueryClient();
 
