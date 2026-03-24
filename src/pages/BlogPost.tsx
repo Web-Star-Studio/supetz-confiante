@@ -150,6 +150,38 @@ export default function BlogPost() {
 
   return (
     <Layout>
+      <SEOHead
+        title={post.title}
+        description={post.excerpt}
+        path={`/blog/${post.slug}`}
+        image={post.cover_image || undefined}
+        type="article"
+        publishedTime={post.published_at ? `${post.published_at}T00:00:00-03:00` : undefined}
+        modifiedTime={post.updated_at}
+        author={post.author_name}
+        section={post.category}
+        tags={post.tags}
+        jsonLd={[
+          buildArticleSchema({
+            title: post.title,
+            description: post.excerpt,
+            url: `https://supetz-playful-trust.lovable.app/blog/${post.slug}`,
+            image: post.cover_image || undefined,
+            publishedAt: post.published_at ? `${post.published_at}T00:00:00-03:00` : undefined,
+            modifiedAt: post.updated_at,
+            authorName: post.author_name,
+            authorRole: post.author_role,
+            category: post.category,
+            tags: post.tags,
+            readTime: post.read_time,
+          }),
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+            { name: "Blog", url: "https://supetz-playful-trust.lovable.app/blog" },
+            { name: post.title, url: `https://supetz-playful-trust.lovable.app/blog/${post.slug}` },
+          ]),
+        ]}
+      />
       <motion.div style={{ scaleX }} className="fixed top-0 left-0 right-0 z-50 h-[3px] origin-left bg-supet-orange" />
 
       <article ref={articleRef}>
