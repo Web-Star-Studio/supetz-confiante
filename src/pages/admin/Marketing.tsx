@@ -39,6 +39,7 @@ const statusConfig: Record<string, { label: string; icon: typeof Clock; class: s
 
 export default function AdminMarketing() {
   const [campaigns, setCampaigns] = useState<CampaignWithMetrics[]>([]);
+  const { log } = useAuditLog();
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
