@@ -235,8 +235,9 @@ export default function AIPetAssistantTab() {
     setLoading(true);
     setAnalysisText("");
     try {
-      const resp = await callAI("analysis", [{ role: "user", content: `Registros de tratamento:\n${logsText}\n\nAnalise a evolução do tratamento e dê insights.` }]);
-      const reader = resp.body!.getReader();
+      const result = await callAI("analysis", [{ role: "user", content: `Registros de tratamento:\n${logsText}\n\nAnalise a evolução do tratamento e dê insights.` }]);
+      if (result.isEmergency) { setLoading(false); return; }
+      const reader = result.resp!.body!.getReader();
       const decoder = new TextDecoder();
       let buf = "";
       let text = "";
