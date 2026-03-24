@@ -303,15 +303,17 @@ export default function AIPetAssistantTab() {
             } catch { /* partial */ }
           }
         }
+        // Save analysis to cache
+        if (pet && text) saveToCache(pet.id, "analysis", { text });
       } else {
         const content = result.content || "";
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
-          if (aiMode === "tips" && parsed.tips) setTips(parsed.tips);
-          if (aiMode === "recipes" && parsed.recipes) setRecipes(parsed.recipes);
-          if (aiMode === "fun_facts" && parsed.facts) setFunFacts(parsed.facts);
-          if (aiMode === "health_plan" && parsed.plan) { setHealthPlan(parsed.plan); setSelectedDay(0); }
+          if (aiMode === "tips" && parsed.tips) { setTips(parsed.tips); saveToCache(pet!.id, "tips", { tips: parsed.tips }); }
+          if (aiMode === "recipes" && parsed.recipes) { setRecipes(parsed.recipes); saveToCache(pet!.id, "recipes", { recipes: parsed.recipes }); }
+          if (aiMode === "fun_facts" && parsed.facts) { setFunFacts(parsed.facts); saveToCache(pet!.id, "fun_facts", { facts: parsed.facts }); }
+          if (aiMode === "health_plan" && parsed.plan) { setHealthPlan(parsed.plan); setSelectedDay(0); saveToCache(pet!.id, "health_plan", { plan: parsed.plan }); }
         }
       }
     } catch (e: any) {
