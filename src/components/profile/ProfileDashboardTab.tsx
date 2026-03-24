@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Package, Star, Ticket, Bell, PawPrint, BookOpen, ShoppingBag,
-  Sparkles, Trophy, ChevronRight, Calendar, TrendingUp, Store,
+  Sparkles, Trophy, ChevronRight, Calendar, TrendingUp, Store, BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
-import { format } from "date-fns";
+import { format, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { Link } from "react-router-dom";
 
 interface ProfileDashboardTabProps {
