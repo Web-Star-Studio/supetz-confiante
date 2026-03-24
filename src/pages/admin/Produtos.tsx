@@ -54,6 +54,7 @@ function DeleteConfirmation({ name, onConfirm, onCancel }: { name: string; onCon
 
 export default function AdminProdutos() {
   const [products, setProducts] = useState<any[]>([]);
+  const { log } = useAuditLog();
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
