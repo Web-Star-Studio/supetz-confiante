@@ -33,7 +33,7 @@ export default function PushNotificationManager() {
         const registration = await navigator.serviceWorker.ready;
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
-          // VAPID public key would go here when configured
+          applicationServerKey: "BFkdlQ0yHWosqvYLhrHVJq124UJS3Q9loArwJw3H4d5sPi8wEw7vjSupkta4RUuPxqT_k_-JYQh7eahdQnoAmkA",
         }).catch(() => null);
 
         if (subscription) {
