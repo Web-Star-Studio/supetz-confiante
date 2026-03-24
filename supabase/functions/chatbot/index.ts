@@ -145,7 +145,14 @@ serve(async (req) => {
           userContext += `\nNome do usuário: ${profile.full_name}.`;
         }
         if (pets.length > 0) {
-          userContext += `\nPets do usuário: ${pets.map(p => `${p.name} (${p.breed || "raça não informada"}, ${p.weight_kg ? p.weight_kg + "kg" : "peso não informado"})`).join(", ")}.`;
+          const petDescriptions = pets.map(p => {
+            let desc = `${p.name} (${p.breed || "raça não informada"}, ${p.weight_kg ? p.weight_kg + "kg" : "peso não informado"})`;
+            if (p.breed && BREED_CONTEXT_MAP[p.breed]) {
+              desc += ` [Info raça: ${BREED_CONTEXT_MAP[p.breed]}]`;
+            }
+            return desc;
+          });
+          userContext += `\nPets do usuário: ${petDescriptions.join("; ")}.`;
         }
         if (orders.length > 0) {
           userContext += `\nÚltimos pedidos: ${orders.map(o => `#${o.id.slice(0, 8)} - R$${o.total} (${o.status})`).join(", ")}.`;
