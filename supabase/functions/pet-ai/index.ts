@@ -265,6 +265,16 @@ serve(async (req) => {
     const extraSafetyRules = aiConfig.safety_rules_extra || "";
     const aiEnabled = aiConfig.enabled !== false;
 
+    if (!aiEnabled) {
+      return new Response(JSON.stringify({ error: "A IA está temporariamente desativada." }), {
+        status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Merge emergency keywords
+    const allKeywords = [...EMERGENCY_KEYWORDS, ...extraKeywords];
+    const emergencyResponse = customEmergencyResponse || EMERGENCY_RESPONSE;
+
     // Extract user from JWT
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
     const userClient = createClient(supabaseUrl, anonKey, {
@@ -289,19 +299,22 @@ serve(async (req) => {
       }
     }
 
-    // Emergency filter — check last user message before calling AI
+    // Emergency filter with merged keywords
     const lastUserMsg = messages ? [...messages].reverse().find((m: any) => m.role === "user") : null;
-    if (lastUserMsg && detectEmergency(lastUserMsg.content)) {
-      // Log emergency
-      await supabaseAdmin.from("emergency_logs").insert({
-        user_id: authUser?.id || null,
-        message_content: lastUserMsg.content.slice(0, 500),
-        matched_keyword: findMatchedKeyword(lastUserMsg.content),
-        source: "pet-ai",
-      });
-      return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (lastUserMsg) {
+      const normalized = normalizeText(lastUserMsg.content);
+      const matched = allKeywords.find((kw) => normalized.includes(normalizeText(kw)));
+      if (matched) {
+        await supabaseAdmin.from("emergency_logs").insert({
+          user_id: authUser?.id || null,
+          message_content: lastUserMsg.content.slice(0, 500),
+          matched_keyword: matched,
+          source: "pet-ai",
+        });
+        return new Response(JSON.stringify({ isEmergency: true, content: emergencyResponse }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Breed-specific context injection
