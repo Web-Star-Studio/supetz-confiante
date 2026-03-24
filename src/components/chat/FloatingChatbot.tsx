@@ -16,6 +16,7 @@ type Msg = {
   content: string;
   feedback?: "positive" | "negative" | null;
   isStreaming?: boolean;
+  isEmergency?: boolean;
 };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chatbot`;
