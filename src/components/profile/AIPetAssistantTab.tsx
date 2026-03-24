@@ -134,12 +134,20 @@ export default function AIPetAssistantTab() {
 
   // Save generated content to cache
   const saveToCache = async (petId: string, aiMode: string, content: Record<string, unknown>) => {
-    await supabase
+    const payload = { user_id: user!.id, pet_id: petId, mode: aiMode, content: content as any, updated_at: new Date().toISOString() };
+    // Try update first, then insert if not exists
+    const { data: existing } = await supabase
       .from("ai_cached_content")
-      .upsert(
-        { user_id: user!.id, pet_id: petId, mode: aiMode, content, updated_at: new Date().toISOString() },
-        { onConflict: "user_id,pet_id,mode" }
-      );
+      .select("id")
+      .eq("user_id", user!.id)
+      .eq("pet_id", petId)
+      .eq("mode", aiMode)
+      .limit(1);
+    if (existing && existing.length > 0) {
+      await supabase.from("ai_cached_content").update({ content: content as any, updated_at: new Date().toISOString() }).eq("id", existing[0].id);
+    } else {
+      await supabase.from("ai_cached_content").insert(payload as any);
+    }
   };
 
   const loadPets = async () => {
