@@ -171,46 +171,73 @@ export default function Perfil() {
 
   const sidebarContent = (
     <>
-      <div className="relative p-6 overflow-hidden flex justify-center">
+      <div className="relative p-4 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
         <Link to="/" className="relative z-10">
-          <img src="/supetNewLogo.svg" alt="Supet" className="h-10 lg:h-12 w-auto" />
+          <img
+            src="/supetNewLogo.svg"
+            alt="Supet"
+            className={`transition-all duration-300 ${sidebarCollapsed ? "h-6 w-auto" : "h-10 lg:h-12 w-auto"}`}
+          />
         </Link>
       </div>
 
-      <div className="px-6 pb-4 text-center">
-        {avatarBlock}
-        <h2 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h2>
-        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-      </div>
+      {!sidebarCollapsed && (
+        <div className="px-6 pb-4 text-center">
+          {avatarBlock}
+          <h2 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h2>
+          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+        </div>
+      )}
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      {sidebarCollapsed && (
+        <div className="flex justify-center pb-3">
+          <div className="relative h-10 w-10">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="h-10 w-10 rounded-full object-cover border-2 border-primary/30" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/30 text-xs font-bold text-primary">
+                {initials}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
           return (
             <button
               key={item.key}
               onClick={() => { setActiveTab(item.key); setMobileSidebarOpen(false); }}
-              className={`flex w-full items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+              title={sidebarCollapsed ? item.label : undefined}
+              className={`flex w-full items-center gap-3 rounded-2xl text-sm font-semibold transition-all ${
+                sidebarCollapsed ? "justify-center px-2 py-3" : "px-4 py-3"
+              } ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
               }`}
             >
               <item.icon className="w-5 h-5 shrink-0" />
-              {item.label}
-              {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
+              {!sidebarCollapsed && item.label}
+              {!sidebarCollapsed && isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
             </button>
           );
         })}
       </nav>
 
-      <div className="p-4">
+      <div className="p-2">
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 w-full px-4 py-2.5 rounded-2xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors"
+          title={sidebarCollapsed ? "Sair" : undefined}
+          className={`flex items-center gap-2 w-full rounded-2xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors ${
+            sidebarCollapsed ? "justify-center px-2 py-2.5" : "px-4 py-2.5"
+          }`}
         >
-          <LogOut className="w-4 h-4" /> Sair
+          <LogOut className="w-4 h-4" />
+          {!sidebarCollapsed && "Sair"}
         </button>
       </div>
     </>
