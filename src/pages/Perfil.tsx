@@ -63,29 +63,31 @@ function MobileTabScroller({ activeTab, setActiveTab }: { activeTab: string; set
 
   return (
     <div className="relative px-3 pb-3 pt-2">
-      {/* Left arrow */}
+      {/* Left fade + arrow */}
       <div
-        className={`absolute left-0 top-0 bottom-0 z-10 flex items-center pl-1 transition-opacity duration-200 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute left-3 top-2 bottom-3 z-10 flex items-center transition-opacity duration-200 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
+        <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-background to-transparent rounded-l-full" />
         <button
           onClick={() => scroll("left")}
-          className="h-8 w-8 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm"
+          className="relative h-7 w-7 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm ml-0.5"
           aria-label="Scroll left"
         >
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3.5 w-3.5" />
         </button>
       </div>
 
-      {/* Right arrow */}
+      {/* Right fade + arrow */}
       <div
-        className={`absolute right-0 top-0 bottom-0 z-10 flex items-center pr-1 transition-opacity duration-200 ${showRight ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute right-3 top-2 bottom-3 z-10 flex items-center transition-opacity duration-200 ${showRight ? "opacity-100" : "opacity-0 pointer-events-none"}`}
       >
+        <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent rounded-r-full" />
         <button
           onClick={() => scroll("right")}
-          className="h-8 w-8 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm"
+          className="relative h-7 w-7 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm mr-0.5"
           aria-label="Scroll right"
         >
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3.5 w-3.5" />
         </button>
       </div>
 
