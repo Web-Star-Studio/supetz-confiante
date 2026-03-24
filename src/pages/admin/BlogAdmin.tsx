@@ -454,9 +454,30 @@ export default function BlogAdmin() {
                         </div>
                       ) : block.type === "image" ? (
                         <div className="space-y-2">
-                          <Input value={block.content || ""} onChange={(e) => updateBlock(idx, { content: e.target.value })} placeholder="URL da imagem..." className="text-xs" />
+                          {!block.content && (
+                            <label className="flex flex-col items-center justify-center w-full h-28 rounded-lg bg-muted/30 border-2 border-dashed border-border cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                              {uploadingBlockImg === idx ? <Loader2 className="w-5 h-5 animate-spin text-primary" /> : (
+                                <><Image className="w-5 h-5 text-muted-foreground mb-1" /><span className="text-[10px] text-muted-foreground">Upload de imagem</span></>
+                              )}
+                              <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                                const file = e.target.files?.[0]; if (!file) return;
+                                setUploadingBlockImg(idx);
+                                const url = await uploadImage(file);
+                                if (url) updateBlock(idx, { content: url });
+                                setUploadingBlockImg(null);
+                              }} />
+                            </label>
+                          )}
+                          <Input value={block.content || ""} onChange={(e) => updateBlock(idx, { content: e.target.value })} placeholder="Ou cole a URL da imagem..." className="text-xs" />
                           <Input value={block.alt || ""} onChange={(e) => updateBlock(idx, { alt: e.target.value })} placeholder="Texto alternativo (alt)..." className="text-xs" />
-                          {block.content && <img src={block.content} alt={block.alt || ""} className="w-full max-h-40 object-cover rounded-lg" />}
+                          {block.content && (
+                            <div className="relative">
+                              <img src={block.content} alt={block.alt || ""} className="w-full max-h-40 object-cover rounded-lg" />
+                              <Button variant="destructive" size="sm" className="absolute top-1 right-1 h-6 w-6 p-0" onClick={(e) => { e.stopPropagation(); updateBlock(idx, { content: "" }); }}>
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <Textarea value={block.content || ""} onChange={(e) => updateBlock(idx, { content: e.target.value })} rows={block.type === "paragraph" ? 4 : 2} className="text-xs font-mono" placeholder={block.type === "paragraph" ? "Texto do parágrafo..." : block.type === "heading" ? "Título da seção..." : "Texto da citação..."} />
