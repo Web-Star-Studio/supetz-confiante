@@ -125,6 +125,99 @@ export type Database = {
           },
         ]
       }
+      campaign_recipients: {
+        Row: {
+          campaign_id: string
+          coupon_id: string | null
+          id: string
+          opened: boolean | null
+          sent_at: string | null
+          user_id: string
+        }
+        Insert: {
+          campaign_id: string
+          coupon_id?: string | null
+          id?: string
+          opened?: boolean | null
+          sent_at?: string | null
+          user_id: string
+        }
+        Update: {
+          campaign_id?: string
+          coupon_id?: string | null
+          id?: string
+          opened?: boolean | null
+          sent_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_recipients_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_recipients_coupon_id_fkey"
+            columns: ["coupon_id"]
+            isOneToOne: false
+            referencedRelation: "user_coupons"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          completed_at: string | null
+          coupon_discount_type: string | null
+          coupon_discount_value: number | null
+          coupon_expires_days: number | null
+          coupon_min_order: number | null
+          created_at: string
+          id: string
+          message: string | null
+          name: string
+          recipients_count: number | null
+          segment_filter: Json | null
+          sent_at: string | null
+          status: string
+          type: string
+        }
+        Insert: {
+          completed_at?: string | null
+          coupon_discount_type?: string | null
+          coupon_discount_value?: number | null
+          coupon_expires_days?: number | null
+          coupon_min_order?: number | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          name: string
+          recipients_count?: number | null
+          segment_filter?: Json | null
+          sent_at?: string | null
+          status?: string
+          type?: string
+        }
+        Update: {
+          completed_at?: string | null
+          coupon_discount_type?: string | null
+          coupon_discount_value?: number | null
+          coupon_expires_days?: number | null
+          coupon_min_order?: number | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          name?: string
+          recipients_count?: number | null
+          segment_filter?: Json | null
+          sent_at?: string | null
+          status?: string
+          type?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
@@ -152,6 +245,128 @@ export type Database = {
           id?: string
           role?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      customer_interactions: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          metadata: Json | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          type?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          metadata?: Json | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      customer_notes: {
+        Row: {
+          admin_id: string
+          content: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          admin_id: string
+          content: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          admin_id?: string
+          content?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      customer_status: {
+        Row: {
+          id: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      customer_tag_assignments: {
+        Row: {
+          created_at: string
+          id: string
+          tag_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          tag_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          tag_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "customer_tag_assignments_tag_id_fkey"
+            columns: ["tag_id"]
+            isOneToOne: false
+            referencedRelation: "customer_tags"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      customer_tags: {
+        Row: {
+          color: string
+          created_at: string
+          id: string
+          name: string
+        }
+        Insert: {
+          color?: string
+          created_at?: string
+          id?: string
+          name: string
+        }
+        Update: {
+          color?: string
+          created_at?: string
+          id?: string
+          name?: string
         }
         Relationships: []
       }
