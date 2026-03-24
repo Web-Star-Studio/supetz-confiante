@@ -245,6 +245,8 @@ export default function Perfil() {
           </motion.div>
         );
       case "pet": return <PetProfileTab />;
+      case "ia": return <AIPetAssistantTab />;
+      case "conquistas": return <AchievementsTab />;
       case "enderecos": return <AddressesTab />;
       case "compras": return <OrdersTab />;
       case "lembretes": return <RestockRemindersTab />;
