@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   DollarSign, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight,
@@ -55,6 +56,7 @@ function getPeriodStart(period: Period): Date | null {
 
 export default function AdminFinanceiro() {
   const { user } = useAuth();
+  const { log } = useAuditLog();
   const [orders, setOrders] = useState<Order[]>([]);
   const [expenses, setExpenses] = useState<Expense[]>([]);
   const [loading, setLoading] = useState(true);
@@ -159,11 +161,13 @@ export default function AdminFinanceiro() {
     setExpForm({ category: "other", description: "", amount: 0, date: new Date().toISOString().slice(0, 10), recurring: false, recurring_period: "monthly" });
     setShowAddExpense(false);
     setSaving(false);
+    log({ action: "create", entity_type: "expense", details: { description: expForm.description, amount: expForm.amount } });
     fetchData();
   }
 
   async function handleDeleteExpense(id: string) {
     await supabase.from("expenses").delete().eq("id", id);
+    log({ action: "delete", entity_type: "expense", entity_id: id });
     fetchData();
   }
 

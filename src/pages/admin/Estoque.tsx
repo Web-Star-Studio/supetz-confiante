@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, AlertTriangle, ArrowUpCircle, ArrowDownCircle, Search,
@@ -39,6 +40,7 @@ const typeConfig: Record<string, { label: string; icon: typeof Plus; class: stri
 
 export default function AdminEstoque() {
   const { user } = useAuth();
+  const { log } = useAuditLog();
   const [products, setProducts] = useState<Product[]>([]);
   const [movements, setMovements] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
@@ -102,6 +104,7 @@ export default function AdminEstoque() {
     });
 
     await supabase.from("products").update({ quantity: newStock }).eq("id", adjustProduct);
+    log({ action: "update", entity_type: "stock", entity_id: adjustProduct, details: { type: adjustType, qty: adjustQty, reason: adjustReason, newStock } });
 
     setAdjustProduct(null);
     setAdjustQty(1);

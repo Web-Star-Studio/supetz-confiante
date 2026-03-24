@@ -4,6 +4,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { motion } from "framer-motion";
 import { Star, Ticket, Users, TrendingUp, Plus, Loader2, Search, Gift, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 
 interface PointsEntry {
@@ -36,6 +37,7 @@ const COLORS = ["hsl(27, 100%, 49%)", "hsl(27, 100%, 70%)", "hsl(28, 38%, 75%)",
 
 export default function Fidelizacao() {
   const [loading, setLoading] = useState(true);
+  const { log } = useAuditLog();
   const [points, setPoints] = useState<PointsEntry[]>([]);
   const [coupons, setCoupons] = useState<CouponEntry[]>([]);
   const [profiles, setProfiles] = useState<ProfileInfo[]>([]);
@@ -123,7 +125,7 @@ export default function Fidelizacao() {
 
     setSavingCoupon(false);
     if (error) toast.error("Erro ao criar cupom");
-    else { toast.success("Cupom criado!"); setShowCouponForm(false); loadData(); }
+    else { toast.success("Cupom criado!"); log({ action: "create", entity_type: "coupon", details: { code: newCoupon.code, userId: newCoupon.userId } }); setShowCouponForm(false); loadData(); }
   };
 
   const handleAddPoints = async () => {
@@ -139,13 +141,13 @@ export default function Fidelizacao() {
 
     setSavingPoints(false);
     if (error) toast.error("Erro ao adicionar pontos");
-    else { toast.success("Pontos adicionados!"); setShowPointsForm(false); loadData(); }
+    else { toast.success("Pontos adicionados!"); log({ action: "create", entity_type: "loyalty", details: { userId: newPoints.userId, points: newPoints.points } }); setShowPointsForm(false); loadData(); }
   };
 
   const handleDeleteCoupon = async (id: string) => {
     const { error } = await supabase.from("user_coupons").delete().eq("id", id);
     if (error) toast.error("Erro ao remover cupom");
-    else { toast.success("Cupom removido"); loadData(); }
+    else { toast.success("Cupom removido"); log({ action: "delete", entity_type: "coupon", entity_id: id }); loadData(); }
   };
 
   const filteredCoupons = coupons.filter((c) =>

@@ -3,6 +3,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Pencil, Trash2, X, Loader2, ImageIcon } from "lucide-react";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 interface ProductForm {
   title: string;
@@ -53,6 +54,7 @@ function DeleteConfirmation({ name, onConfirm, onCancel }: { name: string; onCon
 
 export default function AdminProdutos() {
   const [products, setProducts] = useState<any[]>([]);
+  const { log } = useAuditLog();
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -102,8 +104,13 @@ export default function AdminProdutos() {
       quantity: Number(form.quantity), badge: form.badge || null, category: form.category, active: form.active,
       image_url: form.image_url || null,
     };
-    if (editing) await supabase.from("products").update(payload).eq("id", editing);
-    else await supabase.from("products").insert(payload);
+    if (editing) {
+      await supabase.from("products").update(payload).eq("id", editing);
+      log({ action: "update", entity_type: "product", entity_id: editing, details: { title: form.title } });
+    } else {
+      const { data } = await supabase.from("products").insert(payload).select().single();
+      if (data) log({ action: "create", entity_type: "product", entity_id: data.id, details: { title: form.title } });
+    }
     setSaving(false);
     setShowModal(false);
     fetchProducts();
@@ -112,6 +119,7 @@ export default function AdminProdutos() {
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     await supabase.from("products").delete().eq("id", deleteTarget.id);
+    log({ action: "delete", entity_type: "product", entity_id: deleteTarget.id, details: { title: deleteTarget.name } });
     setDeleteTarget(null);
     fetchProducts();
   };

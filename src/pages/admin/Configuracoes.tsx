@@ -4,9 +4,11 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Loader2, CheckCircle, Store } from "lucide-react";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 export default function AdminConfiguracoes() {
   const { user } = useAuth();
+  const { log } = useAuditLog();
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
@@ -46,6 +48,7 @@ export default function AdminConfiguracoes() {
     }
     setSavingStore(false);
     setStoreSuccess(true);
+    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress } });
     setTimeout(() => setStoreSuccess(false), 3000);
   };
 

@@ -6,6 +6,7 @@ import {
   Megaphone, Plus, Send, Eye, Users, Tag, Percent,
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
 } from "lucide-react";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 interface Campaign {
   id: string;
@@ -38,6 +39,7 @@ const statusConfig: Record<string, { label: string; icon: typeof Clock; class: s
 
 export default function AdminMarketing() {
   const [campaigns, setCampaigns] = useState<CampaignWithMetrics[]>([]);
+  const { log } = useAuditLog();
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -171,6 +173,7 @@ export default function AdminMarketing() {
     }).select().single();
 
     if (!campData) { setSending(false); return; }
+    log({ action: "create", entity_type: "campaign", entity_id: campData.id, details: { name: form.name, type: form.type, recipients: userIds.length } });
 
     // Send notifications and/or coupons to each user
     for (const uid of userIds) {

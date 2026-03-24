@@ -3,6 +3,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 function PedidosSkeleton() {
   return (
@@ -28,6 +29,7 @@ export default function AdminPedidos() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const { log } = useAuditLog();
 
   const fetchOrders = async () => {
     setLoading(true);
@@ -42,6 +44,7 @@ export default function AdminPedidos() {
 
   const updateStatus = async (orderId: string, newStatus: string) => {
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
+    log({ action: "update", entity_type: "order", entity_id: orderId, details: { status: newStatus } });
     fetchOrders();
   };
 
