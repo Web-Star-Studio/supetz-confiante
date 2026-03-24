@@ -86,6 +86,17 @@ export default function BlogAdmin() {
   const [showPreview, setShowPreview] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [isDirty, setIsDirty] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingBlockImg, setUploadingBlockImg] = useState<number | null>(null);
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from("blog-images").upload(fileName, file);
+    if (error) { toast.error("Erro ao enviar imagem"); return null; }
+    const { data: urlData } = supabase.storage.from("blog-images").getPublicUrl(fileName);
+    return urlData.publicUrl;
+  };
 
   useEffect(() => { loadPosts(); }, []);
 
