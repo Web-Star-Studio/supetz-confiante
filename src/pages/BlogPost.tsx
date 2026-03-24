@@ -7,6 +7,7 @@ import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
 import { BlogPostContent as BlogPostContentType } from "@/types";
+import BlurImage from "@/components/blog/BlurImage";
 
 function formatDate(date: string) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("pt-BR", {
