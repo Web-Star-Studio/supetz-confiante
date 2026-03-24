@@ -1,0 +1,1 @@
+ALTER TABLE public.kb_articles ADD COLUMN IF NOT EXISTS static_id TEXT DEFAULT NULL;

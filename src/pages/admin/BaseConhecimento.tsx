@@ -765,9 +765,9 @@ function ArticleEditor({
 }: {
   open: boolean;
   onClose: () => void;
-  article: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string } | null;
+  article: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string; staticId?: string } | null;
   categories: string[];
-  onSave: (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string }) => void;
+  onSave: (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string; staticId?: string }) => void;
 }) {
   const [form, setForm] = useState({ category: "", title: "", tags: "", content: "", icon: "FileText" });
 
@@ -818,7 +818,7 @@ function ArticleEditor({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={() => onSave({ id: article?.id, category: form.category, title: form.title, tags: form.tags.split(",").map(t => t.trim()).filter(Boolean), content: form.content, icon: form.icon })}>
+          <Button onClick={() => onSave({ id: article?.id, category: form.category, title: form.title, tags: form.tags.split(",").map(t => t.trim()).filter(Boolean), content: form.content, icon: form.icon, staticId: article?.staticId })}>
             <Save className="w-4 h-4 mr-2" /> Salvar
           </Button>
         </DialogFooter>
@@ -847,46 +847,59 @@ export default function BaseConhecimento() {
     if (data) setCustomArticles(data);
   };
 
-  // Merge static + custom articles
-  const knowledgeBase = useMemo(() => {
-    const merged = [...staticKnowledgeBase];
-    const customByCategory: Record<string, any[]> = {};
+  // Set of static IDs that have DB overrides
+  const overriddenStaticIds = useMemo(() => {
+    const set = new Set<string>();
+    customArticles.forEach((a) => { if (a.static_id) set.add(a.static_id); });
+    return set;
+  }, [customArticles]);
 
-    customArticles.forEach((a) => {
+  // Merge static + custom articles (DB overrides replace static ones)
+  const knowledgeBase = useMemo(() => {
+    const merged = staticKnowledgeBase.map(cat => ({
+      ...cat,
+      articles: cat.articles.map(a => {
+        // Check if this static article has a DB override
+        const override = customArticles.find(ca => ca.static_id === a.id);
+        if (override) {
+          return {
+            id: override.id,
+            title: override.title,
+            icon: ICON_MAP[override.icon] || <FileText className="w-4 h-4" />,
+            iconName: override.icon,
+            tags: override.tags || [],
+            content: override.content,
+            isCustom: true,
+            staticId: a.id,
+          };
+        }
+        return { ...a, staticId: a.id };
+      }),
+    }));
+
+    // Add purely custom articles (no static_id)
+    const customByCategory: Record<string, any[]> = {};
+    customArticles.filter(a => !a.static_id).forEach((a) => {
       if (!customByCategory[a.category]) customByCategory[a.category] = [];
       customByCategory[a.category].push(a);
     });
 
-    // Add custom articles to existing categories or create new ones
     Object.entries(customByCategory).forEach(([catId, articles]) => {
       const existing = merged.find(c => c.id === catId);
+      const mapped = articles.map(a => ({
+        id: a.id, title: a.title,
+        icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
+        iconName: a.icon, tags: a.tags || [], content: a.content, isCustom: true, staticId: undefined as string | undefined,
+      }));
       if (existing) {
-        articles.forEach(a => {
-          existing.articles.push({
-            id: a.id,
-            title: a.title,
-            icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
-            iconName: a.icon,
-            tags: a.tags || [],
-            content: a.content,
-            isCustom: true,
-          });
-        });
+        existing.articles.push(...mapped);
       } else {
         merged.push({
           id: catId,
           title: catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, " "),
           icon: ICON_MAP[articles[0]?.icon] || <FileText className="w-5 h-5" />,
-          description: `Artigos personalizados`,
-          articles: articles.map(a => ({
-            id: a.id,
-            title: a.title,
-            icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
-            iconName: a.icon,
-            tags: a.tags || [],
-            content: a.content,
-            isCustom: true,
-          })),
+          description: "Artigos personalizados",
+          articles: mapped,
         });
       }
     });
@@ -925,7 +938,7 @@ export default function BaseConhecimento() {
   const totalCategories = knowledgeBase.length;
 
   // Save article
-  const handleSaveArticle = async (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string }) => {
+  const handleSaveArticle = async (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string; staticId?: string }) => {
     if (data.id) {
       const { error } = await supabase.from("kb_articles").update({
         category: data.category, title: data.title, tags: data.tags, content: data.content, icon: data.icon, updated_at: new Date().toISOString(),
@@ -933,11 +946,13 @@ export default function BaseConhecimento() {
       if (error) { toast.error("Erro ao salvar"); return; }
       toast.success("Artigo atualizado!");
     } else {
-      const { error } = await supabase.from("kb_articles").insert({
+      const insertData: any = {
         category: data.category, title: data.title, tags: data.tags, content: data.content, icon: data.icon,
-      });
+      };
+      if (data.staticId) insertData.static_id = data.staticId;
+      const { error } = await supabase.from("kb_articles").insert(insertData);
       if (error) { toast.error("Erro ao criar artigo"); return; }
-      toast.success("Artigo criado!");
+      toast.success(data.staticId ? "Artigo personalizado!" : "Artigo criado!");
     }
     setEditorOpen(false);
     setEditingArticle(null);
@@ -1095,19 +1110,37 @@ export default function BaseConhecimento() {
                         </div>
                       </div>
                     </div>
-                    {selectedArticle.isCustom && (
-                      <div className="flex items-center gap-1 shrink-0">
-                        <Button variant="ghost" size="sm" onClick={() => {
+                    <div className="flex items-center gap-1 shrink-0">
+                      <Button variant="ghost" size="sm" onClick={() => {
+                        if (selectedArticle.isCustom) {
                           const dbArticle = customArticles.find(a => a.id === selectedArticle.id);
                           if (dbArticle) { setEditingArticle(dbArticle); setEditorOpen(true); }
-                        }}>
-                          <Pencil className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteArticle(selectedArticle.id)}>
+                        } else {
+                          // Edit static article — open editor pre-filled, will create DB override
+                          const parentCat = knowledgeBase.find(c => c.articles.some(a => a.id === selectedArticle.id));
+                          setEditingArticle({
+                            id: null, // new record
+                            category: parentCat?.id || "",
+                            title: selectedArticle.title,
+                            tags: selectedArticle.tags,
+                            content: selectedArticle.content,
+                            icon: (selectedArticle as any).iconName || "FileText",
+                            staticId: (selectedArticle as any).staticId,
+                          });
+                          setEditorOpen(true);
+                        }
+                      }} title="Editar">
+                        <Pencil className="w-3.5 h-3.5" />
+                      </Button>
+                      {selectedArticle.isCustom && (
+                        <Button variant="ghost" size="sm" className="text-destructive hover:text-destructive" onClick={() => handleDeleteArticle(selectedArticle.id)} title="Excluir / Restaurar original">
                           <Trash2 className="w-3.5 h-3.5" />
                         </Button>
-                      </div>
-                    )}
+                      )}
+                      {selectedArticle.isCustom && (selectedArticle as any).staticId && (
+                        <Badge variant="outline" className="text-[9px] ml-1">Editado</Badge>
+                      )}
+                    </div>
                   </div>
                   <div className="border-t border-border/50 pt-5">
                     <MarkdownRenderer content={selectedArticle.content} />
@@ -1130,7 +1163,7 @@ export default function BaseConhecimento() {
       <ArticleEditor
         open={editorOpen}
         onClose={() => { setEditorOpen(false); setEditingArticle(null); }}
-        article={editingArticle ? { id: editingArticle.id, category: editingArticle.category, title: editingArticle.title, tags: editingArticle.tags, content: editingArticle.content, icon: editingArticle.icon } : null}
+        article={editingArticle ? { id: editingArticle.id, category: editingArticle.category, title: editingArticle.title, tags: editingArticle.tags, content: editingArticle.content, icon: editingArticle.icon, staticId: editingArticle.staticId || editingArticle.static_id } : null}
         categories={knowledgeBase.map(c => c.id)}
         onSave={handleSaveArticle}
       />
