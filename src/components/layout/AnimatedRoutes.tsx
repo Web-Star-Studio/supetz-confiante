@@ -68,6 +68,7 @@ export default function AnimatedRoutes() {
         <Route path="/admin/marketing" element={<AdminRoute><AdminMarketing /></AdminRoute>} />
         <Route path="/admin/estoque" element={<AdminRoute><AdminEstoque /></AdminRoute>} />
         <Route path="/admin/financeiro" element={<AdminRoute><AdminFinanceiro /></AdminRoute>} />
+        <Route path="/admin/auditoria" element={<AdminRoute><AdminAuditoria /></AdminRoute>} />
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
