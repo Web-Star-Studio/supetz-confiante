@@ -3,7 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Camera, Check, ChevronDown, Loader2, PawPrint, Plus, Trash2, CheckCircle2, Heart, Zap, Clock, AlertTriangle, Scissors, Activity } from "lucide-react";
+import { Camera, Check, ChevronDown, ChevronUp, Loader2, PawPrint, Plus, Trash2, CheckCircle2, Heart, Zap, Clock, AlertTriangle, Scissors, Activity, Info } from "lucide-react";
 import { DOG_BREEDS } from "@/data/dogBreeds";
 import { BREED_INFO, getPorteColor, getEnergiaColor } from "@/data/breedInfo";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
