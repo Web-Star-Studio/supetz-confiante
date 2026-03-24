@@ -54,20 +54,42 @@ const BREED_CONTEXT_MAP: Record<string, string> = {
 };
 
 const EMERGENCY_KEYWORDS = [
-  "convulsao", "convulsão", "convulsoes", "convulsões",
+  // Convulsões
+  "convulsao", "convulsão", "convulsoes", "convulsões", "tremendo muito", "espasmos",
+  // Sangramento
   "sangue nas fezes", "sangue no vomito", "sangue no vômito", "vomitando sangue", "fezes com sangue",
+  "hemorragia", "sangrando muito", "sangue na urina",
+  // Respiratório
   "nao respira", "não respira", "parou de respirar", "dificuldade respiratoria", "dificuldade respiratória",
+  "respiracao ofegante", "respiração ofegante", "respirando rapido demais", "cianose", "lingua roxa", "língua roxa", "gengiva roxa", "gengiva azulada",
+  // Envenenamento / intoxicação
   "envenenamento", "envenenado", "intoxicacao", "intoxicação", "ingeriu veneno", "comeu veneno",
-  "fratura", "osso quebrado", "pata quebrada",
-  "desacordado", "desmaiou", "inconsciente", "desmaio",
+  "comeu chocolate", "comeu uva", "comeu passa", "comeu cebola", "comeu xilitol", "comeu remedio", "comeu remédio", "comeu planta toxica", "comeu planta tóxica",
+  // Fraturas e trauma
+  "fratura", "osso quebrado", "pata quebrada", "atropelado", "atropelada", "queda de altura", "caiu de cima",
+  // Inconsciência
+  "desacordado", "desmaiou", "inconsciente", "desmaio", "nao reage", "não reage", "letargia extrema",
+  // Engasgo
   "engasgou", "engasgando", "engasgo",
-  "nao consegue andar", "não consegue andar", "nao anda", "não anda",
+  // Mobilidade
+  "nao consegue andar", "não consegue andar", "nao anda", "não anda", "patas traseiras", "arrastando as patas",
   "paralisia", "paralisado", "paralisada",
+  // Torção gástrica (DVG)
   "abdomen inchado", "abdômen inchado", "barriga inchada", "torcao gastrica", "torção gástrica",
-  "olho saltado", "olho saindo",
+  "dilatacao gastrica", "dilatação gástrica", "estomago dilatado", "estômago dilatado",
+  "tentando vomitar sem conseguir", "vomito improdutivo", "vômito improdutivo", "ansia sem vomitar", "ânsia sem vomitar",
+  "barriga dura", "abdomen rigido", "abdômen rígido", "inquieto e babando", "salivacao excessiva", "salivação excessiva",
+  // Reações alérgicas graves / anafilaxia
+  "reacao alergica", "reação alérgica", "anafilaxia", "choque anafilatico", "choque anafilático",
+  "rosto inchado", "focinho inchado", "olhos inchados", "inchaço no rosto", "inchaço na face",
+  "urticaria", "urticária", "placas vermelhas pelo corpo", "cocando desesperadamente",
+  "lingua inchada", "língua inchada", "garganta inchada", "dificuldade para engolir",
+  "picada de abelha", "picada de vespa", "picada de aranha", "picada de escorpiao", "picada de escorpião",
+  // Outros
+  "olho saltado", "olho saindo", "prolapso", "utero exposto", "útero exposto",
   "picada de cobra", "mordida de cobra",
-  "atropelado", "atropelada", "queda de altura",
-  "hemorragia", "sangrando muito",
+  "hipotermia", "temperatura muito baixa", "corpo gelado",
+  "golpe de calor", "hipertermia", "temperatura muito alta",
 ];
 
 const EMERGENCY_RESPONSE = `🚨 **EMERGÊNCIA DETECTADA**
