@@ -146,7 +146,7 @@
   }
 
   .hero-lid-mobile {
-    @apply left-[51%] top-[-7%] w-[clamp(150px,42vw,200px)] -translate-x-1/2 rotate-[-13deg];
+    @apply left-[51%] top-[12%] w-[clamp(150px,42vw,200px)] -translate-x-1/2 rotate-[-13deg];
   }
 
   .hero-dog-mobile {
