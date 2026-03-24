@@ -6,6 +6,46 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const EMERGENCY_KEYWORDS = [
+  "convulsao", "convulsão", "convulsoes", "convulsões",
+  "sangue nas fezes", "sangue no vomito", "sangue no vômito", "vomitando sangue", "fezes com sangue",
+  "nao respira", "não respira", "parou de respirar", "dificuldade respiratoria", "dificuldade respiratória",
+  "envenenamento", "envenenado", "intoxicacao", "intoxicação", "ingeriu veneno", "comeu veneno",
+  "fratura", "osso quebrado", "pata quebrada",
+  "desacordado", "desmaiou", "inconsciente", "desmaio",
+  "engasgou", "engasgando", "engasgo",
+  "nao consegue andar", "não consegue andar", "nao anda", "não anda",
+  "paralisia", "paralisado", "paralisada",
+  "abdomen inchado", "abdômen inchado", "barriga inchada", "torcao gastrica", "torção gástrica",
+  "olho saltado", "olho saindo",
+  "picada de cobra", "mordida de cobra",
+  "atropelado", "atropelada", "queda de altura",
+  "hemorragia", "sangrando muito",
+];
+
+const EMERGENCY_RESPONSE = `🚨 **EMERGÊNCIA DETECTADA**
+
+A situação que você descreveu pode ser uma **emergência veterinária**.
+**NÃO siga orientações de IA neste caso.**
+
+👉 Leve seu pet **IMEDIATAMENTE** ao veterinário ou hospital veterinário mais próximo.
+
+📞 Se possível, ligue antes para avisar que está a caminho.
+
+⚠️ Em emergências, cada minuto conta. A Super Pet AI **não substitui** atendimento veterinário presencial.`;
+
+function normalizeText(text: string): string {
+  return text
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
+function detectEmergency(text: string): boolean {
+  const normalized = normalizeText(text);
+  return EMERGENCY_KEYWORDS.some((kw) => normalized.includes(normalizeText(kw)));
+}
+
 const SAFETY_RULES = `
 REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
 1. Você NÃO é veterinário. NUNCA diagnostique doenças, prescreva medicamentos ou recomende doses de remédios.
@@ -26,6 +66,22 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const { mode, messages, petInfo } = await req.json();
+
+    // Emergency filter — check last user message before calling AI
+    const lastUserMsg = messages ? [...messages].reverse().find((m: any) => m.role === "user") : null;
+    if (lastUserMsg && detectEmergency(lastUserMsg.content)) {
+      const isStreamMode = mode === "assistant" || mode === "analysis";
+      if (isStreamMode) {
+        // Return as SSE for streaming modes
+        const sseData = `data: ${JSON.stringify({ choices: [{ delta: { content: "" } }], isEmergency: true })}\n\ndata: [DONE]\n\n`;
+        return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+      return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
 
     const petContext = petInfo
       ? `Informações do pet: Nome: ${petInfo.name}, Raça: ${petInfo.breed || "Não informada"}, Peso: ${petInfo.weight_kg ? petInfo.weight_kg + "kg" : "Não informado"}, Data de nascimento: ${petInfo.birth_date || "Não informada"}.`
