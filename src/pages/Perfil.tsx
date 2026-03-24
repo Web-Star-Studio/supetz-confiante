@@ -170,11 +170,10 @@ export default function Perfil() {
 
   const sidebarContent = (
     <>
-      <div className="relative p-6 overflow-hidden">
+      <div className="relative p-6 overflow-hidden flex justify-center">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
-        <Link to="/" className="flex items-center gap-2 relative z-10 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
-          <Store className="w-4 h-4" />
-          Voltar à loja
+        <Link to="/" className="relative z-10">
+          <img src="/supetNewLogo.svg" alt="Supet" className="h-10 lg:h-12 w-auto" />
         </Link>
       </div>
 
