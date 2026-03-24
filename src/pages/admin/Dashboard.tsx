@@ -277,7 +277,7 @@ export default function AdminDashboard() {
       {/* Grid: CRM + Stock + Marketing + Financial */}
       <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-4 mb-6">
         {/* CRM Funnel */}
-        <Link to="/admin/crm" className="bg-supet-bg-alt rounded-3xl p-5 hover:shadow-lg transition-all group">
+        <Link to="/admin/crm" className="bg-card rounded-2xl border border-border/50 p-5 hover:shadow-lg transition-all group">
           <div className="flex items-center gap-2 mb-4">
             <Users className="w-4 h-4 text-primary" />
             <p className="text-sm font-bold text-foreground">Funil CRM</p>
@@ -302,7 +302,7 @@ export default function AdminDashboard() {
         </Link>
 
         {/* Stock Alerts */}
-        <Link to="/admin/estoque" className="bg-supet-bg-alt rounded-3xl p-5 hover:shadow-lg transition-all group">
+        <Link to="/admin/estoque" className="bg-card rounded-2xl border border-border/50 p-5 hover:shadow-lg transition-all group">
           <div className="flex items-center gap-2 mb-4">
             <Boxes className="w-4 h-4 text-primary" />
             <p className="text-sm font-bold text-foreground">Estoque</p>
@@ -330,7 +330,7 @@ export default function AdminDashboard() {
         </Link>
 
         {/* Marketing */}
-        <Link to="/admin/marketing" className="bg-supet-bg-alt rounded-3xl p-5 hover:shadow-lg transition-all group">
+        <Link to="/admin/marketing" className="bg-card rounded-2xl border border-border/50 p-5 hover:shadow-lg transition-all group">
           <div className="flex items-center gap-2 mb-4">
             <Megaphone className="w-4 h-4 text-primary" />
             <p className="text-sm font-bold text-foreground">Marketing</p>
@@ -343,7 +343,7 @@ export default function AdminDashboard() {
         </Link>
 
         {/* Financial summary */}
-        <Link to="/admin/financeiro" className="bg-supet-bg-alt rounded-3xl p-5 hover:shadow-lg transition-all group">
+        <Link to="/admin/financeiro" className="bg-card rounded-2xl border border-border/50 p-5 hover:shadow-lg transition-all group">
           <div className="flex items-center gap-2 mb-4">
             <Wallet className="w-4 h-4 text-primary" />
             <p className="text-sm font-bold text-foreground">Financeiro</p>
@@ -376,7 +376,7 @@ export default function AdminDashboard() {
       </div>
 
       {/* Recent Orders */}
-      <div className="bg-supet-bg-alt rounded-3xl overflow-hidden mb-6">
+      <div className="bg-card rounded-2xl border border-border/50 overflow-hidden mb-6">
         <div className="p-5 flex items-center justify-between">
           <h2 className="text-sm font-bold text-foreground">Pedidos Recentes</h2>
           <Link to="/admin/pedidos" className="text-[10px] text-muted-foreground hover:text-primary transition-colors">Ver todos →</Link>
@@ -387,7 +387,7 @@ export default function AdminDashboard() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-supet-bg/60">
+                <tr className="bg-muted/30">
                   <th className="text-left px-5 py-2.5 font-semibold text-muted-foreground text-xs">ID</th>
                   <th className="text-left px-5 py-2.5 font-semibold text-muted-foreground text-xs">Cliente</th>
                   <th className="text-left px-5 py-2.5 font-semibold text-muted-foreground text-xs">Status</th>
@@ -399,7 +399,7 @@ export default function AdminDashboard() {
                 {recentOrders.map((order, i) => {
                   const st = statusLabels[order.status] || { label: order.status, className: "bg-muted text-muted-foreground" };
                   return (
-                    <tr key={order.id} className={`transition-colors hover:bg-primary/5 ${i % 2 === 1 ? "bg-supet-bg/30" : ""}`}>
+                    <tr key={order.id} className={`transition-colors hover:bg-primary/5 ${i % 2 === 1 ? "bg-muted/15" : ""}`}>
                       <td className="px-5 py-3 font-mono text-xs text-muted-foreground">{order.id.slice(0, 8)}</td>
                       <td className="px-5 py-3 font-medium text-foreground text-xs">{order.customer_name || "—"}</td>
                       <td className="px-5 py-3"><span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold ${st.className}`}>{st.label}</span></td>
