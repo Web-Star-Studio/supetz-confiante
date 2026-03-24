@@ -847,46 +847,59 @@ export default function BaseConhecimento() {
     if (data) setCustomArticles(data);
   };
 
-  // Merge static + custom articles
-  const knowledgeBase = useMemo(() => {
-    const merged = [...staticKnowledgeBase];
-    const customByCategory: Record<string, any[]> = {};
+  // Set of static IDs that have DB overrides
+  const overriddenStaticIds = useMemo(() => {
+    const set = new Set<string>();
+    customArticles.forEach((a) => { if (a.static_id) set.add(a.static_id); });
+    return set;
+  }, [customArticles]);
 
-    customArticles.forEach((a) => {
+  // Merge static + custom articles (DB overrides replace static ones)
+  const knowledgeBase = useMemo(() => {
+    const merged = staticKnowledgeBase.map(cat => ({
+      ...cat,
+      articles: cat.articles.map(a => {
+        // Check if this static article has a DB override
+        const override = customArticles.find(ca => ca.static_id === a.id);
+        if (override) {
+          return {
+            id: override.id,
+            title: override.title,
+            icon: ICON_MAP[override.icon] || <FileText className="w-4 h-4" />,
+            iconName: override.icon,
+            tags: override.tags || [],
+            content: override.content,
+            isCustom: true,
+            staticId: a.id,
+          };
+        }
+        return { ...a, staticId: a.id };
+      }),
+    }));
+
+    // Add purely custom articles (no static_id)
+    const customByCategory: Record<string, any[]> = {};
+    customArticles.filter(a => !a.static_id).forEach((a) => {
       if (!customByCategory[a.category]) customByCategory[a.category] = [];
       customByCategory[a.category].push(a);
     });
 
-    // Add custom articles to existing categories or create new ones
     Object.entries(customByCategory).forEach(([catId, articles]) => {
       const existing = merged.find(c => c.id === catId);
+      const mapped = articles.map(a => ({
+        id: a.id, title: a.title,
+        icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
+        iconName: a.icon, tags: a.tags || [], content: a.content, isCustom: true,
+      }));
       if (existing) {
-        articles.forEach(a => {
-          existing.articles.push({
-            id: a.id,
-            title: a.title,
-            icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
-            iconName: a.icon,
-            tags: a.tags || [],
-            content: a.content,
-            isCustom: true,
-          });
-        });
+        existing.articles.push(...mapped);
       } else {
         merged.push({
           id: catId,
           title: catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, " "),
           icon: ICON_MAP[articles[0]?.icon] || <FileText className="w-5 h-5" />,
-          description: `Artigos personalizados`,
-          articles: articles.map(a => ({
-            id: a.id,
-            title: a.title,
-            icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
-            iconName: a.icon,
-            tags: a.tags || [],
-            content: a.content,
-            isCustom: true,
-          })),
+          description: "Artigos personalizados",
+          articles: mapped,
         });
       }
     });
