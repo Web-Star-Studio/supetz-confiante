@@ -67,10 +67,31 @@ export default function AIPetAssistantTab() {
   const [healthPlan, setHealthPlan] = useState<DayPlan[]>([]);
   const [selectedDay, setSelectedDay] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [aiAccessExpiry, setAiAccessExpiry] = useState<Date | null>(null);
+  const [aiAccessLoading, setAiAccessLoading] = useState(true);
 
   useEffect(() => {
-    if (user) loadPets();
+    if (user) {
+      loadPets();
+      loadAiAccess();
+    }
   }, [user]);
+
+  const loadAiAccess = async () => {
+    setAiAccessLoading(true);
+    const { data } = await supabase
+      .from("ai_access_credits")
+      .select("expires_at")
+      .eq("user_id", user!.id)
+      .order("expires_at", { ascending: false })
+      .limit(1);
+    if (data && data.length > 0) {
+      setAiAccessExpiry(new Date(data[0].expires_at));
+    } else {
+      setAiAccessExpiry(null);
+    }
+    setAiAccessLoading(false);
+  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
