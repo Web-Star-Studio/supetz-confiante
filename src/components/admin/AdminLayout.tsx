@@ -13,7 +13,9 @@ const navItems = [
   { label: "Pedidos", path: "/admin/pedidos", icon: ShoppingCart },
   { label: "Produtos", path: "/admin/produtos", icon: Package },
   { label: "Clientes", path: "/admin/clientes", icon: Users },
+  { label: "CRM", path: "/admin/crm", icon: ContactRound },
   { label: "Fidelização", path: "/admin/fidelizacao", icon: Gift },
+  { label: "Marketing", path: "/admin/marketing", icon: Megaphone },
   { label: "Configurações", path: "/admin/configuracoes", icon: Settings },
 ];
 
