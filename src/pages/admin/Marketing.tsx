@@ -6,6 +6,7 @@ import {
   Megaphone, Plus, Send, Eye, Users, Tag, Percent,
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
 } from "lucide-react";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 interface Campaign {
   id: string;
