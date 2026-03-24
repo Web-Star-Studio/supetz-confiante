@@ -1,39 +1,32 @@
 
 
-## Plano: Melhorias de Inteligencia na IA da Supet
+## Plano: Graficos de Evolucao no Dashboard do Perfil
 
-### Melhorias planejadas
+### O que sera adicionado
 
-#### 1. Super Pet AI — Novo modo "Plano de Saude" (edge function + frontend)
-Adicionar um 6o modo chamado `health_plan` que gera um plano semanal de cuidados personalizado para o pet (exercicios, higiene, alimentacao) baseado na raca, peso e idade. Retorna JSON estruturado.
+Dois graficos no `ProfileDashboardTab.tsx`, entre os cards de metricas e os cards de resumo:
 
-#### 2. Contexto mais rico no chatbot (edge function)
-O chatbot Super IA atualmente carrega perfil, pets e pedidos. Adicionar tambem:
-- Cupons ativos do usuario (para poder informar sobre descontos disponiveis)
-- Pontos de fidelidade acumulados
-- Lembretes de reposicao proximos
+1. **Grafico "Evolucao do Tratamento"** — AreaChart mostrando quantidade de registros no diario por mes (ultimos 6 meses). Usa dados da tabela `treatment_logs` agrupados por mes.
 
-Isso permite respostas como "Voce tem 150 pontos e um cupom de 10% ativo!"
+2. **Grafico "Historico de Pontos"** — BarChart mostrando pontos acumulados por mes (ultimos 6 meses). Usa dados da tabela `loyalty_points` agrupados por mes.
 
-#### 3. Sugestoes contextuais pos-resposta (frontend chatbot)
-Apos cada resposta da Super IA, mostrar 2-3 botoes de follow-up gerados com base no contexto (ex: "Saber mais", "Ver produtos", "Dosagem para meu pet"). Implementado com chips clicaveis abaixo da mensagem.
+### Alteracoes
 
-#### 4. Historico de conversas persistente (frontend chatbot)
-Ao abrir o chat, carregar as ultimas mensagens da conversa anterior do banco (tabela `chat_messages`) para que o usuario nao perca contexto entre sessoes.
+**Arquivo: `src/components/profile/ProfileDashboardTab.tsx`**
 
-#### 5. Avatar da veterinaria na Super Pet AI (frontend)
-Usar o mesmo avatar `supet-ia-avatar.png` ja criado no header da Super Pet AI (atualmente usa icone generico Sparkles).
-
-### Arquivos alterados
-
-1. **`supabase/functions/chatbot/index.ts`** — Adicionar queries de cupons, pontos e lembretes ao contexto do usuario
-2. **`supabase/functions/pet-ai/index.ts`** — Adicionar modo `health_plan` com prompt e schema JSON
-3. **`src/components/chat/FloatingChatbot.tsx`** — Carregar historico ao abrir; adicionar sugestoes pos-resposta
-4. **`src/components/profile/AIPetAssistantTab.tsx`** — Adicionar modo "Plano de Saude" no seletor; usar avatar da veterinaria no header
+- Importar `ChartContainer`, `ChartTooltip`, `ChartTooltipContent` de `@/components/ui/chart`
+- Importar `AreaChart`, `Area`, `BarChart`, `Bar`, `XAxis`, `YAxis`, `CartesianGrid` de `recharts`
+- Na funcao `loadDashboard`, adicionar 2 queries extras (em paralelo com as existentes):
+  - `treatment_logs`: selecionar `log_date` dos ultimos 6 meses, agrupar no frontend por mes
+  - `loyalty_points`: selecionar `points, created_at` dos ultimos 6 meses, somar por mes
+- Renderizar uma nova secao com grid de 2 colunas contendo os dois graficos entre os metric cards e os cards de resumo
+- Cada grafico em um card com estilo consistente (`rounded-2xl bg-supet-bg-alt p-5`)
+- Estados vazios: se nao houver dados, mostrar mensagem "Sem dados ainda" com icone
 
 ### Detalhes tecnicos
 
-- Nenhuma alteracao no banco de dados (tabelas e RLS ja existem)
-- Edge functions redeployadas automaticamente
-- Historico carregado com query limitada a 20 mensagens mais recentes do `conversation_id` mais recente
+- Recharts ja esta instalado (usado em `chart.tsx` e `RevenueChart.tsx`)
+- Agrupamento por mes feito no frontend com `date-fns/format` (ja importado)
+- Nenhuma alteracao no banco de dados
+- Responsivo: 1 coluna no mobile, 2 no desktop
 
