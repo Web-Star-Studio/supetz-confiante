@@ -3,7 +3,7 @@ import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail,
-  PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, Store, Menu, X,
+  PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, ChevronLeft, Store, Menu, X,
   Sparkles, Trophy, LayoutDashboard, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
