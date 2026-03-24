@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import {
   Package, Star, Ticket, Bell, PawPrint, BookOpen, ShoppingBag,
   Sparkles, Trophy, ChevronRight, Calendar, TrendingUp, Store, BarChart3,
+  AlertCircle, Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
