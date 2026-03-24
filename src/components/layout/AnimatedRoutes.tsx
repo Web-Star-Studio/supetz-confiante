@@ -29,6 +29,7 @@ import AdminEstoque from "../../pages/admin/Estoque";
 import AdminFinanceiro from "../../pages/admin/Financeiro";
 import AdminAuditoria from "../../pages/admin/Auditoria";
 import AdminBaseConhecimento from "../../pages/admin/BaseConhecimento";
+import AdminGerenciarIA from "../../pages/admin/GerenciarIA";
 
 import PageTransition from "./PageTransition";
 
@@ -68,6 +69,7 @@ export default function AnimatedRoutes() {
         <Route path="/admin/estoque" element={<AdminRoute><AdminEstoque /></AdminRoute>} />
         <Route path="/admin/financeiro" element={<AdminRoute><AdminFinanceiro /></AdminRoute>} />
         <Route path="/admin/auditoria" element={<AdminRoute><AdminAuditoria /></AdminRoute>} />
+        <Route path="/admin/ia" element={<AdminRoute><AdminGerenciarIA /></AdminRoute>} />
         <Route path="/admin/base-conhecimento" element={<AdminRoute><AdminBaseConhecimento /></AdminRoute>} />
         <Route path="/admin/clientes" element={<Navigate to="/admin/crm" replace />} />
 

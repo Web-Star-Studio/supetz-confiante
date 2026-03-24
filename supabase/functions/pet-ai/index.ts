@@ -244,11 +244,36 @@ serve(async (req) => {
 
     const { mode, messages, petInfo } = await req.json();
 
-    // Server-side AI access credit check
     const authHeader = req.headers.get("Authorization");
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Load AI config from store_settings
+    const { data: configRow } = await supabaseAdmin
+      .from("store_settings")
+      .select("value")
+      .eq("key", "ai_config")
+      .maybeSingle();
+
+    const aiConfig = configRow?.value as any || {};
+    const model = aiConfig.model || "google/gemini-3-flash-preview";
+    const temperature = aiConfig.temperature ?? 0.4;
+    const extraKeywords: string[] = aiConfig.emergency_keywords_extra || [];
+    const customEmergencyResponse = aiConfig.emergency_response_custom || "";
+    const petAiPersona = aiConfig.pet_ai_persona || "";
+    const extraSafetyRules = aiConfig.safety_rules_extra || "";
+    const aiEnabled = aiConfig.enabled !== false;
+
+    if (!aiEnabled) {
+      return new Response(JSON.stringify({ error: "A IA está temporariamente desativada." }), {
+        status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Merge emergency keywords
+    const allKeywords = [...EMERGENCY_KEYWORDS, ...extraKeywords];
+    const emergencyResponse = customEmergencyResponse || EMERGENCY_RESPONSE;
 
     // Extract user from JWT
     const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -274,19 +299,22 @@ serve(async (req) => {
       }
     }
 
-    // Emergency filter — check last user message before calling AI
+    // Emergency filter with merged keywords
     const lastUserMsg = messages ? [...messages].reverse().find((m: any) => m.role === "user") : null;
-    if (lastUserMsg && detectEmergency(lastUserMsg.content)) {
-      // Log emergency
-      await supabaseAdmin.from("emergency_logs").insert({
-        user_id: authUser?.id || null,
-        message_content: lastUserMsg.content.slice(0, 500),
-        matched_keyword: findMatchedKeyword(lastUserMsg.content),
-        source: "pet-ai",
-      });
-      return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+    if (lastUserMsg) {
+      const normalized = normalizeText(lastUserMsg.content);
+      const matched = allKeywords.find((kw) => normalized.includes(normalizeText(kw)));
+      if (matched) {
+        await supabaseAdmin.from("emergency_logs").insert({
+          user_id: authUser?.id || null,
+          message_content: lastUserMsg.content.slice(0, 500),
+          matched_keyword: matched,
+          source: "pet-ai",
+        });
+        return new Response(JSON.stringify({ isEmergency: true, content: emergencyResponse }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
     }
 
     // Breed-specific context injection
@@ -333,25 +361,27 @@ serve(async (req) => {
       : "";
 
     let systemPrompt = "";
+    const personaPrefix = petAiPersona ? `${petAiPersona}\n\n` : "";
+    const safetyBlock = SAFETY_RULES + (extraSafetyRules ? `\nREGRAS ADICIONAIS:\n${extraSafetyRules}` : "");
 
     switch (mode) {
       case "assistant":
-        systemPrompt = `Você é a Super Pet AI, uma assistente virtual amigável da Supet, especializada em orientações gerais sobre bem-estar e cuidados com cães. Você NÃO substitui consultas veterinárias presenciais. Responda de forma clara, carinhosa e educativa. Use emojis com moderação. ${petContext}\n\n${SAFETY_RULES}\n\nUse a base de conhecimento abaixo para fundamentar suas respostas:\n${DOG_KNOWLEDGE_BASE}`;
+        systemPrompt = `${personaPrefix}Você é a Super Pet AI, uma assistente virtual amigável da Supet, especializada em orientações gerais sobre bem-estar e cuidados com cães. Você NÃO substitui consultas veterinárias presenciais. Responda de forma clara, carinhosa e educativa. Use emojis com moderação. ${petContext}\n\n${safetyBlock}\n\nUse a base de conhecimento abaixo para fundamentar suas respostas:\n${DOG_KNOWLEDGE_BASE}`;
         break;
       case "tips":
-        systemPrompt = `Você é uma especialista em cuidados gerais com pets da Supet. Gere 3 dicas personalizadas e práticas de cuidados para o pet baseadas no perfil dele. Cada dica deve ter um emoji, um título curto e uma explicação de 1-2 frases. Responda em formato JSON: {"tips": [{"emoji": "🐾", "title": "...", "description": "..."}]}. ${petContext}\n\n${SAFETY_RULES}\nAdicional: As dicas devem ser sobre bem-estar geral (higiene, exercício, enriquecimento ambiental). NÃO dê dicas médicas ou sobre medicamentos.\n\nUse a base de conhecimento abaixo:\n${DOG_KNOWLEDGE_BASE}`;
+        systemPrompt = `${personaPrefix}Você é uma especialista em cuidados gerais com pets da Supet. Gere 3 dicas personalizadas e práticas de cuidados para o pet baseadas no perfil dele. Cada dica deve ter um emoji, um título curto e uma explicação de 1-2 frases. Responda em formato JSON: {"tips": [{"emoji": "🐾", "title": "...", "description": "..."}]}. ${petContext}\n\n${safetyBlock}\nAdicional: As dicas devem ser sobre bem-estar geral (higiene, exercício, enriquecimento ambiental). NÃO dê dicas médicas ou sobre medicamentos.\n\nUse a base de conhecimento abaixo:\n${DOG_KNOWLEDGE_BASE}`;
         break;
       case "analysis":
-        systemPrompt = `Você é uma analista de bem-estar animal da Supet. Analise os registros de tratamento fornecidos e gere observações sobre a rotina de cuidados do pet. Destaque padrões positivos de cuidado e sugira melhorias na rotina. Seja encorajadora mas honesta. Use emojis com moderação. ${petContext}\n\n${SAFETY_RULES}\nAdicional: Esta análise é sobre a ROTINA DE CUIDADOS, não sobre diagnósticos. Se notar algo preocupante nos registros, recomende consulta veterinária.\n\nUse a base de conhecimento abaixo:\n${DOG_KNOWLEDGE_BASE}`;
+        systemPrompt = `${personaPrefix}Você é uma analista de bem-estar animal da Supet. Analise os registros de tratamento fornecidos e gere observações sobre a rotina de cuidados do pet. Destaque padrões positivos de cuidado e sugira melhorias na rotina. Seja encorajadora mas honesta. Use emojis com moderação. ${petContext}\n\n${safetyBlock}\nAdicional: Esta análise é sobre a ROTINA DE CUIDADOS, não sobre diagnósticos. Se notar algo preocupante nos registros, recomende consulta veterinária.\n\nUse a base de conhecimento abaixo:\n${DOG_KNOWLEDGE_BASE}`;
         break;
       case "recipes":
-        systemPrompt = `Você é uma especialista em nutrição canina natural da Supet. Gere 2 receitas de petiscos caseiros saudáveis e seguros para o pet, considerando seu perfil. Cada receita deve ter: nome criativo, ingredientes (lista), modo de preparo simples, e um aviso se necessário. Responda em formato JSON: {"recipes": [{"name": "...", "emoji": "🍪", "ingredients": ["..."], "instructions": "...", "warning": "..."}]}. ${petContext}\n\n${SAFETY_RULES}\nAdicional: Use apenas ingredientes amplamente reconhecidos como seguros para cães. Sempre inclua aviso sobre alergias e sobre consultar o veterinário antes de mudar a dieta. NUNCA use chocolate, uva, cebola, alho, xilitol ou outros alimentos tóxicos para cães.\n\nUse a base de conhecimento de nutrição abaixo:\n${DOG_KNOWLEDGE_BASE}`;
+        systemPrompt = `${personaPrefix}Você é uma especialista em nutrição canina natural da Supet. Gere 2 receitas de petiscos caseiros saudáveis e seguros para o pet, considerando seu perfil. Cada receita deve ter: nome criativo, ingredientes (lista), modo de preparo simples, e um aviso se necessário. Responda em formato JSON: {"recipes": [{"name": "...", "emoji": "🍪", "ingredients": ["..."], "instructions": "...", "warning": "..."}]}. ${petContext}\n\n${safetyBlock}\nAdicional: Use apenas ingredientes amplamente reconhecidos como seguros para cães. Sempre inclua aviso sobre alergias e sobre consultar o veterinário antes de mudar a dieta. NUNCA use chocolate, uva, cebola, alho, xilitol ou outros alimentos tóxicos para cães.\n\nUse a base de conhecimento de nutrição abaixo:\n${DOG_KNOWLEDGE_BASE}`;
         break;
       case "fun_facts":
-        systemPrompt = `Você é uma enciclopedista de raças caninas da Supet, muito divertida e educativa. Gere 4 curiosidades surpreendentes e divertidas sobre a raça do pet. Se a raça não for informada, use curiosidades gerais sobre cães. Responda em formato JSON: {"facts": [{"emoji": "🧠", "fact": "..."}]}. ${petContext}\nUse apenas informações amplamente conhecidas e verificáveis. Se não tiver certeza de um fato, não inclua.\n\nUse a base de conhecimento abaixo:\n${DOG_KNOWLEDGE_BASE}`;
+        systemPrompt = `${personaPrefix}Você é uma enciclopedista de raças caninas da Supet, muito divertida e educativa. Gere 4 curiosidades surpreendentes e divertidas sobre a raça do pet. Se a raça não for informada, use curiosidades gerais sobre cães. Responda em formato JSON: {"facts": [{"emoji": "🧠", "fact": "..."}]}. ${petContext}\nUse apenas informações amplamente conhecidas e verificáveis. Se não tiver certeza de um fato, não inclua.\n\nUse a base de conhecimento abaixo:\n${DOG_KNOWLEDGE_BASE}`;
         break;
       case "health_plan":
-        systemPrompt = `Você é uma especialista em bem-estar canino da Supet. Crie um plano semanal de cuidados personalizado para o pet, considerando raça, peso e idade. O plano deve cobrir 7 dias com atividades diárias organizadas em categorias.
+        systemPrompt = `${personaPrefix}Você é uma especialista em bem-estar canino da Supet. Crie um plano semanal de cuidados personalizado para o pet, considerando raça, peso e idade. O plano deve cobrir 7 dias com atividades diárias organizadas em categorias.
 
 Responda EXCLUSIVAMENTE em formato JSON válido, sem texto antes ou depois:
 {"plan": [
@@ -366,11 +396,11 @@ Responda EXCLUSIVAMENTE em formato JSON válido, sem texto antes ou depois:
 Categorias possíveis: exercicio, higiene, alimentacao, socializacao, mental, descanso.
 ${petContext}
 
-${SAFETY_RULES}
+${safetyBlock}
 Adicional: O plano deve ser de BEM-ESTAR GERAL, não médico. Adapte exercícios ao porte e idade do pet. Inclua variedade entre os dias. Não prescreva medicamentos ou suplementos específicos no plano.`;
         break;
       default:
-        systemPrompt = `Você é a Super Pet AI, uma assistente virtual amigável da Supet. ${petContext}\n\n${SAFETY_RULES}`;
+        systemPrompt = `${personaPrefix}Você é a Super Pet AI, uma assistente virtual amigável da Supet. ${petContext}\n\n${safetyBlock}`;
     }
 
     const isStreamMode = mode === "assistant" || mode === "analysis";
@@ -387,10 +417,10 @@ Adicional: O plano deve ser de BEM-ESTAR GERAL, não médico. Adapte exercícios
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model,
         messages: aiMessages,
         stream: isStreamMode,
-        temperature: 0.4,
+        temperature,
       }),
     });
 

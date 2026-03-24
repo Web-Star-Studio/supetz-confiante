@@ -130,31 +130,62 @@ serve(async (req) => {
     const authHeader = req.headers.get("authorization");
     const { messages, conversationId } = await req.json();
 
+    const supabaseAdmin = createClient(
+      Deno.env.get("SUPABASE_URL")!,
+      Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+    );
+
+    // Load AI config from store_settings
+    const { data: configRow } = await supabaseAdmin
+      .from("store_settings")
+      .select("value")
+      .eq("key", "ai_config")
+      .maybeSingle();
+
+    const aiConfig = configRow?.value as any || {};
+    const model = aiConfig.model || "google/gemini-3-flash-preview";
+    const temperature = aiConfig.temperature ?? 0.4;
+    const maxContext = aiConfig.max_context_messages || 20;
+    const extraKeywords: string[] = aiConfig.emergency_keywords_extra || [];
+    const customEmergencyResponse = aiConfig.emergency_response_custom || "";
+    const extraPrompt = aiConfig.chatbot_system_prompt || "";
+    const extraSafetyRules = aiConfig.safety_rules_extra || "";
+    const aiEnabled = aiConfig.enabled !== false;
+
+    if (!aiEnabled) {
+      return new Response(JSON.stringify({ error: "A IA está temporariamente desativada." }), {
+        status: 503, headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Merge emergency keywords
+    const allKeywords = [...EMERGENCY_KEYWORDS, ...extraKeywords];
+    const emergencyResponse = customEmergencyResponse || EMERGENCY_RESPONSE;
+
     // Emergency filter — check last user message before calling AI
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
-    if (lastUserMsg && detectEmergency(lastUserMsg.content)) {
-      // Log emergency asynchronously
-      const supabaseAdmin = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-      );
-      let userId: string | null = null;
-      if (authHeader) {
-        const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
-          global: { headers: { Authorization: authHeader } },
+    if (lastUserMsg) {
+      const normalized = normalizeText(lastUserMsg.content);
+      const matched = allKeywords.find((kw) => normalized.includes(normalizeText(kw)));
+      if (matched) {
+        let userId: string | null = null;
+        if (authHeader) {
+          const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+            global: { headers: { Authorization: authHeader } },
+          });
+          const { data: { user } } = await userClient.auth.getUser();
+          userId = user?.id || null;
+        }
+        await supabaseAdmin.from("emergency_logs").insert({
+          user_id: userId,
+          message_content: lastUserMsg.content.slice(0, 500),
+          matched_keyword: matched,
+          source: "chatbot",
         });
-        const { data: { user } } = await userClient.auth.getUser();
-        userId = user?.id || null;
+        return new Response(JSON.stringify({ isEmergency: true, content: emergencyResponse }), {
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
       }
-      await supabaseAdmin.from("emergency_logs").insert({
-        user_id: userId,
-        message_content: lastUserMsg.content.slice(0, 500),
-        matched_keyword: findMatchedKeyword(lastUserMsg.content),
-        source: "chatbot",
-      });
-      return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
     }
 
     let userContext = "";
@@ -187,36 +218,21 @@ serve(async (req) => {
         const points = pointsRes.data || [];
         const reminders = remindersRes.data || [];
 
-        if (profile?.full_name) {
-          userContext += `\nNome do usuário: ${profile.full_name}.`;
-        }
+        if (profile?.full_name) userContext += `\nNome do usuário: ${profile.full_name}.`;
         if (pets.length > 0) {
           const petDescriptions = pets.map(p => {
             let desc = `${p.name} (${p.breed || "raça não informada"}, ${p.weight_kg ? p.weight_kg + "kg" : "peso não informado"})`;
-            if (p.breed && BREED_CONTEXT_MAP[p.breed]) {
-              desc += ` [Info raça: ${BREED_CONTEXT_MAP[p.breed]}]`;
-            }
+            if (p.breed && BREED_CONTEXT_MAP[p.breed]) desc += ` [Info raça: ${BREED_CONTEXT_MAP[p.breed]}]`;
             return desc;
           });
           userContext += `\nPets do usuário: ${petDescriptions.join("; ")}.`;
         }
-        if (orders.length > 0) {
-          userContext += `\nÚltimos pedidos: ${orders.map(o => `#${o.id.slice(0, 8)} - R$${o.total} (${o.status})`).join(", ")}.`;
-        }
-
+        if (orders.length > 0) userContext += `\nÚltimos pedidos: ${orders.map(o => `#${o.id.slice(0, 8)} - R$${o.total} (${o.status})`).join(", ")}.`;
         const activeCoupons = coupons.filter(c => !c.expires_at || new Date(c.expires_at) > new Date());
-        if (activeCoupons.length > 0) {
-          userContext += `\nCupons ativos: ${activeCoupons.map(c => `${c.code} (${c.discount_type === 'percentage' ? c.discount_value + '%' : 'R$' + c.discount_value} de desconto)`).join(", ")}.`;
-        }
-
+        if (activeCoupons.length > 0) userContext += `\nCupons ativos: ${activeCoupons.map(c => `${c.code} (${c.discount_type === 'percentage' ? c.discount_value + '%' : 'R$' + c.discount_value} de desconto)`).join(", ")}.`;
         const totalPoints = points.reduce((sum, p) => sum + p.points, 0);
-        if (totalPoints > 0) {
-          userContext += `\nPontos de fidelidade acumulados: ${totalPoints} pontos (equivalem a R$${(totalPoints * 0.01).toFixed(2)} em desconto).`;
-        }
-
-        if (reminders.length > 0) {
-          userContext += `\nLembretes de reposição próximos: ${reminders.map(r => `${r.product_title} (até ${r.estimated_end_date})`).join(", ")}.`;
-        }
+        if (totalPoints > 0) userContext += `\nPontos de fidelidade: ${totalPoints} pontos (R$${(totalPoints * 0.01).toFixed(2)}).`;
+        if (reminders.length > 0) userContext += `\nLembretes de reposição: ${reminders.map(r => `${r.product_title} (até ${r.estimated_end_date})`).join(", ")}.`;
       }
     }
 
@@ -232,31 +248,27 @@ Suas capacidades:
 
 REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
 1. Você NÃO é veterinária. NUNCA diagnostique doenças ou prescreva medicamentos.
-2. Para sintomas graves (sangue, convulsões, dificuldade respiratória, intoxicação, letargia extrema), instrua o tutor a procurar um veterinário IMEDIATAMENTE.
+2. Para sintomas graves, instrua o tutor a procurar um veterinário IMEDIATAMENTE.
 3. SEMPRE encerre respostas sobre saúde com: "⚠️ Estas são orientações gerais de uma IA. Consulte sempre um veterinário profissional."
 4. Use linguagem cautelosa: "geralmente", "pode ser", "é recomendável consultar" — NUNCA afirmações absolutas sobre saúde animal.
 5. NÃO recomende doses de medicamentos. Apenas um veterinário pode prescrever medicamentos.
-6. Sobre os produtos Supet: são SUPLEMENTOS NATURAIS para bem-estar, NÃO são medicamentos e NÃO substituem tratamento veterinário. Nunca prometa cura ou resultados garantidos.
-7. Se não souber algo, diga honestamente e sugira entrar em contato pelo WhatsApp ou consultar um veterinário.
-8. Não invente informações sobre produtos, preços ou disponibilidade que você não tem certeza.
+6. Sobre os produtos Supet: são SUPLEMENTOS NATURAIS para bem-estar, NÃO são medicamentos e NÃO substituem tratamento veterinário.
+7. Se não souber algo, diga honestamente.
+8. Não invente informações sobre produtos, preços ou disponibilidade.
+${extraSafetyRules ? `\nREGRAS ADICIONAIS:\n${extraSafetyRules}` : ""}
 
 Regras gerais:
 - Seja sempre simpática, use emojis com moderação (1-2 por mensagem)
 - Respostas concisas (máximo 3 parágrafos curtos)
-- Quando possível, personalize respostas usando o contexto do usuário (cupons, pontos, lembretes)
-- Se o usuário tem cupons ativos, mencione-os quando relevante (ex: ao falar de compras)
-- Se o usuário tem lembretes de reposição próximos, avise proativamente quando oportuno
+- Personalize respostas usando o contexto do usuário
 - Responda sempre em português do Brasil
-- Ao final de cada resposta, sugira 2-3 perguntas de follow-up curtas que o usuário pode fazer, no formato: "💡 Você pode perguntar: [pergunta1] | [pergunta2] | [pergunta3]". IMPORTANTE: As perguntas de follow-up devem ser texto puro, SEM markdown, SEM negrito, SEM asteriscos, SEM formatação.
+- Ao final de cada resposta, sugira 2-3 perguntas de follow-up curtas no formato: "💡 Você pode perguntar: [pergunta1] | [pergunta2] | [pergunta3]". IMPORTANTE: As perguntas de follow-up devem ser texto puro, SEM markdown, SEM negrito, SEM asteriscos.
 ${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}
+${extraPrompt ? `\nINSTRUÇÕES EXTRAS DO ADMIN:\n${extraPrompt}` : ""}
 
 ${DOG_KNOWLEDGE_SUMMARY}`;
 
     if (userId && messages.length > 0) {
-      const supabaseAdmin = createClient(
-        Deno.env.get("SUPABASE_URL")!,
-        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
-      );
       const lastMsg = messages[messages.length - 1];
       if (lastMsg.role === "user") {
         await supabaseAdmin.from("chat_messages").insert({
@@ -275,13 +287,13 @@ ${DOG_KNOWLEDGE_SUMMARY}`;
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model,
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages.slice(-20),
+          ...messages.slice(-maxContext),
         ],
         stream: true,
-        temperature: 0.4,
+        temperature,
       }),
     });
 
@@ -289,21 +301,18 @@ ${DOG_KNOWLEDGE_SUMMARY}`;
       const status = response.status;
       if (status === 429) {
         return new Response(JSON.stringify({ error: "Muitas mensagens em pouco tempo. Aguarde alguns segundos." }), {
-          status: 429,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       if (status === 402) {
         return new Response(JSON.stringify({ error: "Serviço temporariamente indisponível." }), {
-          status: 402,
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
+          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
         });
       }
       const t = await response.text();
       console.error("AI gateway error:", status, t);
       return new Response(JSON.stringify({ error: "Erro no serviço de IA" }), {
-        status: 500,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
+        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
 
@@ -318,8 +327,7 @@ ${DOG_KNOWLEDGE_SUMMARY}`;
   } catch (e) {
     console.error("chatbot error:", e);
     return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro desconhecido" }), {
-      status: 500,
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
+      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   }
 });
