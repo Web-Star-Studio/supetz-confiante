@@ -27,6 +27,7 @@ import AdminFidelizacao from "../../pages/admin/Fidelizacao";
 import AdminCRM from "../../pages/admin/CRM";
 import AdminMarketing from "../../pages/admin/Marketing";
 import AdminEstoque from "../../pages/admin/Estoque";
+import AdminFinanceiro from "../../pages/admin/Financeiro";
 
 import PageTransition from "./PageTransition";
 

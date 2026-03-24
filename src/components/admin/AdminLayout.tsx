@@ -17,6 +17,7 @@ const navItems = [
   { label: "CRM", path: "/admin/crm", icon: ContactRound },
   { label: "Fidelização", path: "/admin/fidelizacao", icon: Gift },
   { label: "Marketing", path: "/admin/marketing", icon: Megaphone },
+  { label: "Financeiro", path: "/admin/financeiro", icon: Wallet },
   { label: "Configurações", path: "/admin/configuracoes", icon: Settings },
 ];
 
