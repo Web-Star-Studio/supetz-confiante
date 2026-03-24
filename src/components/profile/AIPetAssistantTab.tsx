@@ -3,12 +3,15 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Sparkles, Send, Loader2, BookOpen, ChefHat,
   Activity, Brain, PawPrint, RefreshCw, Lightbulb, HeartPulse, Calendar, AlertTriangle,
+  Lock, ShoppingBag, Clock,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import supetIaAvatar from "@/assets/supet-ia-avatar.png";
+import { Link } from "react-router-dom";
+import { Progress } from "@/components/ui/progress";
 
 type Msg = { role: "user" | "assistant"; content: string; isEmergency?: boolean };
 type AIMode = "assistant" | "tips" | "analysis" | "recipes" | "fun_facts" | "health_plan";
@@ -64,10 +67,31 @@ export default function AIPetAssistantTab() {
   const [healthPlan, setHealthPlan] = useState<DayPlan[]>([]);
   const [selectedDay, setSelectedDay] = useState(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [aiAccessExpiry, setAiAccessExpiry] = useState<Date | null>(null);
+  const [aiAccessLoading, setAiAccessLoading] = useState(true);
 
   useEffect(() => {
-    if (user) loadPets();
+    if (user) {
+      loadPets();
+      loadAiAccess();
+    }
   }, [user]);
+
+  const loadAiAccess = async () => {
+    setAiAccessLoading(true);
+    const { data } = await supabase
+      .from("ai_access_credits")
+      .select("expires_at")
+      .eq("user_id", user!.id)
+      .order("expires_at", { ascending: false })
+      .limit(1);
+    if (data && data.length > 0) {
+      setAiAccessExpiry(new Date(data[0].expires_at));
+    } else {
+      setAiAccessExpiry(null);
+    }
+    setAiAccessLoading(false);
+  };
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
@@ -97,16 +121,22 @@ export default function AIPetAssistantTab() {
 
   const callAI = async (aiMode: AIMode, userMessages?: Msg[]) => {
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/pet-ai`;
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     const resp = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        Authorization: `Bearer ${token}`,
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       },
       body: JSON.stringify({ mode: aiMode, messages: userMessages, petInfo: pet }),
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({ error: "Erro de rede" }));
+      if (resp.status === 403) {
+        setAiAccessExpiry(null);
+      }
       throw new Error(err.error || "Erro ao conectar com IA");
     }
     // Check for emergency JSON response
@@ -288,7 +318,10 @@ export default function AIPetAssistantTab() {
     setLoading(false);
   };
 
-  if (petsLoading) {
+  const hasActiveAccess = aiAccessExpiry && aiAccessExpiry > new Date();
+  const daysRemaining = hasActiveAccess ? Math.ceil((aiAccessExpiry!.getTime() - Date.now()) / (1000 * 60 * 60 * 24)) : 0;
+
+  if (petsLoading || aiAccessLoading) {
     return (
       <div className="flex items-center justify-center py-16">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -303,6 +336,43 @@ export default function AIPetAssistantTab() {
         <PawPrint className="h-12 w-12 mx-auto text-muted-foreground" />
         <h3 className="text-lg font-bold text-foreground">Cadastre seu pet primeiro!</h3>
         <p className="text-sm text-muted-foreground">Para usar o assistente com IA, você precisa ter um pet cadastrado.</p>
+      </motion.div>
+    );
+  }
+
+  if (!hasActiveAccess) {
+    return (
+      <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
+        className="rounded-3xl bg-gradient-to-br from-supet-bg-alt to-primary/5 p-8 text-center space-y-5">
+        <div className="mx-auto h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center">
+          <Lock className="h-10 w-10 text-primary/60" />
+        </div>
+        <div className="space-y-2">
+          <h3 className="text-xl font-bold text-foreground">SuperPet AI — Acesso Expirado</h3>
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            {aiAccessExpiry
+              ? "Seu período de acesso ao SuperPet AI terminou. Cada compra concede 30 dias por produto!"
+              : "O SuperPet AI está disponível para clientes Supet! Cada compra concede 30 dias de acesso por produto."}
+          </p>
+        </div>
+        <div className="bg-card rounded-2xl p-4 max-w-sm mx-auto space-y-3">
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <ShoppingBag className="h-5 w-5 text-primary" />
+            <span>1 produto = 30 dias de acesso</span>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Clock className="h-5 w-5 text-primary" />
+            <span>Dias acumulam entre compras</span>
+          </div>
+          <div className="flex items-center gap-3 text-sm text-muted-foreground">
+            <Sparkles className="h-5 w-5 text-primary" />
+            <span>3 produtos = 90 dias de acesso</span>
+          </div>
+        </div>
+        <Link to="/shop"
+          className="inline-flex items-center gap-2 bg-primary text-primary-foreground px-8 py-3 rounded-full font-bold text-sm hover:bg-primary/90 transition-colors shadow-lg shadow-primary/20">
+          <ShoppingBag className="h-4 w-4" /> Comprar agora
+        </Link>
       </motion.div>
     );
   }
@@ -368,7 +438,7 @@ export default function AIPetAssistantTab() {
               </div>
             )}
           </div>
-          <div className="min-w-0">
+            <div className="min-w-0 flex-1">
             <h3 className="text-base font-bold text-foreground flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-primary" /> Super Pet AI para {pet.name}
             </h3>
@@ -377,6 +447,14 @@ export default function AIPetAssistantTab() {
               {pet.weight_kg && <span>{pet.weight_kg}kg</span>}
               {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
             </div>
+          </div>
+          <div className="flex-shrink-0 text-right">
+            <span className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+              daysRemaining <= 7 ? "bg-destructive/10 text-destructive" : daysRemaining <= 15 ? "bg-amber-100 text-amber-700" : "bg-emerald-100 text-emerald-700"
+            }`}>
+              {daysRemaining}d restantes
+            </span>
+            <Progress value={Math.min(100, (daysRemaining / 30) * 100)} className="h-1 mt-1.5 w-20" />
           </div>
         </div>
       )}

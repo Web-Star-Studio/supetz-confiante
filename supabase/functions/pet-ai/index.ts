@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -215,6 +216,36 @@ serve(async (req) => {
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
 
     const { mode, messages, petInfo } = await req.json();
+
+    // Server-side AI access credit check
+    const authHeader = req.headers.get("Authorization");
+    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseServiceKey);
+
+    // Extract user from JWT
+    const anonKey = Deno.env.get("SUPABASE_ANON_KEY")!;
+    const userClient = createClient(supabaseUrl, anonKey, {
+      global: { headers: { Authorization: authHeader || "" } },
+    });
+    const { data: { user: authUser } } = await userClient.auth.getUser();
+
+    if (authUser) {
+      const { data: credit } = await supabaseAdmin
+        .from("ai_access_credits")
+        .select("expires_at")
+        .eq("user_id", authUser.id)
+        .order("expires_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (!credit || new Date(credit.expires_at) < new Date()) {
+        return new Response(
+          JSON.stringify({ error: "Seu acesso ao SuperPet AI expirou. Faça uma compra para reativar!" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+    }
 
     // Emergency filter — check last user message before calling AI
     const lastUserMsg = messages ? [...messages].reverse().find((m: any) => m.role === "user") : null;
