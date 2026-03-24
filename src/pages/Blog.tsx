@@ -5,6 +5,7 @@ import { Clock, ArrowRight, Loader2, ChevronLeft, ChevronRight, Search, X } from
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import BlurImage from "@/components/blog/BlurImage";
+import HighlightText from "@/components/blog/HighlightText";
 import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
