@@ -18,6 +18,7 @@ import LoyaltyPointsTab from "@/components/profile/LoyaltyPointsTab";
 import CouponsTab from "@/components/profile/CouponsTab";
 import AIPetAssistantTab from "@/components/profile/AIPetAssistantTab";
 import AchievementsTab from "@/components/profile/AchievementsTab";
+import ProfileDashboardTab from "@/components/profile/ProfileDashboardTab";
 import UserNotificationCenter from "@/components/profile/UserNotificationCenter";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
