@@ -20,6 +20,7 @@ const navItems = [
   { label: "Marketing", path: "/admin/marketing", icon: Megaphone },
   { label: "Financeiro", path: "/admin/financeiro", icon: Wallet },
   { label: "Auditoria", path: "/admin/auditoria", icon: ScrollText },
+  { label: "Gerenciar IA", path: "/admin/ia", icon: Brain },
   { label: "Base de Conhecimento", path: "/admin/base-conhecimento", icon: BookOpen },
   { label: "Configurações", path: "/admin/configuracoes", icon: Settings },
 ];
