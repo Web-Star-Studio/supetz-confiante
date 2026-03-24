@@ -10,6 +10,7 @@ import CartDrawer from "@/components/layout/CartDrawer";
 import FloatingChatbot from "@/components/chat/FloatingChatbot";
 import PWAInstallPrompt from "@/components/pwa/PWAInstallPrompt";
 import MobileBottomNav from "@/components/pwa/MobileBottomNav";
+import PushNotificationManager from "@/components/pwa/PushNotificationManager";
 
 const queryClient = new QueryClient();
 
