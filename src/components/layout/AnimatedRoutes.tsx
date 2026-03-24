@@ -29,6 +29,7 @@ import AdminEstoque from "../../pages/admin/Estoque";
 import AdminFinanceiro from "../../pages/admin/Financeiro";
 import AdminAuditoria from "../../pages/admin/Auditoria";
 import AdminBaseConhecimento from "../../pages/admin/BaseConhecimento";
+import AdminGerenciarIA from "../../pages/admin/GerenciarIA";
 
 import PageTransition from "./PageTransition";
 
