@@ -835,51 +835,128 @@ export default function BaseConhecimento() {
   const [activeTag, setActiveTag] = useState<string | null>(null);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingArticle, setEditingArticle] = useState<any>(null);
-  const [customArticles, setCustomArticles] = useState<any[]>([]);
+  const [dbArticles, setDbArticles] = useState<any[]>([]);
+  const [isMigrating, setIsMigrating] = useState(false);
 
-  // Load custom articles from DB
-  useEffect(() => {
-    loadCustomArticles();
-  }, []);
+  // Load articles from DB
+  useEffect(() => { loadDbArticles(); }, []);
 
-  const loadCustomArticles = async () => {
+  const loadDbArticles = async () => {
     const { data } = await supabase.from("kb_articles").select("*").order("sort_order");
-    if (data) setCustomArticles(data);
+    if (data) setDbArticles(data);
   };
 
-  // Set of static IDs that have DB overrides
-  const overriddenStaticIds = useMemo(() => {
-    const set = new Set<string>();
-    customArticles.forEach((a) => { if (a.static_id) set.add(a.static_id); });
-    return set;
-  }, [customArticles]);
+  // Check if static articles have been migrated
+  const isMigrated = useMemo(() => {
+    const staticIds = new Set<string>();
+    staticKnowledgeBase.forEach(c => c.articles.forEach(a => staticIds.add(a.id)));
+    const dbStaticIds = new Set(dbArticles.filter(a => a.static_id).map(a => a.static_id));
+    return staticIds.size > 0 && dbStaticIds.size >= staticIds.size;
+  }, [dbArticles]);
 
-  // Merge static + custom articles (DB overrides replace static ones)
+  // Migrate all static articles to DB
+  const handleMigrateAll = async () => {
+    setIsMigrating(true);
+    const existingStaticIds = new Set(dbArticles.filter(a => a.static_id).map(a => a.static_id));
+    const toInsert: any[] = [];
+    let sortOrder = 0;
+
+    staticKnowledgeBase.forEach((cat) => {
+      cat.articles.forEach((article) => {
+        if (!existingStaticIds.has(article.id)) {
+          toInsert.push({
+            category: cat.id,
+            title: article.title,
+            tags: article.tags,
+            content: article.content,
+            icon: article.iconName,
+            static_id: article.id,
+            sort_order: sortOrder++,
+          });
+        }
+      });
+    });
+
+    if (toInsert.length === 0) {
+      toast.info("Todos os artigos já estão no banco!");
+      setIsMigrating(false);
+      return;
+    }
+
+    // Insert in batches of 10
+    for (let i = 0; i < toInsert.length; i += 10) {
+      const batch = toInsert.slice(i, i + 10);
+      const { error } = await supabase.from("kb_articles").insert(batch);
+      if (error) { toast.error(`Erro ao migrar: ${error.message}`); setIsMigrating(false); return; }
+    }
+
+    toast.success(`${toInsert.length} artigos migrados com sucesso!`);
+    setIsMigrating(false);
+    loadDbArticles();
+  };
+
+  // Build knowledge base — fully from DB if migrated, otherwise merge
   const knowledgeBase = useMemo(() => {
+    if (isMigrated) {
+      // Fully DB-driven
+      const catMap: Record<string, { articles: any[] }> = {};
+      dbArticles.forEach(a => {
+        if (!catMap[a.category]) catMap[a.category] = { articles: [] };
+        catMap[a.category].articles.push({
+          id: a.id, title: a.title,
+          icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
+          iconName: a.icon, tags: a.tags || [], content: a.content, isCustom: true,
+          staticId: a.static_id || undefined,
+        });
+      });
+
+      // Use static category metadata for known categories
+      const result: KBCategory[] = [];
+      const usedCats = new Set<string>();
+
+      staticKnowledgeBase.forEach(staticCat => {
+        if (catMap[staticCat.id]) {
+          result.push({ ...staticCat, articles: catMap[staticCat.id].articles });
+          usedCats.add(staticCat.id);
+        }
+      });
+
+      // Add any extra categories not in static
+      Object.entries(catMap).forEach(([catId, data]) => {
+        if (!usedCats.has(catId)) {
+          result.push({
+            id: catId,
+            title: catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, " "),
+            icon: ICON_MAP[data.articles[0]?.iconName] || <FileText className="w-5 h-5" />,
+            description: "Artigos personalizados",
+            articles: data.articles,
+          });
+        }
+      });
+
+      return result;
+    }
+
+    // Not migrated — merge static + DB overrides
     const merged = staticKnowledgeBase.map(cat => ({
       ...cat,
       articles: cat.articles.map(a => {
-        // Check if this static article has a DB override
-        const override = customArticles.find(ca => ca.static_id === a.id);
+        const override = dbArticles.find(ca => ca.static_id === a.id);
         if (override) {
           return {
-            id: override.id,
-            title: override.title,
+            id: override.id, title: override.title,
             icon: ICON_MAP[override.icon] || <FileText className="w-4 h-4" />,
-            iconName: override.icon,
-            tags: override.tags || [],
-            content: override.content,
-            isCustom: true,
-            staticId: a.id,
+            iconName: override.icon, tags: override.tags || [], content: override.content,
+            isCustom: true, staticId: a.id,
           };
         }
         return { ...a, staticId: a.id };
       }),
     }));
 
-    // Add purely custom articles (no static_id)
+    // Add purely custom articles
     const customByCategory: Record<string, any[]> = {};
-    customArticles.filter(a => !a.static_id).forEach((a) => {
+    dbArticles.filter(a => !a.static_id).forEach((a) => {
       if (!customByCategory[a.category]) customByCategory[a.category] = [];
       customByCategory[a.category].push(a);
     });
@@ -891,21 +968,16 @@ export default function BaseConhecimento() {
         icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
         iconName: a.icon, tags: a.tags || [], content: a.content, isCustom: true, staticId: undefined as string | undefined,
       }));
-      if (existing) {
-        existing.articles.push(...mapped);
-      } else {
-        merged.push({
-          id: catId,
-          title: catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, " "),
-          icon: ICON_MAP[articles[0]?.icon] || <FileText className="w-5 h-5" />,
-          description: "Artigos personalizados",
-          articles: mapped,
-        });
-      }
+      if (existing) existing.articles.push(...mapped);
+      else merged.push({
+        id: catId, title: catId.charAt(0).toUpperCase() + catId.slice(1).replace(/-/g, " "),
+        icon: ICON_MAP[articles[0]?.icon] || <FileText className="w-5 h-5" />,
+        description: "Artigos personalizados", articles: mapped,
+      });
     });
 
     return merged;
-  }, [customArticles]);
+  }, [dbArticles, isMigrated]);
 
   // All unique tags
   const allTags = useMemo(() => {
@@ -956,7 +1028,7 @@ export default function BaseConhecimento() {
     }
     setEditorOpen(false);
     setEditingArticle(null);
-    loadCustomArticles();
+    loadDbArticles();
   };
 
   const handleDeleteArticle = async (id: string) => {
@@ -964,7 +1036,7 @@ export default function BaseConhecimento() {
     if (error) { toast.error("Erro ao excluir"); return; }
     toast.success("Artigo excluído!");
     if (selectedArticle?.id === id) setSelectedArticle(null);
-    loadCustomArticles();
+    loadDbArticles();
   };
 
   // Find parent category of selected article
@@ -986,7 +1058,15 @@ export default function BaseConhecimento() {
               Documentação completa do sistema Supet
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {!isMigrated && (
+              <Button onClick={handleMigrateAll} size="sm" variant="outline" disabled={isMigrating} className="shrink-0">
+                <Database className="w-4 h-4 mr-1" /> {isMigrating ? "Migrando..." : "Migrar para banco"}
+              </Button>
+            )}
+            {isMigrated && (
+              <Badge variant="outline" className="text-xs text-green-600 border-green-200 bg-green-50">✓ Persistido no banco</Badge>
+            )}
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input placeholder="Buscar artigos..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
@@ -1003,7 +1083,7 @@ export default function BaseConhecimento() {
             { label: "Categorias", value: totalCategories, icon: <BookOpen className="w-4 h-4" /> },
             { label: "Artigos", value: totalArticles, icon: <FileText className="w-4 h-4" /> },
             { label: "Tags", value: allTags.length, icon: <Tag className="w-4 h-4" /> },
-            { label: "Personalizados", value: customArticles.length, icon: <Pencil className="w-4 h-4" /> },
+            { label: "Personalizados", value: dbArticles.length, icon: <Pencil className="w-4 h-4" /> },
           ].map((stat) => (
             <div key={stat.label} className="rounded-xl border border-border bg-card p-4 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary">{stat.icon}</div>
@@ -1113,7 +1193,7 @@ export default function BaseConhecimento() {
                     <div className="flex items-center gap-1 shrink-0">
                       <Button variant="ghost" size="sm" onClick={() => {
                         if (selectedArticle.isCustom) {
-                          const dbArticle = customArticles.find(a => a.id === selectedArticle.id);
+                          const dbArticle = dbArticles.find(a => a.id === selectedArticle.id);
                           if (dbArticle) { setEditingArticle(dbArticle); setEditorOpen(true); }
                         } else {
                           // Edit static article — open editor pre-filled, will create DB override
