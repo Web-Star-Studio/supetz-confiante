@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Plus, Tag } from "lucide-react";
+import { Search, Plus, Tag, Download } from "lucide-react";
 import CRMFunnelCards from "@/components/admin/crm/CRMFunnelCards";
 import CRMClientList, { type EnrichedClient } from "@/components/admin/crm/CRMClientList";
 import CRMClientDrawer from "@/components/admin/crm/CRMClientDrawer";
