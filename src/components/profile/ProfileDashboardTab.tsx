@@ -1,0 +1,292 @@
+import { useState, useEffect } from "react";
+import { motion } from "framer-motion";
+import {
+  Package, Star, Ticket, Bell, PawPrint, BookOpen, ShoppingBag,
+  Sparkles, Trophy, ChevronRight, Calendar, TrendingUp, Store,
+} from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/context/AuthContext";
+import { format } from "date-fns";
+import { ptBR } from "date-fns/locale";
+import { Link } from "react-router-dom";
+
+interface ProfileDashboardTabProps {
+  setActiveTab: (tab: string) => void;
+}
+
+const statusLabels: Record<string, string> = {
+  pending: "Pendente",
+  confirmed: "Confirmado",
+  shipped: "Enviado",
+  delivered: "Entregue",
+  cancelled: "Cancelado",
+};
+
+const statusColors: Record<string, string> = {
+  pending: "bg-yellow-100 text-yellow-700",
+  confirmed: "bg-blue-100 text-blue-700",
+  shipped: "bg-purple-100 text-purple-700",
+  delivered: "bg-green-100 text-green-700",
+  cancelled: "bg-red-100 text-red-700",
+};
+
+export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTabProps) {
+  const { user } = useAuth();
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<{
+    ordersCount: number;
+    lastOrder: any;
+    totalPoints: number;
+    activeCoupons: number;
+    pendingReminders: number;
+    nextReminder: any;
+    pet: any;
+    lastDiary: any;
+    notifications: any[];
+  }>({
+    ordersCount: 0, lastOrder: null, totalPoints: 0, activeCoupons: 0,
+    pendingReminders: 0, nextReminder: null, pet: null, lastDiary: null, notifications: [],
+  });
+
+  useEffect(() => {
+    if (!user) return;
+    loadDashboard();
+  }, [user]);
+
+  const loadDashboard = async () => {
+    if (!user) return;
+    setLoading(true);
+
+    const [ordersRes, pointsRes, couponsRes, remindersRes, petRes, diaryRes, notifRes] = await Promise.all([
+      supabase.from("orders").select("id, status, total, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
+      supabase.from("loyalty_points").select("points").eq("user_id", user.id),
+      supabase.from("user_coupons").select("id").eq("user_id", user.id).eq("used", false).gte("expires_at", new Date().toISOString()),
+      supabase.from("restock_reminders").select("id, product_title, estimated_end_date").eq("user_id", user.id).eq("reminded", false).order("estimated_end_date", { ascending: true }),
+      supabase.from("pets").select("name, breed, weight_kg, photo_url").eq("user_id", user.id).limit(1).maybeSingle(),
+      supabase.from("treatment_logs").select("log_date, notes").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle(),
+      supabase.from("user_notifications").select("id, title, message, type, created_at, read").eq("user_id", user.id).eq("read", false).order("created_at", { ascending: false }).limit(3),
+    ]);
+
+    const orders = ordersRes.data || [];
+    const totalPoints = (pointsRes.data || []).reduce((sum, p) => sum + p.points, 0);
+    const reminders = remindersRes.data || [];
+
+    setData({
+      ordersCount: orders.length,
+      lastOrder: orders[0] || null,
+      totalPoints,
+      activeCoupons: (couponsRes.data || []).length,
+      pendingReminders: reminders.length,
+      nextReminder: reminders[0] || null,
+      pet: petRes.data,
+      lastDiary: diaryRes.data,
+      notifications: notifRes.data || [],
+    });
+    setLoading(false);
+  };
+
+  if (loading) {
+    return (
+      <div className="space-y-4">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="rounded-2xl bg-supet-bg-alt p-5 animate-pulse">
+              <div className="h-4 w-16 bg-border rounded-full mb-3" />
+              <div className="h-7 w-12 bg-border rounded-full" />
+            </div>
+          ))}
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="rounded-2xl bg-supet-bg-alt p-6 animate-pulse h-32" />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  const metrics = [
+    { label: "Pedidos", value: data.ordersCount, icon: Package, color: "text-blue-500 bg-blue-500/10", tab: "compras" },
+    { label: "Pontos", value: data.totalPoints, icon: Star, color: "text-yellow-500 bg-yellow-500/10", tab: "pontos" },
+    { label: "Cupons", value: data.activeCoupons, icon: Ticket, color: "text-green-500 bg-green-500/10", tab: "cupons" },
+    { label: "Reposições", value: data.pendingReminders, icon: Bell, color: "text-orange-500 bg-orange-500/10", tab: "lembretes" },
+  ];
+
+  const quickActions = [
+    { label: "Loja", icon: Store, href: "/shop", tab: null },
+    { label: "Super IA", icon: Sparkles, tab: "ia", href: null },
+    { label: "Conquistas", icon: Trophy, tab: "conquistas", href: null },
+    { label: "Meu Pet", icon: PawPrint, tab: "pet", href: null },
+    { label: "Diário", icon: BookOpen, tab: "diario", href: null },
+    { label: "Compras", icon: ShoppingBag, tab: "compras", href: null },
+  ];
+
+  const cardClass = "rounded-2xl bg-supet-bg-alt p-5 sm:p-6";
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 sm:space-y-6">
+      {/* Metric Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        {metrics.map((m) => (
+          <button
+            key={m.label}
+            onClick={() => setActiveTab(m.tab)}
+            className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all group`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-muted-foreground">{m.label}</span>
+              <div className={`w-8 h-8 rounded-xl flex items-center justify-center ${m.color}`}>
+                <m.icon className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-2xl font-bold text-foreground">{m.value}</p>
+            <ChevronRight className="w-3.5 h-3.5 text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
+          </button>
+        ))}
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Pet Summary */}
+        <button onClick={() => setActiveTab("pet")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
+          <div className="flex items-center gap-2 mb-3">
+            <PawPrint className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Meu Pet</h3>
+          </div>
+          {data.pet ? (
+            <div className="flex items-center gap-3">
+              {data.pet.photo_url ? (
+                <img src={data.pet.photo_url} alt={data.pet.name} className="w-12 h-12 rounded-xl object-cover" />
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <PawPrint className="w-5 h-5 text-primary" />
+                </div>
+              )}
+              <div>
+                <p className="font-semibold text-foreground">{data.pet.name}</p>
+                <p className="text-xs text-muted-foreground">
+                  {[data.pet.breed, data.pet.weight_kg && `${data.pet.weight_kg}kg`].filter(Boolean).join(" · ") || "Sem detalhes"}
+                </p>
+              </div>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Nenhum pet cadastrado. Toque para adicionar!</p>
+          )}
+        </button>
+
+        {/* Last Order */}
+        <button onClick={() => setActiveTab("compras")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
+          <div className="flex items-center gap-2 mb-3">
+            <Package className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Último Pedido</h3>
+          </div>
+          {data.lastOrder ? (
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusColors[data.lastOrder.status] || "bg-muted text-muted-foreground"}`}>
+                  {statusLabels[data.lastOrder.status] || data.lastOrder.status}
+                </span>
+                <span className="text-sm font-bold text-foreground">
+                  R$ {Number(data.lastOrder.total).toFixed(2).replace(".", ",")}
+                </span>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                {format(new Date(data.lastOrder.created_at), "dd 'de' MMMM", { locale: ptBR })}
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Nenhum pedido ainda.</p>
+          )}
+        </button>
+
+        {/* Next Restock */}
+        <button onClick={() => setActiveTab("lembretes")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
+          <div className="flex items-center gap-2 mb-3">
+            <Calendar className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Próxima Reposição</h3>
+          </div>
+          {data.nextReminder ? (
+            <div>
+              <p className="font-semibold text-foreground text-sm">{data.nextReminder.product_title}</p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {format(new Date(data.nextReminder.estimated_end_date), "dd/MM/yyyy")}
+              </p>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Nenhum lembrete ativo.</p>
+          )}
+        </button>
+
+        {/* Treatment Diary */}
+        <button onClick={() => setActiveTab("diario")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
+          <div className="flex items-center gap-2 mb-3">
+            <BookOpen className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Diário de Tratamento</h3>
+          </div>
+          {data.lastDiary ? (
+            <div>
+              <p className="text-xs text-muted-foreground mb-1">
+                {format(new Date(data.lastDiary.log_date), "dd/MM/yyyy")}
+              </p>
+              <p className="text-sm text-foreground line-clamp-2">{data.lastDiary.notes || "Sem anotações"}</p>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">Nenhum registro ainda.</p>
+          )}
+        </button>
+      </div>
+
+      {/* Notifications */}
+      {data.notifications.length > 0 && (
+        <div className={cardClass}>
+          <div className="flex items-center gap-2 mb-3">
+            <TrendingUp className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Notificações recentes</h3>
+          </div>
+          <div className="space-y-2">
+            {data.notifications.map((n) => (
+              <div key={n.id} className="flex items-start gap-3 p-2.5 rounded-xl bg-supet-bg">
+                <div className="w-2 h-2 rounded-full bg-primary mt-1.5 shrink-0" />
+                <div className="min-w-0">
+                  <p className="text-sm font-semibold text-foreground truncate">{n.title}</p>
+                  <p className="text-xs text-muted-foreground truncate">{n.message}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Quick Actions */}
+      <div className={cardClass}>
+        <h3 className="text-sm font-bold text-foreground mb-3">Ações rápidas</h3>
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+          {quickActions.map((a) =>
+            a.href ? (
+              <Link
+                key={a.label}
+                to={a.href}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-xl hover:bg-primary/10 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <a.icon className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs font-semibold text-muted-foreground">{a.label}</span>
+              </Link>
+            ) : (
+              <button
+                key={a.label}
+                onClick={() => a.tab && setActiveTab(a.tab)}
+                className="flex flex-col items-center gap-1.5 p-3 rounded-xl hover:bg-primary/10 transition-colors"
+              >
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <a.icon className="w-5 h-5 text-primary" />
+                </div>
+                <span className="text-xs font-semibold text-muted-foreground">{a.label}</span>
+              </button>
+            )
+          )}
+        </div>
+      </div>
+    </motion.div>
+  );
+}
