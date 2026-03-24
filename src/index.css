@@ -195,4 +195,39 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* PWA safe areas */
+  .safe-area-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .safe-area-top {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+}
+
+/* Bottom nav spacing - add padding to main content on mobile */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 72px;
+  }
+  
+  /* Standalone PWA: extra notch padding */
+  @media (display-mode: standalone) {
+    body {
+      padding-bottom: 82px;
+    }
+  }
+}
+
+/* Standalone PWA: hide browser-style scrollbar */
+@media (display-mode: standalone) {
+  html {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Prevent pull-to-refresh */
+  body {
+    overscroll-behavior-y: contain;
+  }
 }
