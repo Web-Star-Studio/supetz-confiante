@@ -458,11 +458,22 @@ export default function AIPetAssistantTab() {
             {pets.map((p) => {
               const isActive = pet?.id === p.id;
               return (
-                <button key={p.id} onClick={() => selectPet(p)}
-                  className={`flex flex-col items-center gap-1.5 min-w-[80px] transition-all ${isActive ? "scale-105" : "opacity-60 hover:opacity-90"}`}>
-                  <div className={`relative h-16 w-16 rounded-full overflow-hidden border-[3px] transition-all ${
-                    isActive ? "border-primary shadow-lg shadow-primary/20" : "border-border"
-                  }`}>
+                <motion.button key={p.id} onClick={() => selectPet(p)}
+                  layout
+                  whileTap={{ scale: 0.92 }}
+                  animate={{ 
+                    scale: isActive ? 1.05 : 1, 
+                    opacity: isActive ? 1 : 0.6,
+                  }}
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  className="flex flex-col items-center gap-1.5 min-w-[80px] transition-colors">
+                  <motion.div 
+                    animate={{ 
+                      borderColor: isActive ? "hsl(var(--primary))" : "hsl(var(--border))",
+                      boxShadow: isActive ? "0 10px 15px -3px hsl(var(--primary) / 0.2)" : "0 0 0 0 transparent",
+                    }}
+                    transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    className="relative h-16 w-16 rounded-full overflow-hidden border-[3px]">
                     {p.photo_url ? (
                       <img src={p.photo_url} alt={p.name} className="h-full w-full object-cover" />
                     ) : (
@@ -471,16 +482,18 @@ export default function AIPetAssistantTab() {
                       </div>
                     )}
                     {isActive && (
-                      <motion.div layoutId="petSelector" className="absolute inset-0 rounded-full border-[3px] border-primary" />
+                      <motion.div layoutId="petSelector" className="absolute inset-0 rounded-full border-[3px] border-primary"
+                        transition={{ type: "spring", stiffness: 350, damping: 30 }} />
                     )}
-                  </div>
-                  <span className={`text-xs font-semibold truncate max-w-[80px] ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                  </motion.div>
+                  <motion.span animate={{ color: isActive ? "hsl(var(--primary))" : "hsl(var(--muted-foreground))" }}
+                    className="text-xs font-semibold truncate max-w-[80px]">
                     {p.name}
-                  </span>
+                  </motion.span>
                   {p.breed && (
                     <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">{p.breed}</span>
                   )}
-                </button>
+                </motion.button>
               );
             })}
           </div>
