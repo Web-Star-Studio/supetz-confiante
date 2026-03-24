@@ -24,22 +24,22 @@ function StatsCard({ icon: Icon, label, value, color, delay, trend, to }: {
 }) {
   const content = (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.4 }}
-      whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-      className="bg-supet-bg-alt rounded-3xl p-5 cursor-default"
+      transition={{ delay, duration: 0.35 }}
+      whileHover={{ y: -2, transition: { duration: 0.2 } }}
+      className="bg-card rounded-2xl p-5 border border-border/50 hover:border-primary/20 hover:shadow-lg hover:shadow-primary/5 transition-all cursor-default"
     >
       <div className="flex items-center gap-3">
-        <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${color}`}>
+        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
           <Icon className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-xs text-muted-foreground font-medium">{label}</p>
-          <p className="text-xl font-extrabold text-foreground font-display truncate">{value}</p>
+          <p className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide">{label}</p>
+          <p className="text-xl font-extrabold text-foreground truncate">{value}</p>
         </div>
         {trend && (
-          <div className={`flex items-center gap-0.5 text-[10px] font-bold rounded-full px-2 py-1 flex-shrink-0 ${trend.up ? "bg-emerald-500/15 text-emerald-700" : "bg-destructive/15 text-destructive"}`}>
+          <div className={`flex items-center gap-0.5 text-[10px] font-bold rounded-lg px-2 py-1 flex-shrink-0 ${trend.up ? "bg-emerald-500/10 text-emerald-600" : "bg-destructive/10 text-destructive"}`}>
             {trend.up ? <ArrowUpRight className="w-3 h-3" /> : <ArrowDownRight className="w-3 h-3" />}
             {trend.value}
           </div>
@@ -55,8 +55,8 @@ function MiniCard({ icon: Icon, label, value, color, to }: {
   icon: any; label: string; value: string | number; color: string; to?: string;
 }) {
   const content = (
-    <div className="flex items-center gap-3 p-4 bg-supet-bg-alt rounded-2xl hover:shadow-md transition-all">
-      <div className={`w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 ${color}`}>
+    <div className="flex items-center gap-3 p-3.5 bg-muted/50 rounded-xl hover:bg-muted transition-all">
+      <div className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${color}`}>
         <Icon className="w-4 h-4" />
       </div>
       <div className="min-w-0">
