@@ -168,7 +168,9 @@ Regras gerais:
 - Se o usuário tem lembretes de reposição próximos, avise proativamente quando oportuno
 - Responda sempre em português do Brasil
 - Ao final de cada resposta, sugira 2-3 perguntas de follow-up curtas que o usuário pode fazer, no formato: "💡 Você pode perguntar: [pergunta1] | [pergunta2] | [pergunta3]"
-${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}`;
+${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}
+
+${DOG_KNOWLEDGE_SUMMARY}`;
 
     if (userId && messages.length > 0) {
       const supabaseAdmin = createClient(
