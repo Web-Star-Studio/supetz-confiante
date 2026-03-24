@@ -1058,7 +1058,15 @@ export default function BaseConhecimento() {
               Documentação completa do sistema Supet
             </p>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
+            {!isMigrated && (
+              <Button onClick={handleMigrateAll} size="sm" variant="outline" disabled={isMigrating} className="shrink-0">
+                <Database className="w-4 h-4 mr-1" /> {isMigrating ? "Migrando..." : "Migrar para banco"}
+              </Button>
+            )}
+            {isMigrated && (
+              <Badge variant="outline" className="text-xs text-green-600 border-green-200 bg-green-50">✓ Persistido no banco</Badge>
+            )}
             <div className="relative w-full md:w-72">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input placeholder="Buscar artigos..." value={search} onChange={(e) => setSearch(e.target.value)} className="pl-10" />
