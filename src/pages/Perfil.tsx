@@ -16,6 +16,8 @@ import RestockRemindersTab from "@/components/profile/RestockRemindersTab";
 import TreatmentDiaryTab from "@/components/profile/TreatmentDiaryTab";
 import LoyaltyPointsTab from "@/components/profile/LoyaltyPointsTab";
 import CouponsTab from "@/components/profile/CouponsTab";
+import AIPetAssistantTab from "@/components/profile/AIPetAssistantTab";
+import AchievementsTab from "@/components/profile/AchievementsTab";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
