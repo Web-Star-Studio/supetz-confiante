@@ -534,6 +534,7 @@ export type Database = {
           icon: string
           id: string
           sort_order: number
+          static_id: string | null
           tags: string[]
           title: string
           updated_at: string
@@ -545,6 +546,7 @@ export type Database = {
           icon?: string
           id?: string
           sort_order?: number
+          static_id?: string | null
           tags?: string[]
           title: string
           updated_at?: string
@@ -556,6 +558,7 @@ export type Database = {
           icon?: string
           id?: string
           sort_order?: number
+          static_id?: string | null
           tags?: string[]
           title?: string
           updated_at?: string
