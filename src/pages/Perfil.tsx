@@ -170,11 +170,10 @@ export default function Perfil() {
 
   const sidebarContent = (
     <>
-      <div className="relative p-6 overflow-hidden">
+      <div className="relative p-6 overflow-hidden flex justify-center">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
-        <Link to="/" className="flex items-center gap-2 relative z-10 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
-          <Store className="w-4 h-4" />
-          Voltar à loja
+        <Link to="/" className="relative z-10">
+          <img src="/supetNewLogo.svg" alt="Supet" className="h-10 lg:h-12 w-auto" />
         </Link>
       </div>
 
@@ -295,8 +294,10 @@ export default function Perfil() {
         <div className="flex-1 flex flex-col min-h-screen">
           {/* Desktop top bar with notification center */}
           <header className="hidden lg:flex sticky top-0 z-30 bg-supet-bg/80 backdrop-blur-xl px-6 py-4 items-center gap-3">
-            <img src="/supetNewLogo.svg" alt="Supet" className="h-7" />
-            <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground bg-primary/15 text-primary px-2.5 py-1 rounded-full">Minha Conta</span>
+            <Link to="/" className="flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
+              <Store className="w-4 h-4" />
+              Voltar à loja
+            </Link>
             <div className="ml-auto flex items-center gap-3">
               {currentNavItem && (
                 <span className="text-sm text-muted-foreground flex items-center gap-1.5">
