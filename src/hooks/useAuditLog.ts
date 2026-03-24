@@ -16,13 +16,13 @@ export function useAuditLog() {
     async ({ action, entity_type, entity_id, details }: AuditEntry) => {
       if (!user) return;
       try {
-        await supabase.from("audit_logs").insert({
+        await supabase.from("audit_logs" as any).insert({
           admin_id: user.id,
           action,
           entity_type,
           entity_id: entity_id || null,
           details: details || {},
-        });
+        } as any);
       } catch {
         // silent — audit should never block operations
       }
