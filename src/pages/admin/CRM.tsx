@@ -115,6 +115,29 @@ export default function AdminCRM() {
     });
   }
 
+  function handleExportCSV() {
+    const headers = ["Nome", "Telefone", "Status", "Pedidos", "Gasto Total (R$)", "Pontos", "Tags", "Último Pedido", "Cadastro"];
+    const rows = filtered.map((c) => [
+      c.full_name || "Sem nome",
+      c.phone || "",
+      c.status,
+      c.orderCount,
+      c.totalSpent.toFixed(2),
+      c.totalPoints,
+      c.tags.map((t) => t.name).join("; "),
+      c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString("pt-BR") : "",
+      new Date(c.created_at).toLocaleDateString("pt-BR"),
+    ]);
+    const csv = [headers, ...rows].map((r) => r.map((v) => `"${v}"`).join(",")).join("\n");
+    const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `clientes_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   // Update selectedClient when clients change
   useEffect(() => {
     if (selectedClient) {
@@ -125,9 +148,19 @@ export default function AdminCRM() {
 
   return (
     <AdminLayout>
-      <div className="mb-8">
-        <h1 className="text-3xl font-extrabold text-foreground font-display">CRM</h1>
-        <p className="text-muted-foreground mt-1">Gestão avançada de clientes e funil de vendas</p>
+      <div className="mb-8 flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-extrabold text-foreground font-display">Clientes</h1>
+          <p className="text-muted-foreground mt-1">Gestão avançada de clientes e funil de vendas</p>
+        </div>
+        <button
+          onClick={handleExportCSV}
+          disabled={filtered.length === 0}
+          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border/50 text-sm font-semibold text-foreground hover:border-primary/30 hover:shadow-md transition-all disabled:opacity-40 disabled:pointer-events-none"
+        >
+          <Download className="w-4 h-4" />
+          Exportar CSV
+        </button>
       </div>
 
       {/* Stats overview */}
