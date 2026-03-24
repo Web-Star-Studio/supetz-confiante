@@ -1,0 +1,1 @@
+DROP POLICY "Service role can insert emergency logs" ON public.emergency_logs;

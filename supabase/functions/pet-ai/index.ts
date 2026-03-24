@@ -47,6 +47,11 @@ function detectEmergency(text: string): boolean {
   return EMERGENCY_KEYWORDS.some((kw) => normalized.includes(normalizeText(kw)));
 }
 
+function findMatchedKeyword(text: string): string | null {
+  const normalized = normalizeText(text);
+  return EMERGENCY_KEYWORDS.find((kw) => normalized.includes(normalizeText(kw))) || null;
+}
+
 const SAFETY_RULES = `
 REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
 1. Você NÃO é veterinário. NUNCA diagnostique doenças, prescreva medicamentos ou recomende doses de remédios.
@@ -250,14 +255,13 @@ serve(async (req) => {
     // Emergency filter — check last user message before calling AI
     const lastUserMsg = messages ? [...messages].reverse().find((m: any) => m.role === "user") : null;
     if (lastUserMsg && detectEmergency(lastUserMsg.content)) {
-      const isStreamMode = mode === "assistant" || mode === "analysis";
-      if (isStreamMode) {
-        // Return as SSE for streaming modes
-        const sseData = `data: ${JSON.stringify({ choices: [{ delta: { content: "" } }], isEmergency: true })}\n\ndata: [DONE]\n\n`;
-        return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
-          headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      // Log emergency
+      await supabaseAdmin.from("emergency_logs").insert({
+        user_id: authUser?.id || null,
+        message_content: lastUserMsg.content.slice(0, 500),
+        matched_keyword: findMatchedKeyword(lastUserMsg.content),
+        source: "pet-ai",
+      });
       return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
