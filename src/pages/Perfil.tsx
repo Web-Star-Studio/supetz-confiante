@@ -451,11 +451,7 @@ export default function Perfil() {
                 <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
               <button
-                onClick={() => {
-                  if (window.confirm("Tem certeza que deseja sair da sua conta?")) {
-                    handleSignOut();
-                  }
-                }}
+                onClick={() => setShowLogoutModal(true)}
                 className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
                 aria-label="Sair"
               >
