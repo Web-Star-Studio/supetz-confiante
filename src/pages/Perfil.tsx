@@ -171,7 +171,7 @@ export default function Perfil() {
 
   const sidebarContent = (
     <>
-      <div className="relative p-4 overflow-hidden flex items-center justify-center">
+      <div className="relative p-3 lg:p-4 xl:p-5 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
         <Link to="/" className="relative z-10">
           <img
