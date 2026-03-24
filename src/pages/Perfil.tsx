@@ -312,11 +312,26 @@ export default function Perfil() {
           <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
         )}
 
-        <aside className={`fixed lg:sticky top-0 left-0 h-screen w-72 bg-supet-bg-alt z-50 flex flex-col transition-transform duration-300 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <aside className={`fixed lg:sticky top-0 left-0 h-screen bg-supet-bg-alt z-50 flex flex-col transition-all duration-300 ease-in-out ${
+          sidebarCollapsed ? "w-[72px]" : "w-72"
+        } ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
           <button onClick={() => setMobileSidebarOpen(false)} className="absolute top-5 right-4 lg:hidden text-muted-foreground hover:text-foreground z-10">
             <X className="w-5 h-5" />
           </button>
           {sidebarContent}
+
+          {/* Collapse toggle — desktop only */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-12 items-center justify-center rounded-full bg-supet-bg-alt border border-border/50 shadow-md hover:bg-primary/10 hover:border-primary/30 transition-all group z-50"
+          >
+            <motion.div
+              animate={{ rotate: sidebarCollapsed ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <PanelLeftClose className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </motion.div>
+          </button>
         </aside>
 
         <div className="flex-1 flex flex-col min-h-screen">
