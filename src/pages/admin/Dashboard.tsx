@@ -1,6 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import RevenueChart from "@/components/admin/RevenueChart";
+import EmergencyAnalytics from "@/components/admin/EmergencyAnalytics";
 import { supabase } from "@/integrations/supabase/client";
 import { ShoppingCart, Package, Users, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { motion } from "framer-motion";
