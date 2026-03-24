@@ -84,7 +84,7 @@ export default function AdminGlobalSearch() {
         title: p.full_name || "Sem nome",
         subtitle: p.phone || "Sem telefone",
         icon: Users,
-        path: "/admin/clientes",
+        path: "/admin/crm",
       });
     });
 

@@ -369,7 +369,7 @@ export default function AdminDashboard() {
 
       {/* Secondary row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <MiniCard icon={Users} label="Total clientes" value={totalCustomers} color="bg-violet-500/15 text-violet-600" to="/admin/clientes" />
+        <MiniCard icon={Users} label="Total clientes" value={totalCustomers} color="bg-violet-500/15 text-violet-600" <MiniCard icon={Users} label="Total clientes" value={totalCustomers} color="bg-violet-500/15 text-violet-600" to="/admin/crm" /> />
         <MiniCard icon={Package} label="Produtos" value={totalProducts} color="bg-blue-500/15 text-blue-600" to="/admin/produtos" />
         <MiniCard icon={AlertTriangle} label="Estoque baixo" value={lowStockProducts.length} color="bg-amber-500/15 text-amber-600" to="/admin/estoque" />
         <MiniCard icon={TrendingUp} label="Margem" value={`${margin.toFixed(1)}%`} color={margin >= 0 ? "bg-emerald-500/15 text-emerald-600" : "bg-destructive/15 text-destructive"} to="/admin/financeiro" />
