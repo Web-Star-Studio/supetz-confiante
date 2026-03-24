@@ -243,10 +243,10 @@ export default function Blog() {
                         </span>
                       </div>
                       <h2 className="text-lg font-display font-bold leading-tight text-supet-text group-hover:text-supet-orange transition-colors">
-                        {post.title}
+                        <HighlightText text={post.title} query={searchQuery} />
                       </h2>
                       <p className="mt-3 flex-1 text-sm leading-relaxed text-supet-text/50 line-clamp-3">
-                        {post.excerpt}
+                        <HighlightText text={post.excerpt || ""} query={searchQuery} />
                       </p>
                       <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-supet-orange group-hover:gap-2.5 transition-all">
                         Ler artigo <ArrowRight className="h-3 w-3" />
