@@ -37,6 +37,7 @@ const COLORS = ["hsl(27, 100%, 49%)", "hsl(27, 100%, 70%)", "hsl(28, 38%, 75%)",
 
 export default function Fidelizacao() {
   const [loading, setLoading] = useState(true);
+  const { log } = useAuditLog();
   const [points, setPoints] = useState<PointsEntry[]>([]);
   const [coupons, setCoupons] = useState<CouponEntry[]>([]);
   const [profiles, setProfiles] = useState<ProfileInfo[]>([]);
