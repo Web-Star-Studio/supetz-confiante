@@ -48,10 +48,11 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     notifications: any[];
     treatmentChart: { month: string; registros: number }[];
     pointsChart: { month: string; pontos: number }[];
+    aiExpiry: { expiresAt: Date; daysLeft: number } | null;
   }>({
     ordersCount: 0, lastOrder: null, totalPoints: 0, activeCoupons: 0,
     pendingReminders: 0, nextReminder: null, pets: [], lastDiary: null, notifications: [],
-    treatmentChart: [], pointsChart: [],
+    treatmentChart: [], pointsChart: [], aiExpiry: null,
   });
 
   useEffect(() => {
