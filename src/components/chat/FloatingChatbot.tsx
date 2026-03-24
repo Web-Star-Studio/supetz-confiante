@@ -27,6 +27,15 @@ const quickQuestions = [
   "Como acompanhar meu pedido?",
 ];
 
+// Extract follow-up suggestions from AI response
+function extractSuggestions(content: string): { cleanContent: string; suggestions: string[] } {
+  const match = content.match(/💡\s*Você pode perguntar:\s*(.+)$/m);
+  if (!match) return { cleanContent: content, suggestions: [] };
+  const suggestions = match[1].split("|").map(s => s.trim()).filter(Boolean);
+  const cleanContent = content.replace(match[0], "").trim();
+  return { cleanContent, suggestions };
+}
+
 export default function FloatingChatbot() {
   const { user } = useAuth();
   const [open, setOpen] = useState(false);
@@ -35,6 +44,8 @@ export default function FloatingChatbot() {
   const [loading, setLoading] = useState(false);
   const [conversationId] = useState(() => crypto.randomUUID());
   const [unread, setUnread] = useState(0);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [historyLoaded, setHistoryLoaded] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -43,7 +54,7 @@ export default function FloatingChatbot() {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
     }
-  }, [messages]);
+  }, [messages, suggestions]);
 
   // Focus input when opened
   useEffect(() => {
@@ -53,10 +64,39 @@ export default function FloatingChatbot() {
     }
   }, [open]);
 
+  // Load chat history on first open
+  useEffect(() => {
+    if (open && user && !historyLoaded) {
+      setHistoryLoaded(true);
+      loadHistory();
+    }
+  }, [open, user, historyLoaded]);
+
+  const loadHistory = async () => {
+    if (!user) return;
+    const { data } = await supabase
+      .from("chat_messages")
+      .select("id, role, content, feedback, conversation_id")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (data && data.length > 0) {
+      const reversed = data.reverse();
+      setMessages(reversed.map(m => ({
+        id: m.id,
+        role: m.role as "user" | "assistant",
+        content: m.content,
+        feedback: m.feedback as "positive" | "negative" | null,
+      })));
+    }
+  };
+
   const sendMessage = useCallback(async (text?: string) => {
     const content = (text || input).trim();
     if (!content || loading) return;
 
+    setSuggestions([]);
     const userMsg: Msg = { role: "user", content };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
@@ -118,9 +158,16 @@ export default function FloatingChatbot() {
         }
       }
 
+      // Extract suggestions from final text
+      const { cleanContent, suggestions: newSuggestions } = extractSuggestions(assistantText);
+      if (newSuggestions.length > 0) {
+        setSuggestions(newSuggestions);
+        assistantText = cleanContent;
+      }
+
       // Finalize streaming flag
       setMessages((prev) =>
-        prev.map((m, i) => i === prev.length - 1 && m.isStreaming ? { ...m, isStreaming: false } : m)
+        prev.map((m, i) => i === prev.length - 1 && m.isStreaming ? { ...m, isStreaming: false, content: assistantText } : m)
       );
 
       // Save assistant response if logged in
@@ -142,7 +189,6 @@ export default function FloatingChatbot() {
       if (!open) setUnread((n) => n + 1);
     } catch (e: any) {
       toast.error(e.message);
-      // Remove streaming message on error
       setMessages((prev) => prev.filter((m) => !m.isStreaming));
     }
 
@@ -167,6 +213,7 @@ export default function FloatingChatbot() {
 
   const clearChat = () => {
     setMessages([]);
+    setSuggestions([]);
   };
 
   return (
@@ -301,6 +348,18 @@ export default function FloatingChatbot() {
                   </div>
                 </div>
               ))}
+
+              {/* Contextual suggestion chips */}
+              {suggestions.length > 0 && !loading && (
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  {suggestions.map((s, i) => (
+                    <button key={i} onClick={() => sendMessage(s)}
+                      className="text-[11px] bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-full transition-colors">
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
 
               {loading && messages[messages.length - 1]?.role === "user" && (
                 <div className="flex justify-start">

@@ -47,7 +47,26 @@ serve(async (req) => {
         systemPrompt = `Você é uma especialista em nutrição canina natural da Supet. Gere 2 receitas de petiscos caseiros saudáveis e seguros para o pet, considerando seu perfil. Cada receita deve ter: nome criativo, ingredientes (lista), modo de preparo simples, e um aviso se necessário. Responda em formato JSON: {"recipes": [{"name": "...", "emoji": "🍪", "ingredients": ["..."], "instructions": "...", "warning": "..."}]}. ${petContext}\n\n${SAFETY_RULES}\nAdicional: Use apenas ingredientes amplamente reconhecidos como seguros para cães. Sempre inclua aviso sobre alergias e sobre consultar o veterinário antes de mudar a dieta. NUNCA use chocolate, uva, cebola, alho, xilitol ou outros alimentos tóxicos para cães.`;
         break;
       case "fun_facts":
-        systemPrompt = `Você é uma enciclopedista de raças caninas da Supet, muito divertida e educativa. Gere 4 curiosidades surpreendentes e divertidas sobre a raça do pet. Se a raça não for informada, use curiosidades gerais sobre cães. Responda em formato JSON: {"facts": [{"emoji": "🧠", "fact": "..."}]}. ${petContext}\n\nUse apenas informações amplamente conhecidas e verificáveis. Se não tiver certeza de um fato, não inclua.`;
+        systemPrompt = `Você é uma enciclopedista de raças caninas da Supet, muito divertida e educativa. Gere 4 curiosidades surpreendentes e divertidas sobre a raça do pet. Se a raça não for informada, use curiosidades gerais sobre cães. Responda em formato JSON: {"facts": [{"emoji": "🧠", "fact": "..."}]}. ${petContext}\nUse apenas informações amplamente conhecidas e verificáveis. Se não tiver certeza de um fato, não inclua.`;
+        break;
+      case "health_plan":
+        systemPrompt = `Você é uma especialista em bem-estar canino da Supet. Crie um plano semanal de cuidados personalizado para o pet, considerando raça, peso e idade. O plano deve cobrir 7 dias com atividades diárias organizadas em categorias.
+
+Responda EXCLUSIVAMENTE em formato JSON válido, sem texto antes ou depois:
+{"plan": [
+  {"day": "Segunda", "activities": [
+    {"category": "exercicio", "emoji": "🏃", "title": "...", "description": "...", "duration": "30 min"},
+    {"category": "higiene", "emoji": "🛁", "title": "...", "description": "..."},
+    {"category": "alimentacao", "emoji": "🥗", "title": "...", "description": "..."}
+  ]},
+  ...para cada dia da semana
+]}
+
+Categorias possíveis: exercicio, higiene, alimentacao, socializacao, mental, descanso.
+${petContext}
+
+${SAFETY_RULES}
+Adicional: O plano deve ser de BEM-ESTAR GERAL, não médico. Adapte exercícios ao porte e idade do pet. Inclua variedade entre os dias. Não prescreva medicamentos ou suplementos específicos no plano.`;
         break;
       default:
         systemPrompt = `Você é a Super Pet AI, uma assistente virtual amigável da Supet. ${petContext}\n\n${SAFETY_RULES}`;
