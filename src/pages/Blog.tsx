@@ -5,6 +5,7 @@ import { Clock, ArrowRight, Loader2, ChevronLeft, ChevronRight, Search, X } from
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import BlurImage from "@/components/blog/BlurImage";
+import HighlightText from "@/components/blog/HighlightText";
 import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
@@ -186,12 +187,12 @@ export default function Blog() {
                       </span>
                     </div>
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-extrabold leading-[1.1] text-supet-text tracking-tight group-hover:text-supet-orange transition-colors">
-                      {featured.title}
+                      <HighlightText text={featured.title} query={searchQuery} />
                     </h2>
                   </div>
                   <div className="md:max-w-xs md:pt-10">
                     <p className="text-[15px] leading-relaxed text-supet-text/50 line-clamp-3">
-                      {featured.excerpt}
+                      <HighlightText text={featured.excerpt || ""} query={searchQuery} />
                     </p>
                     <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-supet-orange group-hover:gap-3 transition-all">
                       Ler artigo <ArrowRight className="h-4 w-4" />
@@ -242,10 +243,10 @@ export default function Blog() {
                         </span>
                       </div>
                       <h2 className="text-lg font-display font-bold leading-tight text-supet-text group-hover:text-supet-orange transition-colors">
-                        {post.title}
+                        <HighlightText text={post.title} query={searchQuery} />
                       </h2>
                       <p className="mt-3 flex-1 text-sm leading-relaxed text-supet-text/50 line-clamp-3">
-                        {post.excerpt}
+                        <HighlightText text={post.excerpt || ""} query={searchQuery} />
                       </p>
                       <span className="mt-5 inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-supet-orange group-hover:gap-2.5 transition-all">
                         Ler artigo <ArrowRight className="h-3 w-3" />
