@@ -233,8 +233,47 @@ serve(async (req) => {
       });
     }
 
+    // Breed-specific context injection
+    const BREED_SPECIFIC_INFO: Record<string, string> = {
+      "Pug": "Braquicefálico severo. MUITO sensível ao calor. Propenso a: problemas respiratórios, oculares, obesidade, dermatite nas dobras. Limpar dobras faciais diariamente. Exercício leve apenas (20-30min). Porte pequeno, 13-15 anos expectativa.",
+      "Bulldog Francês": "Braquicefálico. NUNCA exercitar em dias quentes. Propenso a: problemas respiratórios graves, alergias de pele, problemas de coluna. Limpar dobras faciais. Exercício leve (20-30min). Porte pequeno, 10-12 anos.",
+      "Bulldog Inglês": "Braquicefálico severo. Extremamente sensível ao calor. Propenso a: displasia, problemas cardíacos, dermatite nas dobras. Exercício mínimo. Porte médio, 8-10 anos.",
+      "Shih Tzu": "Braquicefálico. Sensível ao calor. Propenso a: problemas oculares, respiratórios, dentários. Escovação diária ou tosa curta. Porte pequeno, 10-18 anos.",
+      "Yorkshire": "Porte mini. Propenso a: luxação patelar, problemas dentários, colapso traqueal, hipoglicemia. Usar peitoral (não coleira). Escovação diária. 11-15 anos.",
+      "Golden Retriever": "Porte grande. Propenso a: displasia de quadril/cotovelo, câncer (alta incidência), obesidade. Adora água. Exercício 60-90min/dia. 10-12 anos.",
+      "Labrador": "Porte grande. MUITO propenso a obesidade (mutação gene POMC). Propenso a: displasia, problemas oculares. Come tudo. Exercício 60-90min/dia. 10-12 anos.",
+      "Pastor Alemão": "Porte grande. Propenso a: displasia de quadril/cotovelo, estômago sensível, dermatite. Alimentação de qualidade. Estímulo mental. Exercício 60-90min/dia. 9-13 anos.",
+      "Poodle": "Hipoalergênico, pelo não cai. Tosa regular obrigatória. Muito inteligente. Propenso a: luxação patelar, problemas oculares, epilepsia. Exercício 60min/dia. 12-15 anos.",
+      "Border Collie": "Raça MAIS inteligente. Energia muito alta. PRECISA de estímulo mental diário ou desenvolve comportamentos destrutivos. Propenso a: displasia, epilepsia. Exercício 90+min/dia. 12-15 anos.",
+      "Rottweiler": "Porte grande, protetor. Socialização precoce essencial. Propenso a: displasia, osteossarcoma, cardiomiopatia. Controlar peso. 8-10 anos.",
+      "Beagle": "Muito olfativo e curioso. Propenso a: otite (orelhas longas), obesidade, epilepsia. Limpar orelhas frequentemente. Exercício 60min/dia. 10-15 anos.",
+      "Dachshund": "Coluna EXTREMAMENTE sensível. EVITAR saltos e escadas. Usar rampas. Propenso a: DDIV, obesidade. Controle rigoroso de peso. Porte pequeno, 12-16 anos.",
+      "Husky Siberiano": "SOFRE MUITO com calor no Brasil. Ambiente climatizado recomendado. NUNCA tosar. Artista de fuga. Energia muito alta (90+min/dia). Independente e teimoso. 12-14 anos.",
+      "Chihuahua": "Menor raça. Moleira pode não fechar. Propenso a: hipoglicemia, problemas dentários, colapso traqueal. Sensível ao frio. Alimentação fracionada. 14-16 anos.",
+      "Pinscher": "Porte mini, energia alta. Muito sensível ao frio (usar roupinha). Propenso a: luxação patelar, problemas dentários. Socialização importante. 12-16 anos.",
+      "Pitbull": "Porte médio, atlético. Socialização extensiva desde filhote. Propenso a: displasia, alergias de pele. Exercício intenso 60-90min/dia. Brinquedos resistentes. 12-16 anos.",
+      "Lhasa Apso": "Porte pequeno, independente. Propenso a: problemas renais, oculares, luxação patelar. Escovação diária ou tosa curta. 12-15 anos.",
+      "Maltês": "Porte pequeno, hipoalergênico. Propenso a: luxação patelar, problemas dentários, manchas de lágrima. Limpeza diária dos olhos. 12-15 anos.",
+      "Boxer": "Braquicefálico de grande porte. Propenso a: cardiomiopatia, câncer, torção gástrica. Sensível ao calor e frio. Amadurece lentamente. 10-12 anos.",
+      "Cocker Spaniel": "Orelhas longas propensas a otite crônica. Limpar orelhas 2-3x/semana. Propenso a: problemas oculares, obesidade. Tosa regular. 10-14 anos.",
+      "Schnauzer": "Barba característica. Propenso a: pancreatite, hiperlipidemia, diabetes. Dieta BAIXA em gordura. Tosa regular. Porte médio, 12-15 anos.",
+      "Lulu da Pomerânia": "Porte mini. NUNCA tosar rente (Alopecia X — pelo pode não crescer). Propenso a: luxação patelar, colapso traqueal. Escovação frequente. 12-16 anos.",
+      "Shiba Inu": "Muito independente. Grito Shiba (vocalização única). Artista de fuga. Propenso a: alergias de pele, luxação patelar. Porte pequeno, 13-16 anos.",
+      "Doberman": "Porte grande. Propenso a: cardiomiopatia dilatada (check-up cardíaco anual), doença de von Willebrand, torção gástrica. Sensível ao frio. 10-12 anos.",
+      "Cane Corso": "Porte grande, guardião. Socialização extensiva obrigatória. Dono experiente. Propenso a: displasia, torção gástrica, entrópio. 9-12 anos.",
+      "Dogue Alemão": "MAIOR raça do mundo. Expectativa de vida CURTA (6-8 anos). Risco ALTO de torção gástrica. Alimentar em porções menores e frequentes. Evitar exercício intenso em filhotes.",
+      "São Bernardo": "Porte gigante. Sofre MUITO com calor. Baba bastante. Propenso a: displasia, torção gástrica, problemas cardíacos. 8-10 anos.",
+      "Fila Brasileiro": "Raça brasileira, guardião nato. EXTREMAMENTE protetor. Dono muito experiente obrigatório. Socialização essencial. Porte gigante, 9-11 anos.",
+      "SRD (Sem Raça Definida)": "Vigor híbrido geralmente confere boa saúde. Cada indivíduo é único. Avaliar porte pelo peso para adequar alimentação e exercício. Geralmente 12-16 anos.",
+    };
+
+    let breedContext = "";
+    if (petInfo?.breed && BREED_SPECIFIC_INFO[petInfo.breed]) {
+      breedContext = `\n\nINFORMAÇÕES ESPECÍFICAS DA RAÇA DO PET (${petInfo.breed}):\n${BREED_SPECIFIC_INFO[petInfo.breed]}`;
+    }
+
     const petContext = petInfo
-      ? `Informações do pet: Nome: ${petInfo.name}, Raça: ${petInfo.breed || "Não informada"}, Peso: ${petInfo.weight_kg ? petInfo.weight_kg + "kg" : "Não informado"}, Data de nascimento: ${petInfo.birth_date || "Não informada"}.`
+      ? `Informações do pet: Nome: ${petInfo.name}, Raça: ${petInfo.breed || "Não informada"}, Peso: ${petInfo.weight_kg ? petInfo.weight_kg + "kg" : "Não informado"}, Data de nascimento: ${petInfo.birth_date || "Não informada"}.${breedContext}`
       : "";
 
     let systemPrompt = "";
