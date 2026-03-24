@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight, Gift, ContactRound, Megaphone, Boxes,
+  LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight, Gift, ContactRound, Megaphone, Boxes, Wallet,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import AdminGlobalSearch from "./AdminGlobalSearch";
@@ -17,6 +17,7 @@ const navItems = [
   { label: "CRM", path: "/admin/crm", icon: ContactRound },
   { label: "Fidelização", path: "/admin/fidelizacao", icon: Gift },
   { label: "Marketing", path: "/admin/marketing", icon: Megaphone },
+  { label: "Financeiro", path: "/admin/financeiro", icon: Wallet },
   { label: "Configurações", path: "/admin/configuracoes", icon: Settings },
 ];
 
