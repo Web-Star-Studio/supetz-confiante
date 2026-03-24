@@ -129,6 +129,9 @@ export default function Header() {
             )}
           </Link>
 
+          {/* Notification bell — next to cart */}
+          {user && <UserNotificationCenter />}
+
           {/* Cart Toggle */}
           <button
             onClick={openCart}
