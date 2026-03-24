@@ -69,7 +69,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       supabase.from("loyalty_points").select("points").eq("user_id", user.id),
       supabase.from("user_coupons").select("id").eq("user_id", user.id).eq("used", false).gte("expires_at", new Date().toISOString()),
       supabase.from("restock_reminders").select("id, product_title, estimated_end_date").eq("user_id", user.id).eq("reminded", false).order("estimated_end_date", { ascending: true }),
-      supabase.from("pets").select("name, breed, weight_kg, photo_url").eq("user_id", user.id).limit(1).maybeSingle(),
+      supabase.from("pets").select("name, breed, weight_kg, photo_url").eq("user_id", user.id),
       supabase.from("treatment_logs").select("log_date, notes").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("user_notifications").select("id, title, message, type, created_at, read").eq("user_id", user.id).eq("read", false).order("created_at", { ascending: false }).limit(3),
       supabase.from("treatment_logs").select("log_date").eq("user_id", user.id).gte("log_date", sixMonthsAgo.split("T")[0]),
