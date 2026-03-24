@@ -42,14 +42,14 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     activeCoupons: number;
     pendingReminders: number;
     nextReminder: any;
-    pet: any;
+    pets: any[];
     lastDiary: any;
     notifications: any[];
     treatmentChart: { month: string; registros: number }[];
     pointsChart: { month: string; pontos: number }[];
   }>({
     ordersCount: 0, lastOrder: null, totalPoints: 0, activeCoupons: 0,
-    pendingReminders: 0, nextReminder: null, pet: null, lastDiary: null, notifications: [],
+    pendingReminders: 0, nextReminder: null, pets: [], lastDiary: null, notifications: [],
     treatmentChart: [], pointsChart: [],
   });
 
