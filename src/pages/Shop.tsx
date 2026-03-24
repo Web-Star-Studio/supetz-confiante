@@ -139,9 +139,9 @@ export default function Shop() {
                   O suplemento diário definitivo para a saúde da pele, imunidade e articulações do seu cão.
                 </p>
 
-                <div className="flex items-baseline gap-4 mb-8">
-                  <span className="text-4xl font-black text-supet-text">R$ 149,90</span>
-                  <span className="text-xl font-bold text-supet-text/30 line-through">R$ 199,90</span>
+                <div className="flex items-baseline gap-3 mb-6 md:mb-8">
+                  <span className="text-3xl md:text-4xl font-black text-foreground">R$ 149,90</span>
+                  <span className="text-base md:text-xl font-bold text-muted-foreground/50 line-through">R$ 199,90</span>
                 </div>
 
                 {/* Quantity & Add to Cart */}
