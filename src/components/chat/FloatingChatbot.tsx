@@ -319,10 +319,18 @@ export default function FloatingChatbot() {
                     <div className={`rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed ${
                       m.role === "user"
                         ? "bg-primary text-primary-foreground rounded-br-md"
-                        : "bg-muted text-foreground rounded-bl-md"
+                        : m.isEmergency
+                          ? "bg-destructive/10 border-2 border-destructive/30 text-foreground rounded-bl-md"
+                          : "bg-muted text-foreground rounded-bl-md"
                     }`}>
                       {m.role === "assistant" ? (
                         <div className="prose prose-sm max-w-none dark:prose-invert [&>p]:mb-1.5 [&>p:last-child]:mb-0 [&>ul]:mb-1.5 [&>ol]:mb-1.5">
+                          {m.isEmergency && (
+                            <div className="flex items-center gap-1.5 mb-2">
+                              <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                              <span className="text-xs font-bold text-destructive uppercase">Emergência</span>
+                            </div>
+                          )}
                           <ReactMarkdown>{m.content}</ReactMarkdown>
                           {m.isStreaming && (
                             <span className="inline-block w-1.5 h-4 bg-foreground/50 animate-pulse ml-0.5 align-text-bottom" />
