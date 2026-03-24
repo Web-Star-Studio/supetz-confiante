@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Clock, ArrowRight, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
+import BlurImage from "@/components/blog/BlurImage";
 import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
@@ -112,13 +113,12 @@ export default function Blog() {
               className="mt-10 md:mt-14"
             >
               <Link to={`/blog/${featured.slug}`} className="group block">
-                <div className="overflow-hidden rounded-2xl md:rounded-3xl">
-                  <img
-                    src={featured.cover_image || "/images/pet-studio.png"}
-                    alt={featured.title}
-                    className="w-full aspect-[2/1] md:aspect-[5/2] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                  />
-                </div>
+                <BlurImage
+                  src={featured.cover_image || "/images/pet-studio.png"}
+                  alt={featured.title}
+                  wrapperClassName="rounded-2xl md:rounded-3xl"
+                  className="w-full aspect-[2/1] md:aspect-[5/2] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
+                />
                 <div className="mt-6 md:mt-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-12 pb-12 md:pb-16">
                   <div className="flex-1 max-w-2xl">
                     <div className="flex items-center gap-3 mb-4">
@@ -169,11 +169,10 @@ export default function Blog() {
                     className="group flex h-full flex-col overflow-hidden rounded-2xl border border-supet-text/6 bg-white transition-all hover:shadow-xl hover:shadow-supet-text/8 hover:border-supet-orange/15"
                   >
                     <div className="relative overflow-hidden">
-                      <img
+                      <BlurImage
                         src={post.cover_image || "/images/pet-studio.png"}
                         alt={post.title}
                         className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
                       />
                       {post.category && (
                         <span className="absolute top-4 left-4 rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-supet-orange shadow-sm">

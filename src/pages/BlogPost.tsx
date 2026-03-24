@@ -7,6 +7,7 @@ import Layout from "@/components/layout/Layout";
 import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
 import { BlogPostContent as BlogPostContentType } from "@/types";
+import BlurImage from "@/components/blog/BlurImage";
 
 function formatDate(date: string) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("pt-BR", {
@@ -82,7 +83,7 @@ function ContentBlock({ block, isFirst }: { block: BlogPostContentType; isFirst:
     case "image":
       return (
         <figure className="my-12 md:my-16 -mx-4 md:-mx-16">
-          <img src={block.content} alt={block.alt || ""} className="w-full rounded-xl md:rounded-2xl" />
+          <BlurImage src={block.content!} alt={block.alt || ""} wrapperClassName="rounded-xl md:rounded-2xl" className="w-full rounded-xl md:rounded-2xl" />
           {block.alt && <figcaption className="mt-4 text-center font-body text-[0.8rem] italic text-supet-text/40 tracking-wide">{block.alt}</figcaption>}
         </figure>
       );
@@ -186,8 +187,8 @@ export default function BlogPost() {
 
         <section className="bg-supet-bg pb-4">
           <div className="mx-auto max-w-4xl px-6 md:px-8">
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }} className="overflow-hidden rounded-2xl md:rounded-3xl">
-              <img src={post.cover_image || "/images/pet-studio.png"} alt={post.title} className="w-full aspect-[16/9] object-cover" />
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}>
+              <BlurImage src={post.cover_image || "/images/pet-studio.png"} alt={post.title} wrapperClassName="rounded-2xl md:rounded-3xl" className="w-full aspect-[16/9] object-cover" />
             </motion.div>
           </div>
         </section>
@@ -256,7 +257,7 @@ export default function BlogPost() {
                   <motion.article key={related.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.08 }}>
                     <Link to={`/blog/${related.slug}`} className="group block overflow-hidden rounded-2xl border border-supet-text/6 bg-white transition-all hover:shadow-lg hover:shadow-supet-text/8 hover:border-supet-orange/15">
                       <div className="overflow-hidden">
-                        <img src={related.cover_image || "/images/pet-studio.png"} alt={related.title} className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        <BlurImage src={related.cover_image || "/images/pet-studio.png"} alt={related.title} className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       </div>
                       <div className="p-5">
                         <div className="flex items-center gap-2 mb-3">
