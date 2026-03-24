@@ -1,66 +1,36 @@
 
 
-## Plano: Sistema de Moderacao com Filtro de Emergencia Pre-IA
+## Plano: Seletor de Racas de Cachorro com Busca
 
 ### O que sera feito
 
-Adicionar uma camada de moderacao **antes** de enviar a mensagem ao modelo de IA. Quando palavras-chave de emergencia forem detectadas na mensagem do usuario, o sistema retorna uma resposta imediata e padronizada orientando a procurar um veterinario, **sem consumir tokens da IA**.
+Substituir o campo de texto livre "Raca" no formulario de cadastro de pet por um **dropdown com busca** (combobox) contendo todas as principais racas de cachorro encontradas no Brasil, em portugues. Incluir tambem a opcao "SRD (Sem Raca Definida)" e "Outra" para flexibilidade.
 
-### Logica
+### Lista de racas (75+ racas)
 
-Uma lista de palavras/frases de emergencia (ex: "convulsao", "sangue nas fezes", "nao respira", "envenenamento", "intoxicacao", "fratura", "desacordado", "engasgou", "nao consegue andar") sera verificada contra a ultima mensagem do usuario. Se houver match, retorna resposta fixa imediata.
+Baseado em pesquisa do Patas da Casa e fontes brasileiras:
 
-### Arquivos alterados
+Akita, Akita Americano, American Bully, American Staffordshire Terrier, Basenji, Basset Hound, Beagle, Bichon Frise, Boerboel, Boiadeiro Australiano, Boiadeiro de Berna, Border Collie, Borzoi, Boston Terrier, Boxer, Bulldog Frances, Bulldog Ingles, Bull Terrier, Cane Corso, Cao de Crista Chines, Cavalier King Charles Spaniel, Chihuahua, Chow Chow, Cocker Spaniel, Collie, Dachshund, Dalmata, Doberman, Dogo Argentino, Dogue Alemao, Dogue de Bordeaux, Fila Brasileiro, Fox Terrier, Galgo Ingles, Golden Retriever, Husky Siberiano, Jack Russell Terrier, Kangal, Komondor, Labrador, Lhasa Apso, Lulu da Pomerania, Malamute do Alasca, Maltes, Mastiff Ingles, Mastim Napolitano, Mastim Tibetano, Pastor Alemao, Pastor Australiano, Pastor Belga, Pastor de Shetland, Pequines, Pinscher, Pitbull, Poodle, Pug, Rottweiler, Samoieda, Sao Bernardo, Schnauzer, Setter Irlandes, Shar Pei, Shiba Inu, Shih Tzu, Staffordshire Bull Terrier, Terra Nova, Terrier Brasileiro, Weimaraner, West Highland White Terrier, Whippet, Yorkshire, SRD (Sem Raca Definida), Outra
 
-#### 1. `supabase/functions/chatbot/index.ts`
-- Adicionar constante `EMERGENCY_KEYWORDS` (array de strings)
-- Adicionar funcao `detectEmergency(text)` que normaliza o texto (lowercase, remove acentos) e verifica matches
-- Apos parsear o JSON do request, antes de chamar a IA, rodar `detectEmergency` na ultima mensagem do usuario
-- Se detectada emergencia: retornar resposta JSON fixa com mensagem de alerta (sem chamar a IA gateway)
-- A resposta fixa inclui: orientacao para ir ao veterinario imediatamente, numero de emergencia animal se disponivel, e disclaimer
+### Alteracoes
 
-#### 2. `supabase/functions/pet-ai/index.ts`
-- Mesmo tratamento: adicionar `EMERGENCY_KEYWORDS` e `detectEmergency`
-- Aplicar filtro antes de chamar a IA, em todos os modos (assistant, tips, analysis, etc.)
-- Retornar resposta estruturada de emergencia compativel com o formato esperado pelo frontend
+**Novo arquivo: `src/data/dogBreeds.ts`**
+- Exportar array `DOG_BREEDS` com todas as racas ordenadas alfabeticamente
+- Inclui "SRD (Sem Raca Definida)" no topo da lista
 
-#### 3. `src/components/chat/FloatingChatbot.tsx`
-- Detectar quando a resposta vem do filtro de emergencia (flag `isEmergency` no JSON)
-- Renderizar a mensagem de emergencia com destaque visual (borda vermelha, icone de alerta)
-
-#### 4. `src/components/profile/AIPetAssistantTab.tsx`
-- Mesmo tratamento visual para respostas de emergencia no modo assistant
-
-### Palavras-chave de emergencia (lista inicial)
-
-```text
-convulsão, convulsao, sangue nas fezes, sangue no vômito, sangue no vomito,
-não respira, nao respira, envenenamento, envenenado, intoxicação, intoxicacao,
-fratura, osso quebrado, desacordado, desmaiou, engasgou, engasgando,
-não consegue andar, nao consegue andar, paralisia, paralisado,
-abdômen inchado, abdomen inchado, barriga inchada, olho saltado,
-picada de cobra, mordida de cobra, atropelado, queda de altura
-```
-
-### Resposta fixa de emergencia
-
-```
-🚨 EMERGÊNCIA DETECTADA
-
-A situação que você descreveu pode ser uma emergência veterinária.
-NÃO siga orientações de IA neste caso.
-
-👉 Leve seu pet IMEDIATAMENTE ao veterinário ou hospital veterinário mais próximo.
-
-📞 Se possível, ligue antes para avisar que está a caminho.
-
-⚠️ Em emergências, cada minuto conta. A Super IA não substitui atendimento veterinário presencial.
-```
+**Arquivo: `src/components/profile/PetProfileTab.tsx`**
+- Importar `DOG_BREEDS` e componentes Popover + Command do shadcn
+- Substituir o `<input>` de raca por um **Combobox** (Popover + Command) com:
+  - Campo de busca para filtrar racas pelo nome
+  - Lista scrollavel com todas as racas
+  - Opcao "Outra" no final que permite digitar manualmente
+- Manter compatibilidade: se o pet ja tem uma raca salva que nao esta na lista, exibir normalmente
+- Estado `breedSearch` para filtrar a lista em tempo real
+- Estado `showCustomBreed` para quando usuario seleciona "Outra"
 
 ### Detalhes tecnicos
 
-- Nenhuma alteracao no banco de dados
-- Filtro roda server-side (edge functions) — nao depende do frontend
-- Normalizacao de texto com remoção de acentos para evitar bypass
-- Funcao pura sem dependencias externas
+- Usa componentes ja existentes: `Popover`, `PopoverTrigger`, `PopoverContent` de `@/components/ui/popover` e `Command` de `@/components/ui/command`
+- Nenhuma alteracao no banco de dados (campo `breed` continua sendo `text`)
+- Estilo consistente com o design atual (rounded-full, bg-supet-bg)
 
