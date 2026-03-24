@@ -132,10 +132,10 @@ export default function Shop() {
                   <span className="text-sm font-bold text-supet-text/60">4.9/5 (1.2k+ avaliações)</span>
                 </div>
 
-                <h1 className="text-5xl md:text-6xl font-black text-supet-text tracking-tight mb-2 uppercase">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-2 uppercase">
                   Goma Supet
                 </h1>
-                <p className="text-xl text-supet-text/60 font-medium mb-8">
+                <p className="text-sm md:text-xl text-muted-foreground font-medium mb-6 md:mb-8">
                   O suplemento diário definitivo para a saúde da pele, imunidade e articulações do seu cão.
                 </p>
 
