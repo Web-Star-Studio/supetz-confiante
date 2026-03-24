@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
 import { BlogPostContent as BlogPostContentType } from "@/types";
 import BlurImage from "@/components/blog/BlurImage";
+import SocialShare from "@/components/blog/SocialShare";
 
 function formatDate(date: string) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("pt-BR", {
@@ -208,12 +209,14 @@ export default function BlogPost() {
             </div>
 
             {post.tags.length > 0 && (
-              <div className="flex flex-wrap items-center gap-2 mb-12">
+              <div className="flex flex-wrap items-center gap-2 mb-8">
                 {post.tags.map((tag) => (
                   <span key={tag} className="rounded-full bg-supet-bg px-4 py-1.5 font-body text-[11px] font-semibold text-supet-text/45 capitalize">{tag}</span>
                 ))}
               </div>
             )}
+
+            <SocialShare title={post.title} />
 
             <div className="rounded-2xl border border-supet-text/6 bg-supet-bg/60 p-6 md:p-8">
               <div className="flex flex-col sm:flex-row items-start gap-5">
