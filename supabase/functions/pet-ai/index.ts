@@ -86,7 +86,7 @@ BASE DE CONHECIMENTO — CUIDADOS CANINOS
 - **Pastor Alemão**: Inteligente e versátil. Propenso a displasia de quadril, problemas digestivos e dermatite.
 - **Rottweiler**: Forte e protetor. Propenso a displasia, problemas cardíacos e osteossarcoma. Socialização precoce importante.
 - **Boxer**: Braquicefálico de grande porte. Propenso a cardiomiopatia, câncer e problemas digestivos.
-- **Pit Bull (American Pit Bull Terrier)**: Forte e atlético. Propenso a alergias de pele e displasia. Precisa de socialização e exercício intenso.
+- **Pit Bull**: Forte e atlético. Propenso a alergias de pele e displasia. Precisa de socialização e exercício intenso.
 - **Husky Siberiano**: Pelagem dupla densa, sofre muito com calor no Brasil. Precisa de exercício intenso. Propenso a problemas oculares e de pele.
 
 ### Raças Gigantes (acima de 45kg)
@@ -126,7 +126,7 @@ BASE DE CONHECIMENTO — CUIDADOS CANINOS
 ### Filhotes (0-12 meses)
 - Vacinação: V8/V10, antirrábica (consultar veterinário para calendário)
 - Socialização: Período crítico entre 3-16 semanas
-- Vermifugação regular (a cada 2-4 semanas até 3 meses, depois mensal até 6 meses)
+- Vermifugação regular
 - Não passear em locais públicos antes da vacinação completa
 - Treinamento básico desde cedo: nome, sentar, ficar
 
@@ -136,76 +136,75 @@ BASE DE CONHECIMENTO — CUIDADOS CANINOS
 - Exercício adequado ao porte e raça
 - Escovação dos dentes 2-3x por semana
 - Controle de peso regular
-- Vermifugação e controle de pulgas/carrapatos regular
 
 ### Idosos (7+ anos, gigantes 5+ anos)
 - Check-up veterinário semestral
-- Atenção a sinais de artrite: dificuldade para levantar, claudicação
-- Alimentação adequada para idosos (menos calórica, suporte articular)
+- Atenção a sinais de artrite
+- Alimentação adequada para idosos
 - Exercício mais leve e frequente
-- Atenção a mudanças comportamentais (podem indicar disfunção cognitiva)
 - Rampas para subir/descer de móveis
+
+## CUIDADOS SAZONAIS NO BRASIL
+
+### Verão / Calor intenso
+- Braquicefálicos (Pug, Bulldog, Shih Tzu, Boxer): risco ALTO de golpe de calor. Manter em ambiente fresco com ar-condicionado.
+- Raças nórdicas (Husky, Malamute, Samoieda): sofrem MUITO. Ambiente climatizado obrigatório.
+- Passeios apenas de manhã cedo (antes das 8h) ou à noite (após 18h). Testar asfalto com dorso da mão.
+- Água fresca sempre disponível. Tapetes gelados ajudam.
+- Nunca deixar pet dentro do carro.
+- Protetor solar para raças de pelo claro/curto (Dogo Argentino, Bull Terrier branco, Cão de Crista Chinês).
+
+### Inverno / Frio
+- Raças pequenas e de pelo curto (Pinscher, Chihuahua, Whippet, Galgo): usar roupinha.
+- Manter camas elevadas e quentinhas.
+- Atenção a dores articulares em idosos — frio agrava artrite.
+
+### Época de chuvas
+- Secar bem o pet após molhar (especialmente dobras e orelhas).
+- Leptospirose: evitar contato com água parada/enchentes.
+- Verificar pulgas e carrapatos com mais frequência.
+
+## DOENÇAS COMUNS POR PORTE
+
+### Pequeno porte
+- Luxação patelar, problemas dentários, colapso traqueal, hipoglicemia (filhotes), shunt hepático
+
+### Médio porte
+- Otite (raças de orelha caída), alergias de pele, epilepsia, displasia de quadril
+
+### Grande porte
+- Displasia de quadril e cotovelo, problemas articulares, torção gástrica, osteossarcoma
+
+### Gigantes
+- Torção gástrica (emergência!), cardiomiopatia dilatada, problemas articulares severos, expectativa de vida reduzida
 
 ## HIGIENE E CUIDADOS
 
 ### Banho
-- Frequência geral: a cada 15-30 dias (varia com raça e estilo de vida)
-- Usar shampoo específico para cães (pH da pele canina é diferente)
+- Frequência geral: a cada 15-30 dias
+- Usar shampoo específico para cães
 - Secar bem, especialmente orelhas e dobras de pele
-- Raças com dobras (Bulldog, Shar-Pei): limpar dobras regularmente
 
 ### Escovação
 - Pelos curtos: 1-2x por semana
 - Pelos médios: 2-3x por semana
 - Pelos longos: diariamente
-- Período de troca de pelo: escovação diária para todas as raças
 
-### Unhas
-- Cortar a cada 2-4 semanas
-- Atenção ao sabugo (veia interna da unha)
-- Unhas compridas causam problemas posturais e podem encravar
-
-### Dentes
-- Escovação 2-3x por semana com pasta canina
-- Nunca usar pasta de dente humana (flúor é tóxico)
-- Petiscos dentais podem ajudar, mas não substituem escovação
-- Limpeza profissional anual recomendada
-
-### Orelhas
-- Limpeza semanal com produto específico
-- Raças de orelha caída: mais propensas a otite, limpar com mais frequência
-- Nunca usar cotonete dentro do canal auditivo
+### Unhas, Dentes, Orelhas
+- Unhas: cortar a cada 2-4 semanas
+- Dentes: escovação 2-3x por semana com pasta canina
+- Orelhas: limpeza semanal, raças de orelha caída com mais frequência
 
 ## BEM-ESTAR E COMPORTAMENTO
 
-### Sinais de estresse em cães
-- Lamber os lábios excessivamente, bocejar fora de contexto
-- Orelhas para trás, rabo entre as pernas
-- Arquejar sem calor ou exercício
-- Morder/lamber patas compulsivamente
-- Destruir objetos, latir excessivamente
-- Esconder-se, evitar contato
+### Sinais de estresse
+- Lamber os lábios, bocejar fora de contexto, orelhas para trás, destruir objetos, esconder-se
 
 ### Enriquecimento ambiental
-- Brinquedos interativos (Kong, tapete de lamber)
-- Passeios com tempo para farejar
-- Treinamento com reforço positivo
-- Rodízio de brinquedos
-- Brincadeiras de buscar e puxar
+- Brinquedos interativos (Kong, tapete de lamber), passeios com tempo para farejar, treinamento com reforço positivo
 
 ### Exercício por porte
-- Pequeno porte: 20-40 min/dia de caminhadas leves e brincadeiras
-- Médio porte: 40-60 min/dia de caminhadas e atividades
-- Grande porte: 60-90 min/dia de exercício variado
-- Gigantes: 30-60 min/dia (exercício moderado, sem impacto excessivo em filhotes)
-- Braquicefálicos: exercício leve, evitar calor, pausas frequentes
-
-## PRIMEIROS SOCORROS BÁSICOS (orientações gerais, sempre consultar veterinário)
-- Cortes superficiais: lavar com soro fisiológico, pressionar com gaze limpa
-- Queimaduras: resfriar com água corrente, não aplicar pomadas caseiras
-- Engasgo: NÃO tentar manobra de Heimlich sem orientação veterinária
-- Golpe de calor: molhar com água fresca (não gelada), ventilar, ir ao veterinário
-- Picada de inseto: observar inchaço e reação alérgica, ir ao veterinário se necessário
+- Pequeno: 20-40 min/dia | Médio: 40-60 min/dia | Grande: 60-90 min/dia | Gigantes: 30-60 min moderado | Braquicefálicos: leve, sem calor
 `;
 
 serve(async (req) => {
