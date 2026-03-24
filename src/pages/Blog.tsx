@@ -187,7 +187,7 @@ export default function Blog() {
                       </span>
                     </div>
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-extrabold leading-[1.1] text-supet-text tracking-tight group-hover:text-supet-orange transition-colors">
-                      {featured.title}
+                      <HighlightText text={featured.title} query={searchQuery} />
                     </h2>
                   </div>
                   <div className="md:max-w-xs md:pt-10">
