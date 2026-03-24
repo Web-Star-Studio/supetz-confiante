@@ -141,7 +141,7 @@ export default function Fidelizacao() {
 
     setSavingPoints(false);
     if (error) toast.error("Erro ao adicionar pontos");
-    else { toast.success("Pontos adicionados!"); setShowPointsForm(false); loadData(); }
+    else { toast.success("Pontos adicionados!"); log({ action: "create", entity_type: "loyalty", details: { userId: newPoints.userId, points: newPoints.points } }); setShowPointsForm(false); loadData(); }
   };
 
   const handleDeleteCoupon = async (id: string) => {
