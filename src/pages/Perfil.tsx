@@ -70,23 +70,22 @@ function MobileTabScroller({ activeTab, setActiveTab }: { activeTab: string; set
       {/* Left chevron - subtle, outside content */}
       <button
         onClick={() => scroll("left")}
-        className={`absolute left-1 top-1/2 -translate-y-1/2 z-20 h-5 w-5 flex items-center justify-center text-primary/70 transition-all duration-300 ${showLeft ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-1 pointer-events-none"}`}
+        className={`absolute left-0.5 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center text-primary transition-all duration-300 ${showLeft ? "opacity-90 translate-x-0 animate-[pulse-subtle_2s_ease-in-out_3]" : "opacity-0 -translate-x-1 pointer-events-none"}`}
         aria-label="Scroll left"
       >
-        <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
+        <ChevronLeft className="h-5 w-5" strokeWidth={2.5} />
       </button>
 
       {/* Right fade gradient */}
       <div
         className={`absolute right-3 top-2 bottom-3 z-10 w-8 bg-gradient-to-l from-background via-background/60 to-transparent rounded-r-full pointer-events-none transition-opacity duration-300 ${showRight ? "opacity-100" : "opacity-0"}`}
       />
-      {/* Right chevron - subtle, outside content */}
       <button
         onClick={() => scroll("right")}
-        className={`absolute right-1 top-1/2 -translate-y-1/2 z-20 h-5 w-5 flex items-center justify-center text-primary/70 transition-all duration-300 ${showRight ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1 pointer-events-none"}`}
+        className={`absolute right-0.5 top-1/2 -translate-y-1/2 z-20 h-7 w-7 flex items-center justify-center text-primary transition-all duration-300 ${showRight ? "opacity-90 translate-x-0 animate-[pulse-subtle_2s_ease-in-out_3]" : "opacity-0 translate-x-1 pointer-events-none"}`}
         aria-label="Scroll right"
       >
-        <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+        <ChevronRight className="h-5 w-5" strokeWidth={2.5} />
       </button>
 
       {/* Tabs */}
