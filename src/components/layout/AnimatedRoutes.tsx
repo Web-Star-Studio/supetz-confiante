@@ -28,6 +28,7 @@ import AdminCRM from "../../pages/admin/CRM";
 import AdminMarketing from "../../pages/admin/Marketing";
 import AdminEstoque from "../../pages/admin/Estoque";
 import AdminFinanceiro from "../../pages/admin/Financeiro";
+import AdminAuditoria from "../../pages/admin/Auditoria";
 
 import PageTransition from "./PageTransition";
 
