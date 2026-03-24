@@ -9,6 +9,7 @@ import { motionTokens } from "@/lib/motion";
 import { BlogPostContent as BlogPostContentType } from "@/types";
 import BlurImage from "@/components/blog/BlurImage";
 import SocialShare from "@/components/blog/SocialShare";
+import SEOHead, { buildArticleSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
 
 function formatDate(date: string) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("pt-BR", {
