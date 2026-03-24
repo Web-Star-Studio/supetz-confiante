@@ -242,3 +242,8 @@
     overscroll-behavior-y: contain;
   }
 }
+
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.9; transform: translateY(-50%) scale(1); }
+  50% { opacity: 1; transform: translateY(-50%) scale(1.2); }
+}
