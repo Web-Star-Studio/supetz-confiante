@@ -818,7 +818,7 @@ function ArticleEditor({
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancelar</Button>
-          <Button onClick={() => onSave({ id: article?.id, category: form.category, title: form.title, tags: form.tags.split(",").map(t => t.trim()).filter(Boolean), content: form.content, icon: form.icon })}>
+          <Button onClick={() => onSave({ id: article?.id, category: form.category, title: form.title, tags: form.tags.split(",").map(t => t.trim()).filter(Boolean), content: form.content, icon: form.icon, staticId: article?.staticId })}>
             <Save className="w-4 h-4 mr-2" /> Salvar
           </Button>
         </DialogFooter>
