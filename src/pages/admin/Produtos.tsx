@@ -104,8 +104,13 @@ export default function AdminProdutos() {
       quantity: Number(form.quantity), badge: form.badge || null, category: form.category, active: form.active,
       image_url: form.image_url || null,
     };
-    if (editing) await supabase.from("products").update(payload).eq("id", editing);
-    else await supabase.from("products").insert(payload);
+    if (editing) {
+      await supabase.from("products").update(payload).eq("id", editing);
+      log({ action: "update", entity_type: "product", entity_id: editing, details: { title: form.title } });
+    } else {
+      const { data } = await supabase.from("products").insert(payload).select().single();
+      if (data) log({ action: "create", entity_type: "product", entity_id: data.id, details: { title: form.title } });
+    }
     setSaving(false);
     setShowModal(false);
     fetchProducts();
