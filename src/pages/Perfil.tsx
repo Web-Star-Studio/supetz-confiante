@@ -63,33 +63,31 @@ function MobileTabScroller({ activeTab, setActiveTab }: { activeTab: string; set
 
   return (
     <div className="relative px-3 pb-3 pt-2">
-      {/* Left fade + arrow */}
+      {/* Left fade gradient */}
       <div
-        className={`absolute left-3 top-2 bottom-3 z-10 flex items-center transition-opacity duration-200 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute left-3 top-2 bottom-3 z-10 w-8 bg-gradient-to-r from-background via-background/60 to-transparent rounded-l-full pointer-events-none transition-opacity duration-300 ${showLeft ? "opacity-100" : "opacity-0"}`}
+      />
+      {/* Left chevron - subtle, outside content */}
+      <button
+        onClick={() => scroll("left")}
+        className={`absolute left-1 top-1/2 -translate-y-1/2 z-20 h-5 w-5 flex items-center justify-center text-primary/70 transition-all duration-300 ${showLeft ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-1 pointer-events-none"}`}
+        aria-label="Scroll left"
       >
-        <div className="absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-background to-transparent rounded-l-full" />
-        <button
-          onClick={() => scroll("left")}
-          className="relative h-7 w-7 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm ml-0.5"
-          aria-label="Scroll left"
-        >
-          <ChevronLeft className="h-3.5 w-3.5" />
-        </button>
-      </div>
+        <ChevronLeft className="h-4 w-4" strokeWidth={2.5} />
+      </button>
 
-      {/* Right fade + arrow */}
+      {/* Right fade gradient */}
       <div
-        className={`absolute right-3 top-2 bottom-3 z-10 flex items-center transition-opacity duration-200 ${showRight ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`absolute right-3 top-2 bottom-3 z-10 w-8 bg-gradient-to-l from-background via-background/60 to-transparent rounded-r-full pointer-events-none transition-opacity duration-300 ${showRight ? "opacity-100" : "opacity-0"}`}
+      />
+      {/* Right chevron - subtle, outside content */}
+      <button
+        onClick={() => scroll("right")}
+        className={`absolute right-1 top-1/2 -translate-y-1/2 z-20 h-5 w-5 flex items-center justify-center text-primary/70 transition-all duration-300 ${showRight ? "opacity-100 translate-x-0" : "opacity-0 translate-x-1 pointer-events-none"}`}
+        aria-label="Scroll right"
       >
-        <div className="absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-background to-transparent rounded-r-full" />
-        <button
-          onClick={() => scroll("right")}
-          className="relative h-7 w-7 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm mr-0.5"
-          aria-label="Scroll right"
-        >
-          <ChevronRight className="h-3.5 w-3.5" />
-        </button>
-      </div>
+        <ChevronRight className="h-4 w-4" strokeWidth={2.5} />
+      </button>
 
       {/* Tabs */}
       <div ref={scrollRef} className="overflow-x-auto scrollbar-hide scroll-snap-x">
