@@ -87,12 +87,12 @@ export default function Shop() {
           ]),
         ]}
       />
-      <section className="bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
-          {/* Breadcrumb / Top label */}
-          <div className="mb-8">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-supet-text/40">
-              Home / <span className="text-supet-orange">Loja</span>
+      <section className="bg-supet-bg pt-6 md:pt-32 pb-24 border-b border-border/30 relative">
+        <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-12">
+          {/* Breadcrumb */}
+          <div className="mb-4 md:mb-8">
+            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+              Home / <span className="text-primary">Loja</span>
             </span>
           </div>
 
@@ -132,21 +132,21 @@ export default function Shop() {
                   <span className="text-sm font-bold text-supet-text/60">4.9/5 (1.2k+ avaliações)</span>
                 </div>
 
-                <h1 className="text-5xl md:text-6xl font-black text-supet-text tracking-tight mb-2 uppercase">
+                <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-foreground tracking-tight mb-2 uppercase">
                   Goma Supet
                 </h1>
-                <p className="text-xl text-supet-text/60 font-medium mb-8">
+                <p className="text-sm md:text-xl text-muted-foreground font-medium mb-6 md:mb-8">
                   O suplemento diário definitivo para a saúde da pele, imunidade e articulações do seu cão.
                 </p>
 
-                <div className="flex items-baseline gap-4 mb-8">
-                  <span className="text-4xl font-black text-supet-text">R$ 149,90</span>
-                  <span className="text-xl font-bold text-supet-text/30 line-through">R$ 199,90</span>
+                <div className="flex items-baseline gap-3 mb-6 md:mb-8">
+                  <span className="text-3xl md:text-4xl font-black text-foreground">R$ 149,90</span>
+                  <span className="text-base md:text-xl font-bold text-muted-foreground/50 line-through">R$ 199,90</span>
                 </div>
 
                 {/* Quantity & Add to Cart */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                  <div className="flex items-center justify-between border-2 border-supet-text/10 rounded-full px-6 py-4 sm:w-1/3 bg-white">
+                <div className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-12">
+                  <div className="flex items-center justify-between border-2 border-border rounded-2xl px-5 py-3 sm:w-1/3 bg-background">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
                       className="text-supet-text/50 hover:text-supet-orange transition-colors"

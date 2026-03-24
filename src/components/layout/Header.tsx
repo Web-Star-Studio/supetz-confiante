@@ -69,10 +69,10 @@ export default function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-supet-bg/80 backdrop-blur-sm">
-      <div className="relative mx-auto flex max-w-[1480px] items-center justify-between px-4 py-2 md:px-8 md:py-3">
+    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/30 md:border-b-0">
+      <div className="relative mx-auto flex max-w-[1480px] items-center justify-between px-3 py-1.5 md:px-8 md:py-3">
         <Link to="/" onClick={handleLogoClick} className="relative z-10 flex shrink-0 items-center">
-          <div className="relative h-[46px] w-[138px] overflow-hidden md:h-[56px] md:w-[168px]">
+          <div className="relative h-[38px] w-[114px] overflow-hidden md:h-[56px] md:w-[168px]">
             <img
               src="/supetLogoNew.png"
               alt="SUPET"
@@ -95,7 +95,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4 text-supet-text/75">
+        <div className="flex items-center gap-2 md:gap-4 text-muted-foreground">
           <div className="hidden lg:flex items-center gap-3 mr-2">
             {socialLinks.map((social) => {
               const Icon = iconByPlatform[social.platform];
@@ -114,29 +114,29 @@ export default function Header() {
             })}
           </div>
 
-          {/* User icon with restock badge */}
+          {/* User icon — hidden on mobile (bottom nav has it) */}
           <Link
             to={user ? "/perfil" : "/login"}
-            className="relative p-2 text-supet-text hover:text-supet-orange transition-colors"
+            className="hidden md:flex relative p-2 text-foreground hover:text-primary transition-colors"
             aria-label={user ? "Meu Perfil" : "Entrar"}
           >
             <UserCircle className="w-5 h-5" />
             {restockCount > 0 && (
-              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black flex items-center justify-center animate-pulse">
                 {restockCount}
               </span>
             )}
           </Link>
 
           {/* Cart Toggle */}
-          <button 
+          <button
             onClick={openCart}
-            className="relative p-2 text-supet-text hover:text-supet-orange transition-colors"
+            className="relative p-2 text-foreground hover:text-primary transition-colors active:scale-90"
             aria-label="Abrir Sacola"
           >
             <ShoppingBag className="w-5 h-5" />
             {totalItems > 0 && (
-              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-supet-orange text-white text-[9px] font-black flex items-center justify-center">
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-black flex items-center justify-center">
                 {totalItems}
               </span>
             )}
