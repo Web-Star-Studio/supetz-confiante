@@ -765,9 +765,9 @@ function ArticleEditor({
 }: {
   open: boolean;
   onClose: () => void;
-  article: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string } | null;
+  article: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string; staticId?: string } | null;
   categories: string[];
-  onSave: (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string }) => void;
+  onSave: (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string; staticId?: string }) => void;
 }) {
   const [form, setForm] = useState({ category: "", title: "", tags: "", content: "", icon: "FileText" });
 
