@@ -257,7 +257,7 @@ export default function BlogPost() {
                   <motion.article key={related.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.5, delay: index * 0.08 }}>
                     <Link to={`/blog/${related.slug}`} className="group block overflow-hidden rounded-2xl border border-supet-text/6 bg-white transition-all hover:shadow-lg hover:shadow-supet-text/8 hover:border-supet-orange/15">
                       <div className="overflow-hidden">
-                        <img src={related.cover_image || "/images/pet-studio.png"} alt={related.title} className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy" />
+                        <BlurImage src={related.cover_image || "/images/pet-studio.png"} alt={related.title} className="h-44 w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                       </div>
                       <div className="p-5">
                         <div className="flex items-center gap-2 mb-3">

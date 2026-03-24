@@ -169,11 +169,10 @@ export default function Blog() {
                     className="group flex h-full flex-col overflow-hidden rounded-2xl border border-supet-text/6 bg-white transition-all hover:shadow-xl hover:shadow-supet-text/8 hover:border-supet-orange/15"
                   >
                     <div className="relative overflow-hidden">
-                      <img
+                      <BlurImage
                         src={post.cover_image || "/images/pet-studio.png"}
                         alt={post.title}
                         className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
-                        loading="lazy"
                       />
                       {post.category && (
                         <span className="absolute top-4 left-4 rounded-full bg-white/90 backdrop-blur-sm px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-supet-orange shadow-sm">
