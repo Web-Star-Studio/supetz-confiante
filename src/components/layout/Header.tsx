@@ -146,14 +146,7 @@ export default function Header() {
             )}
           </button>
 
-          {/* Mobile toggle */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileOpen(!mobileOpen)}
-            aria-label="Menu"
-          >
-            {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
+          {/* Mobile toggle — hidden since bottom nav handles navigation */}
         </div>
       </div>
 
