@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
+import supetIaAvatar from "@/assets/supet-ia-avatar.png";
 
 type Msg = {
   id?: string;
