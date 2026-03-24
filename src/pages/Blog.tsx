@@ -148,6 +148,7 @@ export default function Blog() {
                 {cat}
               </button>
             ))}
+            </div>
           </motion.div>
 
           {isLoading && (
