@@ -21,6 +21,7 @@ const categories = ["Todos", "Saúde da Pele", "Imunidade", "Nutrição", "Alerg
 
 export default function Blog() {
   const [activeCategory, setActiveCategory] = useState("Todos");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const { data: posts = [], isLoading } = useQuery({
     queryKey: ["blog-posts-public"],
@@ -35,10 +36,22 @@ export default function Blog() {
     },
   });
 
-  const filteredPosts =
-    activeCategory === "Todos"
-      ? posts
-      : posts.filter((p) => p.category === activeCategory);
+  const filteredPosts = useMemo(() => {
+    let result = posts;
+    if (activeCategory !== "Todos") {
+      result = result.filter((p) => p.category === activeCategory);
+    }
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (p) =>
+          p.title.toLowerCase().includes(q) ||
+          p.excerpt?.toLowerCase().includes(q) ||
+          p.tags?.some((t: string) => t.toLowerCase().includes(q))
+      );
+    }
+    return result;
+  }, [posts, activeCategory, searchQuery]);
 
   const [currentPage, setCurrentPage] = useState(1);
   const POSTS_PER_PAGE = 6;
