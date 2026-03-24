@@ -92,17 +92,6 @@ export default function Auditoria() {
     fetchLogs();
   }, [entityFilter, actionFilter]);
 
-  // Log admin page visit
-  useEffect(() => {
-    if (user) {
-      supabase.from("audit_logs").insert({
-        admin_id: user.id,
-        action: "view",
-        entity_type: "audit",
-        details: { page: "auditoria" },
-      });
-    }
-  }, [user]);
 
   const filtered = logs.filter((log) => {
     if (!search) return true;
