@@ -354,7 +354,7 @@ export default function Perfil() {
             </div>
           </div>
 
-          <main className="flex-1 p-4 md:p-6 lg:p-10">
+          <main className="flex-1 p-3 md:p-6 lg:p-10">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
               {renderContent()}
             </motion.div>

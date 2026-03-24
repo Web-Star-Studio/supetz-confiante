@@ -14,7 +14,7 @@ export default function Footer() {
   const reduceMotion = useReducedMotion();
 
   return (
-    <footer className="relative overflow-hidden bg-gradient-to-b from-[#FE6D00] to-[#E56200] pt-20 pb-28 md:pb-10 text-white">
+    <footer className="relative overflow-hidden bg-gradient-to-b from-[#FE6D00] to-[#E56200] pt-20 pb-10 text-white hidden md:block">
       <div className="pointer-events-none absolute inset-x-0 bottom-0 z-0 hidden h-[180px] overflow-hidden opacity-75 md:block md:h-[240px]">
         <motion.div
           initial={reduceMotion ? undefined : { x: "calc(100vw + 420px)" }}

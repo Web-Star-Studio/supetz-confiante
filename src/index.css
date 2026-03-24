@@ -216,9 +216,18 @@
   /* Standalone PWA: extra notch padding */
   @media (display-mode: standalone) {
     body {
-      padding-bottom: 82px;
+      padding-bottom: calc(72px + env(safe-area-inset-bottom, 0px));
     }
   }
+}
+
+/* Native scroll-snap for horizontal tabs */
+.scroll-snap-x {
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.scroll-snap-x > * {
+  scroll-snap-align: center;
 }
 
 /* Standalone PWA: hide browser-style scrollbar */

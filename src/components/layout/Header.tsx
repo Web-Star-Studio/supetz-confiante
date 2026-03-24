@@ -150,48 +150,7 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.nav
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden border-t border-border/30 md:hidden"
-          >
-            <div className="flex flex-col gap-4 px-6 py-6">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.href}
-                  to={link.href}
-                  onClick={(event) => handleNavClick(event, link.href)}
-                  className="text-base font-semibold text-supet-text/70 hover:text-supet-orange"
-                >
-                  {link.label}
-                </Link>
-              ))}
-
-              <div className="mt-2 flex items-center gap-4 border-t border-supet-text/10 pt-4 text-supet-text/70">
-                {socialLinks.map((social) => {
-                  const Icon = iconByPlatform[social.platform];
-                  return (
-                    <a
-                      key={social.id}
-                      href={social.url}
-                      target="_blank"
-                      rel="noreferrer"
-                      aria-label={social.ariaLabel}
-                      className="transition-colors hover:text-supet-orange"
-                    >
-                      <Icon className="h-4 w-4" />
-                    </a>
-                  );
-                })}
-              </div>
-            </div>
-          </motion.nav>
-        )}
-      </AnimatePresence>
+      {/* Mobile menu removed — bottom nav handles navigation */}
     </header>
   );
 }
