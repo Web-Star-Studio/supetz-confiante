@@ -171,7 +171,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
   const cardClass = "rounded-2xl bg-supet-bg-alt p-5 sm:p-6";
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 sm:space-y-6">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 sm:space-y-6 overflow-x-hidden">
       {/* AI Access Expiry Warning */}
       {data.aiExpiry && (
         <motion.div
