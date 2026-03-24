@@ -168,10 +168,10 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     { label: "Compras", icon: ShoppingBag, tab: "compras", href: null },
   ];
 
-  const cardClass = "rounded-2xl bg-supet-bg-alt p-5 sm:p-6";
+  const cardClass = "rounded-2xl bg-supet-bg-alt p-4 sm:p-5 md:p-6 overflow-hidden";
 
   return (
-    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 sm:space-y-6">
+    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 sm:space-y-6 overflow-x-hidden">
       {/* AI Access Expiry Warning */}
       {data.aiExpiry && (
         <motion.div
@@ -219,7 +219,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       )}
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
         {metrics.map((m) => (
           <button
             key={m.label}
@@ -232,21 +232,21 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
                 <m.icon className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-foreground">{m.value}</p>
+            <p className="text-xl sm:text-2xl font-bold text-foreground">{m.value}</p>
             <ChevronRight className="w-3.5 h-3.5 text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         ))}
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
         <div className={cardClass}>
           <div className="flex items-center gap-2 mb-4">
             <BookOpen className="w-4 h-4 text-primary" />
             <h3 className="text-sm font-bold text-foreground">Evolução do Tratamento</h3>
           </div>
           {data.treatmentChart.some((d) => d.registros > 0) ? (
-            <ChartContainer config={{ registros: { label: "Registros", color: "hsl(var(--primary))" } }} className="h-[180px] w-full">
+            <ChartContainer config={{ registros: { label: "Registros", color: "hsl(var(--primary))" } }} className="h-[150px] sm:h-[180px] w-full">
               <AreaChart data={data.treatmentChart}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
@@ -256,7 +256,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
               </AreaChart>
             </ChartContainer>
           ) : (
-            <div className="h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+            <div className="h-[150px] sm:h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
               <BookOpen className="w-8 h-8 opacity-40" />
               <p className="text-sm">Sem registros ainda</p>
             </div>
@@ -269,7 +269,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
             <h3 className="text-sm font-bold text-foreground">Histórico de Pontos</h3>
           </div>
           {data.pointsChart.some((d) => d.pontos > 0) ? (
-            <ChartContainer config={{ pontos: { label: "Pontos", color: "hsl(var(--chart-2))" } }} className="h-[180px] w-full">
+            <ChartContainer config={{ pontos: { label: "Pontos", color: "hsl(var(--chart-2))" } }} className="h-[150px] sm:h-[180px] w-full">
               <BarChart data={data.pointsChart}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
@@ -279,7 +279,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
               </BarChart>
             </ChartContainer>
           ) : (
-            <div className="h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+            <div className="h-[150px] sm:h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
               <BarChart3 className="w-8 h-8 opacity-40" />
               <p className="text-sm">Sem pontos ainda</p>
             </div>
@@ -287,7 +287,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-3 sm:gap-4 lg:grid-cols-2">
         {/* Pet Summary */}
         <button onClick={() => setActiveTab("pet")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
           <div className="flex items-center gap-2 mb-3">
