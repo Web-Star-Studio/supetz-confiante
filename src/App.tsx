@@ -20,6 +20,7 @@ const App = () => (
             <SmoothScrollProvider>
               <ScrollToTop />
               <CartDrawer />
+              <FloatingChatbot />
               <AnimatedRoutes />
             </SmoothScrollProvider>
           </CartProvider>
