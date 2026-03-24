@@ -18,6 +18,7 @@ import LoyaltyPointsTab from "@/components/profile/LoyaltyPointsTab";
 import CouponsTab from "@/components/profile/CouponsTab";
 import AIPetAssistantTab from "@/components/profile/AIPetAssistantTab";
 import AchievementsTab from "@/components/profile/AchievementsTab";
+import UserNotificationCenter from "@/components/profile/UserNotificationCenter";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
@@ -145,7 +146,6 @@ export default function Perfil() {
 
   const currentNavItem = navItems.find((i) => i.key === activeTab);
 
-  // Shared avatar block
   const avatarBlock = (
     <div className="relative mx-auto mb-3 h-20 w-20">
       <div className="absolute inset-0 rounded-full bg-primary/20 scale-110" />
@@ -167,10 +167,8 @@ export default function Perfil() {
     </div>
   );
 
-  // Sidebar content (shared between desktop sticky and mobile overlay)
   const sidebarContent = (
     <>
-      {/* Logo + back */}
       <div className="relative p-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
         <Link to="/" className="flex items-center gap-2 relative z-10 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors">
@@ -179,14 +177,12 @@ export default function Perfil() {
         </Link>
       </div>
 
-      {/* Avatar + info */}
       <div className="px-6 pb-4 text-center">
         {avatarBlock}
         <h2 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h2>
         <p className="text-xs text-muted-foreground truncate">{user.email}</p>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
@@ -208,7 +204,6 @@ export default function Perfil() {
         })}
       </nav>
 
-      {/* Logout */}
       <div className="p-4">
         <button
           onClick={handleSignOut}
@@ -220,7 +215,6 @@ export default function Perfil() {
     </>
   );
 
-  // Active tab content
   const renderContent = () => {
     switch (activeTab) {
       case "dados":
@@ -279,48 +273,49 @@ export default function Perfil() {
 
   return (
     <>
-      {/* Mobile: show site header */}
       <div className="lg:hidden">
         <Header />
       </div>
 
       <div className="min-h-screen bg-supet-bg flex">
-        {/* Mobile sidebar overlay */}
         {mobileSidebarOpen && (
           <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
         )}
 
-        {/* Sidebar — desktop: sticky, mobile: overlay */}
         <aside className={`fixed lg:sticky top-0 left-0 h-screen w-72 bg-supet-bg-alt z-50 flex flex-col transition-transform duration-300 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-          {/* Mobile close */}
           <button onClick={() => setMobileSidebarOpen(false)} className="absolute top-5 right-4 lg:hidden text-muted-foreground hover:text-foreground z-10">
             <X className="w-5 h-5" />
           </button>
           {sidebarContent}
         </aside>
 
-        {/* Main content */}
         <div className="flex-1 flex flex-col min-h-screen">
-          {/* Desktop top bar */}
+          {/* Desktop top bar with notification center */}
           <header className="hidden lg:flex sticky top-0 z-30 bg-supet-bg/80 backdrop-blur-xl px-6 py-4 items-center gap-3">
             <img src="/supetNewLogo.svg" alt="Supet" className="h-7" />
             <span className="text-xs font-bold uppercase tracking-widest text-muted-foreground bg-primary/15 text-primary px-2.5 py-1 rounded-full">Minha Conta</span>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto flex items-center gap-3">
               {currentNavItem && (
                 <span className="text-sm text-muted-foreground flex items-center gap-1.5">
                   <currentNavItem.icon className="w-4 h-4" />
                   {currentNavItem.label}
                 </span>
               )}
+              <UserNotificationCenter />
             </div>
           </header>
 
           {/* Mobile: avatar + tabs */}
           <div className="lg:hidden">
-            <div className="pt-6 pb-2 px-4 text-center">
-              {avatarBlock}
-              <h1 className="text-xl font-bold text-foreground font-display">{fullName || "Meu Perfil"}</h1>
-              <p className="text-sm text-muted-foreground">{user.email}</p>
+            <div className="pt-6 pb-2 px-4 flex items-start justify-between">
+              <div className="flex-1 text-center">
+                {avatarBlock}
+                <h1 className="text-xl font-bold text-foreground font-display">{fullName || "Meu Perfil"}</h1>
+                <p className="text-sm text-muted-foreground">{user.email}</p>
+              </div>
+              <div className="absolute right-4 top-20">
+                <UserNotificationCenter />
+              </div>
             </div>
             <div className="overflow-x-auto px-4 pb-4 scrollbar-hide">
               <div className="w-max min-w-full rounded-full bg-supet-bg-alt p-1 flex gap-1">
@@ -342,7 +337,6 @@ export default function Perfil() {
             </div>
           </div>
 
-          {/* Content area */}
           <main className="flex-1 p-4 md:p-6 lg:p-10">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
               {renderContent()}
@@ -351,7 +345,6 @@ export default function Perfil() {
         </div>
       </div>
 
-      {/* Mobile: show footer */}
       <div className="lg:hidden">
         <Footer />
       </div>
