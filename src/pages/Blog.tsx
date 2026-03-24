@@ -70,6 +70,11 @@ export default function Blog() {
     setCurrentPage(1);
   };
 
+  const handleSearch = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
   return (
     <Layout>
       <SEOHead
