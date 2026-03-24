@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Clock, ArrowRight } from "lucide-react";
+import { Clock, ArrowRight, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
-import { blogPreviews, blogPosts } from "@/services/mockData";
+import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
 
 function formatDate(date: string) {
@@ -20,27 +21,24 @@ const categories = ["Todos", "Saúde da Pele", "Imunidade", "Nutrição", "Alerg
 export default function Blog() {
   const [activeCategory, setActiveCategory] = useState("Todos");
 
-  // Sort previews by date (newest first)
-  const sortedPreviews = [...blogPreviews].sort(
-    (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
-  );
-
-  // Merge preview data with full post data to get categories
-  const postsWithCategory = sortedPreviews.map((preview) => {
-    const fullPost = blogPosts.find((p) => p.id === preview.id);
-    return {
-      ...preview,
-      category: fullPost?.category || "",
-      readTime: fullPost?.readTime || 5,
-    };
+  const { data: posts = [], isLoading } = useQuery({
+    queryKey: ["blog-posts-public"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("blog_posts")
+        .select("id, title, slug, excerpt, cover_image, published_at, category, read_time, tags")
+        .eq("status", "published")
+        .order("published_at", { ascending: false });
+      if (error) throw error;
+      return data || [];
+    },
   });
 
   const filteredPosts =
     activeCategory === "Todos"
-      ? postsWithCategory
-      : postsWithCategory.filter((p) => p.category === activeCategory);
+      ? posts
+      : posts.filter((p) => p.category === activeCategory);
 
-  // Featured article = the most recent post
   const featured = filteredPosts[0];
   const restPosts = filteredPosts.slice(1);
 
@@ -55,10 +53,8 @@ export default function Blog() {
           { name: "Blog", url: "https://supetz-playful-trust.lovable.app/blog" },
         ])}
       />
-      {/* Hero + Featured */}
       <section className="bg-supet-bg pt-28 pb-0 md:pt-36">
         <div className="mx-auto max-w-6xl px-6">
-          {/* Title row */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -81,7 +77,6 @@ export default function Blog() {
             </p>
           </motion.div>
 
-          {/* Category Filter */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -103,28 +98,27 @@ export default function Blog() {
             ))}
           </motion.div>
 
-          {/* Featured Article — integrated into hero */}
-          {featured && (
+          {isLoading && (
+            <div className="flex items-center justify-center py-24">
+              <Loader2 className="w-6 h-6 animate-spin text-supet-orange" />
+            </div>
+          )}
+
+          {!isLoading && featured && (
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-10 md:mt-14"
             >
-              <Link
-                to={`/blog/${featured.slug}`}
-                className="group block"
-              >
-                {/* Image */}
+              <Link to={`/blog/${featured.slug}`} className="group block">
                 <div className="overflow-hidden rounded-2xl md:rounded-3xl">
                   <img
-                    src={featured.coverImage}
+                    src={featured.cover_image || "/images/pet-studio.png"}
                     alt={featured.title}
                     className="w-full aspect-[2/1] md:aspect-[5/2] object-cover transition-transform duration-700 group-hover:scale-[1.03]"
                   />
                 </div>
-
-                {/* Text below image */}
                 <div className="mt-6 md:mt-8 flex flex-col md:flex-row md:items-start md:justify-between gap-4 md:gap-12 pb-12 md:pb-16">
                   <div className="flex-1 max-w-2xl">
                     <div className="flex items-center gap-3 mb-4">
@@ -132,11 +126,11 @@ export default function Blog() {
                         {featured.category || "Destaque"}
                       </span>
                       <span className="text-[11px] text-supet-text/35 font-medium">
-                        {formatDate(featured.publishedAt)}
+                        {featured.published_at ? formatDate(featured.published_at) : ""}
                       </span>
                       <span className="flex items-center gap-1 text-[11px] text-supet-text/35">
                         <Clock className="h-3 w-3" />
-                        {featured.readTime} min
+                        {featured.read_time} min
                       </span>
                     </div>
                     <h2 className="text-2xl md:text-3xl lg:text-4xl font-display font-extrabold leading-[1.1] text-supet-text tracking-tight group-hover:text-supet-orange transition-colors">
@@ -158,7 +152,6 @@ export default function Blog() {
         </div>
       </section>
 
-      {/* Articles Grid */}
       {restPosts.length > 0 && (
         <section className="bg-white py-16 md:py-24">
           <div className="mx-auto max-w-6xl px-6">
@@ -177,7 +170,7 @@ export default function Blog() {
                   >
                     <div className="relative overflow-hidden">
                       <img
-                        src={post.coverImage}
+                        src={post.cover_image || "/images/pet-studio.png"}
                         alt={post.title}
                         className="h-52 w-full object-cover transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
@@ -190,11 +183,11 @@ export default function Blog() {
                     </div>
                     <div className="flex flex-1 flex-col p-5 md:p-6">
                       <div className="flex items-center gap-3 mb-3 text-xs text-supet-text/40">
-                        <span className="font-medium">{formatDate(post.publishedAt)}</span>
+                        <span className="font-medium">{post.published_at ? formatDate(post.published_at) : ""}</span>
                         <span className="h-0.5 w-0.5 rounded-full bg-supet-text/30" />
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {post.readTime} min
+                          {post.read_time} min
                         </span>
                       </div>
                       <h2 className="text-lg font-display font-bold leading-tight text-supet-text group-hover:text-supet-orange transition-colors">
@@ -215,8 +208,7 @@ export default function Blog() {
         </section>
       )}
 
-      {/* Empty state */}
-      {filteredPosts.length === 0 && (
+      {!isLoading && filteredPosts.length === 0 && (
         <section className="bg-white py-24">
           <div className="mx-auto max-w-md px-6 text-center">
             <p className="text-lg font-bold text-supet-text/50">
@@ -232,7 +224,6 @@ export default function Blog() {
         </section>
       )}
 
-      {/* Newsletter Section */}
       <section className="bg-supet-orange py-20 text-white">
         <div className="mx-auto max-w-4xl px-6 text-center">
           <motion.div
