@@ -29,6 +29,7 @@ export default function AdminPedidos() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const { log } = useAuditLog();
 
   const fetchOrders = async () => {
     setLoading(true);
