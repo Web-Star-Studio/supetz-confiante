@@ -95,7 +95,7 @@ export default function Header() {
           ))}
         </nav>
 
-        <div className="flex items-center gap-4 text-supet-text/75">
+        <div className="flex items-center gap-2 md:gap-4 text-muted-foreground">
           <div className="hidden lg:flex items-center gap-3 mr-2">
             {socialLinks.map((social) => {
               const Icon = iconByPlatform[social.platform];
