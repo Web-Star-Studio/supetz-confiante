@@ -51,8 +51,10 @@ const categoryColors: Record<string, string> = {
 export default function AIPetAssistantTab() {
   const { user } = useAuth();
   const [mode, setMode] = useState<AIMode>("assistant");
+  const [pets, setPets] = useState<PetInfo[]>([]);
   const [pet, setPet] = useState<PetInfo | null>(null);
   const [loading, setLoading] = useState(false);
+  const [petsLoading, setPetsLoading] = useState(true);
   const [input, setInput] = useState("");
   const [messages, setMessages] = useState<Msg[]>([]);
   const [tips, setTips] = useState<Tip[]>([]);
@@ -64,16 +66,33 @@ export default function AIPetAssistantTab() {
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (user) loadPet();
+    if (user) loadPets();
   }, [user]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
-  const loadPet = async () => {
-    const { data } = await supabase.from("pets").select("name, breed, weight_kg, birth_date").eq("user_id", user!.id).limit(1).maybeSingle();
-    if (data) setPet(data);
+  const loadPets = async () => {
+    setPetsLoading(true);
+    const { data } = await supabase.from("pets").select("id, name, breed, weight_kg, birth_date, photo_url").eq("user_id", user!.id).order("created_at", { ascending: true });
+    const petList = (data as PetInfo[]) || [];
+    setPets(petList);
+    if (petList.length > 0 && !pet) setPet(petList[0]);
+    setPetsLoading(false);
+  };
+
+  const selectPet = (p: PetInfo) => {
+    setPet(p);
+    // Reset all AI content when switching pets
+    setMessages([]);
+    setTips([]);
+    setRecipes([]);
+    setFunFacts([]);
+    setAnalysisText("");
+    setHealthPlan([]);
+    setSelectedDay(0);
+    setMode("assistant");
   };
 
   const callAI = async (aiMode: AIMode, userMessages?: Msg[]) => {
