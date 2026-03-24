@@ -1,57 +1,58 @@
 
 
-## Plano: Dashboard de Resumo no Perfil do Usuario
+## Plano: Melhorias de Seguranca e Inteligencia na Super Pet AI e Super IA
 
-### O que sera criado
+### Problema
 
-Um novo componente `ProfileDashboardTab.tsx` que sera a aba inicial do perfil, mostrando um resumo visual completo de todos os recursos do usuario em cards organizados.
+Os prompts atuais das duas IAs (pet-ai e chatbot) nao possuem disclaimers legais robustos. A IA pode gerar informacoes incorretas sobre saude animal sem avisos adequados, expondo a empresa a riscos juridicos.
 
-### Conteudo do Dashboard
+### Alteracoes
 
-**Cards de metricas rapidas (grid 2x2 no mobile, 4 colunas no desktop):**
-- Total de pedidos + ultimo status
-- Saldo de pontos de fidelidade
-- Cupons ativos disponiveis
-- Lembretes de reposicao pendentes
+#### 1. Edge Function `supabase/functions/pet-ai/index.ts`
 
-**Secao "Meu Pet" (resumo):**
-- Nome, raca, peso e foto do pet (se cadastrado)
-- Link rapido para editar
+Reescrever todos os system prompts com regras de seguranca:
 
-**Secao "Ultimo Pedido":**
-- Status atual com timeline simplificada
-- Valor e data
+- **Disclaimer obrigatorio**: Toda resposta deve terminar com aviso de que e gerada por IA e nao substitui consulta veterinaria
+- **Proibicoes explicitas**: Nao diagnosticar doencas, nao prescrever medicamentos, nao recomendar dosagens de remedios
+- **Linguagem cautelosa**: Usar "pode ser", "consulte um veterinario", "geralmente recomenda-se" em vez de afirmacoes absolutas
+- **Recusa ativa**: Se o usuario descrever emergencia (vomito com sangue, convulsao, etc), a IA deve recusar dar conselho e mandar ir ao veterinario imediatamente
+- **Renomear** de "SuperPet AI" para "Super Pet AI" (consistencia com o nome pedido)
+- Adicionar regra de temperatura conservadora no prompt (evitar respostas criativas demais em saude)
 
-**Secao "Proxima Reposicao":**
-- Produto e data estimada do proximo lembrete
+Exemplo de bloco de seguranca adicionado a todos os prompts:
 
-**Secao "Diario de Tratamento":**
-- Ultimo registro com data e notas
+```
+REGRAS DE SEGURANÇA (OBRIGATÓRIAS):
+1. Você NÃO é veterinário. NUNCA diagnostique doenças ou prescreva medicamentos.
+2. Para sintomas graves (sangue, convulsões, dificuldade respiratória, intoxicação), instrua o tutor a procurar um veterinário IMEDIATAMENTE.
+3. Sempre encerre respostas sobre saúde com: "⚠️ Lembre-se: estas são orientações gerais de uma IA. Consulte sempre um veterinário para diagnósticos e tratamentos."
+4. Use linguagem como "geralmente", "pode ser", "é recomendável consultar" — nunca afirmações absolutas sobre saúde.
+5. Não recomende doses de medicamentos em hipótese alguma.
+6. Sobre os produtos Supet, seja honesto: são suplementos naturais, NÃO são medicamentos.
+```
 
-**Secao "Notificacoes recentes":**
-- 3 ultimas notificacoes nao lidas
+#### 2. Edge Function `supabase/functions/chatbot/index.ts`
 
-**Acoes rapidas (grid de botoes):**
-- Ir para loja, Falar com Super IA, Ver conquistas, etc.
+Mesmo tratamento de seguranca no system prompt do chatbot Super IA:
+- Adicionar bloco de regras de seguranca similar
+- Reforcar que produtos Supet sao suplementos naturais, nao medicamentos
+- Instruir a IA a nunca fazer promessas de cura
 
-### Alteracoes nos arquivos
+#### 3. Frontend `src/components/profile/AIPetAssistantTab.tsx`
 
-1. **Criar `src/components/profile/ProfileDashboardTab.tsx`**
-   - Componente que busca dados resumidos de todas as tabelas (orders, pets, loyalty_points, user_coupons, restock_reminders, treatment_logs, user_notifications)
-   - Queries paralelas com Promise.all
-   - Cards com icones e cores consistentes com o design system
-   - Botoes de acao rapida que chamam `setActiveTab` via prop
+- Renomear "SuperPet AI" para "Super Pet AI" no header (linha 272)
+- Adicionar disclaimer visual fixo abaixo do chat e de cada modo:
+  - Banner discreto: "⚠️ Informacoes geradas por IA. Consulte sempre um veterinario profissional."
+- Atualizar texto de boas-vindas com aviso inicial
 
-2. **Editar `src/pages/Perfil.tsx`**
-   - Adicionar "dashboard" como primeiro item no `navItems` com icone `LayoutDashboard`
-   - Definir `activeTab` inicial como `"dashboard"`
-   - Importar e renderizar `ProfileDashboardTab` no switch
-   - Passar `setActiveTab` como prop para navegacao interna
+#### 4. Frontend `src/components/chat/FloatingChatbot.tsx`
+
+- Adicionar disclaimer visual no rodape do chat (acima do input)
+- Texto: "As respostas sao geradas por IA e podem conter imprecisoes."
 
 ### Detalhes tecnicos
 
-- Todas as queries usam o Supabase client existente com RLS (sem alteracoes no banco)
-- Layout responsivo: grid de 1 coluna no mobile, 2-4 colunas no desktop
-- Skeleton loading durante carregamento
-- Animacoes com framer-motion consistentes com o resto do perfil
+- Nenhuma alteracao no banco de dados
+- Apenas edicao de 4 arquivos existentes
+- Prompts mais longos mas necessarios para protecao legal
 
