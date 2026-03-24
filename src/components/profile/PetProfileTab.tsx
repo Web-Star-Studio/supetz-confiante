@@ -152,6 +152,38 @@ function BreedInfoCard({ breed }: { breed: string }) {
   );
 }
 
+function ExpandableBreedInfo({ info }: { info: BreedDetails }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="border-t border-border/50">
+      <button onClick={() => setExpanded(!expanded)} className="w-full px-5 sm:px-6 py-2.5 flex items-center justify-between text-xs font-semibold text-primary hover:bg-primary/5 transition-colors">
+        <span className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" /> Informações da raça</span>
+        {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+      </button>
+      {expanded && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-5 sm:px-6 pb-5 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+            <div className="flex items-start gap-1.5"><Scissors className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Pelagem:</strong> {info.pelagem}</span></div>
+            <div className="flex items-start gap-1.5"><Activity className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Exercício:</strong> {info.exercicio}</span></div>
+          </div>
+          <div className="flex items-start gap-1.5 text-xs"><Heart className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Temperamento:</strong> {info.temperamento.join(", ")}</span></div>
+          {info.predisposicoes.length > 0 && (
+            <div className="flex items-start gap-1.5 text-xs"><AlertTriangle className="h-3.5 w-3.5 mt-0.5 text-amber-500 flex-shrink-0" /><span><strong>Atenção:</strong> {info.predisposicoes.join(", ")}</span></div>
+          )}
+          {info.cuidadosEspeciais.length > 0 && (
+            <div className="text-xs space-y-0.5">
+              <p className="font-semibold text-foreground flex items-center gap-1"><Zap className="h-3.5 w-3.5 text-primary" /> Cuidados especiais:</p>
+              <ul className="list-disc list-inside text-muted-foreground space-y-0.5 ml-1">
+                {info.cuidadosEspeciais.map((c, idx) => <li key={idx}>{c}</li>)}
+              </ul>
+            </div>
+          )}
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 export default function PetProfileTab() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
