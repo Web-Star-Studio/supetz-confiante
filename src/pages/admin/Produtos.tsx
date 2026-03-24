@@ -119,6 +119,7 @@ export default function AdminProdutos() {
   const confirmDelete = async () => {
     if (!deleteTarget) return;
     await supabase.from("products").delete().eq("id", deleteTarget.id);
+    log({ action: "delete", entity_type: "product", entity_id: deleteTarget.id, details: { title: deleteTarget.title } });
     setDeleteTarget(null);
     fetchProducts();
   };

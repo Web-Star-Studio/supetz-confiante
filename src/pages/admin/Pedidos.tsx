@@ -44,6 +44,7 @@ export default function AdminPedidos() {
 
   const updateStatus = async (orderId: string, newStatus: string) => {
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
+    log({ action: "update", entity_type: "order", entity_id: orderId, details: { status: newStatus } });
     fetchOrders();
   };
 
