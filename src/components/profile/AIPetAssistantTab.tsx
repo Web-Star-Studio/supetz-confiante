@@ -120,8 +120,13 @@ export default function AIPetAssistantTab() {
     };
 
     try {
-      const resp = await callAI("assistant", newMessages);
-      const reader = resp.body!.getReader();
+      const result = await callAI("assistant", newMessages);
+      if (result.isEmergency) {
+        setMessages((prev) => [...prev, { role: "assistant", content: result.content, isEmergency: true }]);
+        setLoading(false);
+        return;
+      }
+      const reader = result.resp!.body!.getReader();
       const decoder = new TextDecoder();
       let buf = "";
 
