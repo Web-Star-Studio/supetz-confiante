@@ -39,6 +39,7 @@ const typeConfig: Record<string, { label: string; icon: typeof Plus; class: stri
 
 export default function AdminEstoque() {
   const { user } = useAuth();
+  const { log } = useAuditLog();
   const [products, setProducts] = useState<Product[]>([]);
   const [movements, setMovements] = useState<StockMovement[]>([]);
   const [loading, setLoading] = useState(true);
