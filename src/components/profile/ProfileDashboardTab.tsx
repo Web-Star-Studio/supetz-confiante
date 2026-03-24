@@ -172,6 +172,52 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4 sm:space-y-6">
+      {/* AI Access Expiry Warning */}
+      {data.aiExpiry && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className={`rounded-2xl p-4 sm:p-5 flex items-start gap-3 ${
+            data.aiExpiry.daysLeft <= 2
+              ? "bg-destructive/10 border border-destructive/20"
+              : "bg-amber-500/10 border border-amber-500/20"
+          }`}
+        >
+          <div className={`h-9 w-9 rounded-xl flex items-center justify-center flex-shrink-0 ${
+            data.aiExpiry.daysLeft <= 2 ? "bg-destructive/15" : "bg-amber-500/15"
+          }`}>
+            {data.aiExpiry.daysLeft <= 2
+              ? <AlertCircle className="h-4.5 w-4.5 text-destructive" />
+              : <Clock className="h-4.5 w-4.5 text-amber-600" />
+            }
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className={`text-sm font-bold ${data.aiExpiry.daysLeft <= 2 ? "text-destructive" : "text-amber-700 dark:text-amber-400"}`}>
+              {data.aiExpiry.daysLeft === 0
+                ? "Super IA expira hoje!"
+                : data.aiExpiry.daysLeft === 1
+                  ? "Super IA expira amanhã!"
+                  : `Super IA expira em ${data.aiExpiry.daysLeft} dias`
+              }
+            </p>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Seu acesso ao assistente inteligente expira em {format(data.aiExpiry.expiresAt, "dd/MM/yyyy")}. Faça uma nova compra para renovar automaticamente.
+            </p>
+            <button
+              onClick={() => setActiveTab("ia")}
+              className={`mt-2.5 rounded-full px-4 py-1.5 text-xs font-bold transition-colors ${
+                data.aiExpiry.daysLeft <= 2
+                  ? "bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  : "bg-amber-500 text-white hover:bg-amber-600"
+              }`}
+            >
+              <Sparkles className="h-3 w-3 inline mr-1" />
+              Usar agora
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       {/* Metric Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
         {metrics.map((m) => (
