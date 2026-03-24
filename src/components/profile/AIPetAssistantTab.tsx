@@ -69,6 +69,7 @@ export default function AIPetAssistantTab() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [aiAccessExpiry, setAiAccessExpiry] = useState<Date | null>(null);
   const [aiAccessLoading, setAiAccessLoading] = useState(true);
+  const [cacheLoading, setCacheLoading] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -97,18 +98,73 @@ export default function AIPetAssistantTab() {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
+  // Load cached AI content for the selected pet
+  const loadCachedContent = async (petId: string) => {
+    setCacheLoading(true);
+    const { data } = await supabase
+      .from("ai_cached_content")
+      .select("mode, content")
+      .eq("user_id", user!.id)
+      .eq("pet_id", petId);
+
+    if (data) {
+      for (const row of data) {
+        const content = row.content as Record<string, unknown>;
+        switch (row.mode) {
+          case "tips":
+            if (Array.isArray(content.tips)) setTips(content.tips as Tip[]);
+            break;
+          case "recipes":
+            if (Array.isArray(content.recipes)) setRecipes(content.recipes as Recipe[]);
+            break;
+          case "fun_facts":
+            if (Array.isArray(content.facts)) setFunFacts(content.facts as FunFact[]);
+            break;
+          case "analysis":
+            if (typeof content.text === "string") setAnalysisText(content.text);
+            break;
+          case "health_plan":
+            if (Array.isArray(content.plan)) { setHealthPlan(content.plan as DayPlan[]); setSelectedDay(0); }
+            break;
+        }
+      }
+    }
+    setCacheLoading(false);
+  };
+
+  // Save generated content to cache
+  const saveToCache = async (petId: string, aiMode: string, content: Record<string, unknown>) => {
+    const payload = { user_id: user!.id, pet_id: petId, mode: aiMode, content: content as any, updated_at: new Date().toISOString() };
+    // Try update first, then insert if not exists
+    const { data: existing } = await supabase
+      .from("ai_cached_content")
+      .select("id")
+      .eq("user_id", user!.id)
+      .eq("pet_id", petId)
+      .eq("mode", aiMode)
+      .limit(1);
+    if (existing && existing.length > 0) {
+      await supabase.from("ai_cached_content").update({ content: content as any, updated_at: new Date().toISOString() }).eq("id", existing[0].id);
+    } else {
+      await supabase.from("ai_cached_content").insert(payload as any);
+    }
+  };
+
   const loadPets = async () => {
     setPetsLoading(true);
     const { data } = await supabase.from("pets").select("id, name, breed, weight_kg, birth_date, photo_url").eq("user_id", user!.id).order("created_at", { ascending: true });
     const petList = (data as PetInfo[]) || [];
     setPets(petList);
-    if (petList.length > 0 && !pet) setPet(petList[0]);
+    if (petList.length > 0 && !pet) {
+      setPet(petList[0]);
+      loadCachedContent(petList[0].id);
+    }
     setPetsLoading(false);
   };
 
   const selectPet = (p: PetInfo) => {
     setPet(p);
-    // Reset all AI content when switching pets
+    // Reset all AI content when switching pets, then load cache
     setMessages([]);
     setTips([]);
     setRecipes([]);
@@ -117,6 +173,7 @@ export default function AIPetAssistantTab() {
     setHealthPlan([]);
     setSelectedDay(0);
     setMode("assistant");
+    loadCachedContent(p.id);
   };
 
   const callAI = async (aiMode: AIMode, userMessages?: Msg[]) => {
@@ -246,15 +303,17 @@ export default function AIPetAssistantTab() {
             } catch { /* partial */ }
           }
         }
+        // Save analysis to cache
+        if (pet && text) saveToCache(pet.id, "analysis", { text });
       } else {
         const content = result.content || "";
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
-          if (aiMode === "tips" && parsed.tips) setTips(parsed.tips);
-          if (aiMode === "recipes" && parsed.recipes) setRecipes(parsed.recipes);
-          if (aiMode === "fun_facts" && parsed.facts) setFunFacts(parsed.facts);
-          if (aiMode === "health_plan" && parsed.plan) { setHealthPlan(parsed.plan); setSelectedDay(0); }
+          if (aiMode === "tips" && parsed.tips) { setTips(parsed.tips); saveToCache(pet!.id, "tips", { tips: parsed.tips }); }
+          if (aiMode === "recipes" && parsed.recipes) { setRecipes(parsed.recipes); saveToCache(pet!.id, "recipes", { recipes: parsed.recipes }); }
+          if (aiMode === "fun_facts" && parsed.facts) { setFunFacts(parsed.facts); saveToCache(pet!.id, "fun_facts", { facts: parsed.facts }); }
+          if (aiMode === "health_plan" && parsed.plan) { setHealthPlan(parsed.plan); setSelectedDay(0); saveToCache(pet!.id, "health_plan", { plan: parsed.plan }); }
         }
       }
     } catch (e: any) {
@@ -312,6 +371,8 @@ export default function AIPetAssistantTab() {
           } catch { /* partial */ }
         }
       }
+      // Save analysis to cache
+      if (pet && text) saveToCache(pet.id, "analysis", { text });
     } catch (e: any) {
       toast.error(e.message);
     }
