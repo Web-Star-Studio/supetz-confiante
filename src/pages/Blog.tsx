@@ -40,8 +40,22 @@ export default function Blog() {
       ? posts
       : posts.filter((p) => p.category === activeCategory);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const POSTS_PER_PAGE = 6;
+
   const featured = filteredPosts[0];
-  const restPosts = filteredPosts.slice(1);
+  const allRestPosts = filteredPosts.slice(1);
+  const totalPages = Math.max(1, Math.ceil(allRestPosts.length / POSTS_PER_PAGE));
+  const restPosts = useMemo(() => {
+    const start = (currentPage - 1) * POSTS_PER_PAGE;
+    return allRestPosts.slice(start, start + POSTS_PER_PAGE);
+  }, [allRestPosts, currentPage]);
+
+  // Reset page when category changes
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    setCurrentPage(1);
+  };
 
   return (
     <Layout>
