@@ -41,7 +41,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <div className="relative p-6 flex items-center justify-between overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
           <Link to="/admin" className="flex items-center gap-3 relative z-10">
-            <img src="/supetNewLogo.svg" alt="Supet" className="h-12" />
+            <img src="/supetNewLogo.svg" alt="Supet" className="h-16" />
           </Link>
           <button onClick={() => setSidebarOpen(false)} className="lg:hidden text-muted-foreground hover:text-foreground relative z-10">
             <X className="w-5 h-5" />
