@@ -19,6 +19,7 @@ interface AuditLog {
   admin_id: string;
   action: string;
   entity_type: string;
+  ip_address: string | null;
   entity_id: string | null;
   details: Record<string, unknown> | null;
   created_at: string;
