@@ -121,16 +121,22 @@ export default function AIPetAssistantTab() {
 
   const callAI = async (aiMode: AIMode, userMessages?: Msg[]) => {
     const url = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/pet-ai`;
+    const { data: { session } } = await supabase.auth.getSession();
+    const token = session?.access_token || import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
     const resp = await fetch(url, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        Authorization: `Bearer ${token}`,
+        apikey: import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
       },
       body: JSON.stringify({ mode: aiMode, messages: userMessages, petInfo: pet }),
     });
     if (!resp.ok) {
       const err = await resp.json().catch(() => ({ error: "Erro de rede" }));
+      if (resp.status === 403) {
+        setAiAccessExpiry(null);
+      }
       throw new Error(err.error || "Erro ao conectar com IA");
     }
     // Check for emergency JSON response
