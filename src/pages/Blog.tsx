@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Clock, ArrowRight, Loader2 } from "lucide-react";
+import { Clock, ArrowRight, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import BlurImage from "@/components/blog/BlurImage";
@@ -40,8 +40,22 @@ export default function Blog() {
       ? posts
       : posts.filter((p) => p.category === activeCategory);
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const POSTS_PER_PAGE = 6;
+
   const featured = filteredPosts[0];
-  const restPosts = filteredPosts.slice(1);
+  const allRestPosts = filteredPosts.slice(1);
+  const totalPages = Math.max(1, Math.ceil(allRestPosts.length / POSTS_PER_PAGE));
+  const restPosts = useMemo(() => {
+    const start = (currentPage - 1) * POSTS_PER_PAGE;
+    return allRestPosts.slice(start, start + POSTS_PER_PAGE);
+  }, [allRestPosts, currentPage]);
+
+  // Reset page when category changes
+  const handleCategoryChange = (cat: string) => {
+    setActiveCategory(cat);
+    setCurrentPage(1);
+  };
 
   return (
     <Layout>
@@ -87,7 +101,7 @@ export default function Blog() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setActiveCategory(cat)}
+                onClick={() => handleCategoryChange(cat)}
                 className={`shrink-0 rounded-full px-5 py-2 text-xs font-bold uppercase tracking-wider transition-all duration-300 ${
                   activeCategory === cat
                     ? "bg-supet-orange text-white shadow-lg shadow-supet-orange/25"
@@ -203,6 +217,38 @@ export default function Blog() {
                 </motion.article>
               ))}
             </div>
+
+            {totalPages > 1 && (
+              <div className="mt-12 flex items-center justify-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-bold transition-all disabled:opacity-30 text-supet-text/60 hover:text-supet-orange"
+                >
+                  <ChevronLeft className="h-4 w-4" /> Anterior
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`h-9 w-9 rounded-full text-sm font-bold transition-all ${
+                      currentPage === page
+                        ? "bg-supet-orange text-white shadow-lg shadow-supet-orange/25"
+                        : "text-supet-text/50 hover:bg-supet-orange/10 hover:text-supet-orange"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-bold transition-all disabled:opacity-30 text-supet-text/60 hover:text-supet-orange"
+                >
+                  Próximo <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </div>
         </section>
       )}
