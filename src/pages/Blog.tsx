@@ -192,7 +192,7 @@ export default function Blog() {
                   </div>
                   <div className="md:max-w-xs md:pt-10">
                     <p className="text-[15px] leading-relaxed text-supet-text/50 line-clamp-3">
-                      {featured.excerpt}
+                      <HighlightText text={featured.excerpt || ""} query={searchQuery} />
                     </p>
                     <span className="mt-4 inline-flex items-center gap-2 text-sm font-bold text-supet-orange group-hover:gap-3 transition-all">
                       Ler artigo <ArrowRight className="h-4 w-4" />
