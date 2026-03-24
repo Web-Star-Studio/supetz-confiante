@@ -125,7 +125,7 @@ export default function Fidelizacao() {
 
     setSavingCoupon(false);
     if (error) toast.error("Erro ao criar cupom");
-    else { toast.success("Cupom criado!"); setShowCouponForm(false); loadData(); }
+    else { toast.success("Cupom criado!"); log({ action: "create", entity_type: "coupon", details: { code: newCoupon.code, userId: newCoupon.userId } }); setShowCouponForm(false); loadData(); }
   };
 
   const handleAddPoints = async () => {
