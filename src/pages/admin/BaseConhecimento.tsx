@@ -1030,7 +1030,7 @@ export default function BaseConhecimento() {
     }
     setEditorOpen(false);
     setEditingArticle(null);
-    loadCustomArticles();
+    loadDbArticles();
   };
 
   const handleDeleteArticle = async (id: string) => {
@@ -1038,7 +1038,7 @@ export default function BaseConhecimento() {
     if (error) { toast.error("Erro ao excluir"); return; }
     toast.success("Artigo excluído!");
     if (selectedArticle?.id === id) setSelectedArticle(null);
-    loadCustomArticles();
+    loadDbArticles();
   };
 
   // Find parent category of selected article
@@ -1077,7 +1077,7 @@ export default function BaseConhecimento() {
             { label: "Categorias", value: totalCategories, icon: <BookOpen className="w-4 h-4" /> },
             { label: "Artigos", value: totalArticles, icon: <FileText className="w-4 h-4" /> },
             { label: "Tags", value: allTags.length, icon: <Tag className="w-4 h-4" /> },
-            { label: "Personalizados", value: customArticles.length, icon: <Pencil className="w-4 h-4" /> },
+            { label: "Personalizados", value: dbArticles.length, icon: <Pencil className="w-4 h-4" /> },
           ].map((stat) => (
             <div key={stat.label} className="rounded-xl border border-border bg-card p-4 flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center text-primary">{stat.icon}</div>
@@ -1187,7 +1187,7 @@ export default function BaseConhecimento() {
                     <div className="flex items-center gap-1 shrink-0">
                       <Button variant="ghost" size="sm" onClick={() => {
                         if (selectedArticle.isCustom) {
-                          const dbArticle = customArticles.find(a => a.id === selectedArticle.id);
+                          const dbArticle = dbArticles.find(a => a.id === selectedArticle.id);
                           if (dbArticle) { setEditingArticle(dbArticle); setEditorOpen(true); }
                         } else {
                           // Edit static article — open editor pre-filled, will create DB override
