@@ -105,6 +105,16 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     const treatmentChart = months.map((m) => ({ month: m, registros: treatmentByMonth[m] || 0 }));
     const pointsChart = months.map((m) => ({ month: m, pontos: pointsByMonth[m] || 0 }));
 
+    // AI access expiry
+    let aiExpiry: { expiresAt: Date; daysLeft: number } | null = null;
+    if (aiCreditsRes.data?.expires_at) {
+      const expiresAt = new Date(aiCreditsRes.data.expires_at);
+      const daysLeft = differenceInDays(expiresAt, new Date());
+      if (daysLeft >= 0 && daysLeft <= 7) {
+        aiExpiry = { expiresAt, daysLeft };
+      }
+    }
+
     setData({
       ordersCount: orders.length,
       lastOrder: orders[0] || null,
@@ -117,6 +127,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       notifications: notifRes.data || [],
       treatmentChart,
       pointsChart,
+      aiExpiry,
     });
     setLoading(false);
   };
