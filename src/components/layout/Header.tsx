@@ -114,29 +114,29 @@ export default function Header() {
             })}
           </div>
 
-          {/* User icon with restock badge */}
+          {/* User icon — hidden on mobile (bottom nav has it) */}
           <Link
             to={user ? "/perfil" : "/login"}
-            className="relative p-2 text-supet-text hover:text-supet-orange transition-colors"
+            className="hidden md:flex relative p-2 text-foreground hover:text-primary transition-colors"
             aria-label={user ? "Meu Perfil" : "Entrar"}
           >
             <UserCircle className="w-5 h-5" />
             {restockCount > 0 && (
-              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-red-500 text-white text-[9px] font-black flex items-center justify-center animate-pulse">
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-destructive text-destructive-foreground text-[9px] font-black flex items-center justify-center animate-pulse">
                 {restockCount}
               </span>
             )}
           </Link>
 
           {/* Cart Toggle */}
-          <button 
+          <button
             onClick={openCart}
-            className="relative p-2 text-supet-text hover:text-supet-orange transition-colors"
+            className="relative p-2 text-foreground hover:text-primary transition-colors active:scale-90"
             aria-label="Abrir Sacola"
           >
             <ShoppingBag className="w-5 h-5" />
             {totalItems > 0 && (
-              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-supet-orange text-white text-[9px] font-black flex items-center justify-center">
+              <span className="absolute top-0 right-0 w-4 h-4 rounded-full bg-primary text-primary-foreground text-[9px] font-black flex items-center justify-center">
                 {totalItems}
               </span>
             )}
