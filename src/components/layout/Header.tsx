@@ -1,16 +1,12 @@
 import { useState, useEffect, type MouseEvent } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Menu,
-  X,
   Facebook,
   Instagram,
   Youtube,
   Music2,
   ShoppingBag,
   UserCircle,
-  Bell,
 } from "lucide-react";
 import { socialLinks } from "@/services/mockData";
 import { useCart } from "@/context/CartContext";
