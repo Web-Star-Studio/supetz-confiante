@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail,
   PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, Store, Menu, X,
-  Sparkles, Trophy, LayoutDashboard,
+  Sparkles, Trophy, LayoutDashboard, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -50,6 +50,7 @@ export default function Perfil() {
   const [uploading, setUploading] = useState(false);
   const [passwordResetSent, setPasswordResetSent] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -170,46 +171,73 @@ export default function Perfil() {
 
   const sidebarContent = (
     <>
-      <div className="relative p-6 overflow-hidden flex justify-center">
+      <div className="relative p-4 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
         <Link to="/" className="relative z-10">
-          <img src="/supetNewLogo.svg" alt="Supet" className="h-10 lg:h-12 w-auto" />
+          <img
+            src="/supetNewLogo.svg"
+            alt="Supet"
+            className={`transition-all duration-300 ${sidebarCollapsed ? "h-6 w-auto" : "h-10 lg:h-12 w-auto"}`}
+          />
         </Link>
       </div>
 
-      <div className="px-6 pb-4 text-center">
-        {avatarBlock}
-        <h2 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h2>
-        <p className="text-xs text-muted-foreground truncate">{user.email}</p>
-      </div>
+      {!sidebarCollapsed && (
+        <div className="px-6 pb-4 text-center">
+          {avatarBlock}
+          <h2 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h2>
+          <p className="text-xs text-muted-foreground truncate">{user.email}</p>
+        </div>
+      )}
 
-      <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+      {sidebarCollapsed && (
+        <div className="flex justify-center pb-3">
+          <div className="relative h-10 w-10">
+            {avatarUrl ? (
+              <img src={avatarUrl} alt="Avatar" className="h-10 w-10 rounded-full object-cover border-2 border-primary/30" />
+            ) : (
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/30 text-xs font-bold text-primary">
+                {initials}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
           return (
             <button
               key={item.key}
               onClick={() => { setActiveTab(item.key); setMobileSidebarOpen(false); }}
-              className={`flex w-full items-center gap-3 px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+              title={sidebarCollapsed ? item.label : undefined}
+              className={`flex w-full items-center gap-3 rounded-2xl text-sm font-semibold transition-all ${
+                sidebarCollapsed ? "justify-center px-2 py-3" : "px-4 py-3"
+              } ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
               }`}
             >
               <item.icon className="w-5 h-5 shrink-0" />
-              {item.label}
-              {isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
+              {!sidebarCollapsed && item.label}
+              {!sidebarCollapsed && isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
             </button>
           );
         })}
       </nav>
 
-      <div className="p-4">
+      <div className="p-2">
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 w-full px-4 py-2.5 rounded-2xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors"
+          title={sidebarCollapsed ? "Sair" : undefined}
+          className={`flex items-center gap-2 w-full rounded-2xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors ${
+            sidebarCollapsed ? "justify-center px-2 py-2.5" : "px-4 py-2.5"
+          }`}
         >
-          <LogOut className="w-4 h-4" /> Sair
+          <LogOut className="w-4 h-4" />
+          {!sidebarCollapsed && "Sair"}
         </button>
       </div>
     </>
@@ -284,11 +312,26 @@ export default function Perfil() {
           <div className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-40 lg:hidden" onClick={() => setMobileSidebarOpen(false)} />
         )}
 
-        <aside className={`fixed lg:sticky top-0 left-0 h-screen w-72 bg-supet-bg-alt z-50 flex flex-col transition-transform duration-300 ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <aside className={`fixed lg:sticky top-0 left-0 h-screen bg-supet-bg-alt z-50 flex flex-col transition-all duration-300 ease-in-out ${
+          sidebarCollapsed ? "w-[72px]" : "w-72"
+        } ${mobileSidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
           <button onClick={() => setMobileSidebarOpen(false)} className="absolute top-5 right-4 lg:hidden text-muted-foreground hover:text-foreground z-10">
             <X className="w-5 h-5" />
           </button>
           {sidebarContent}
+
+          {/* Collapse toggle — desktop only */}
+          <button
+            onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+            className="hidden lg:flex absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-12 items-center justify-center rounded-full bg-supet-bg-alt border border-border/50 shadow-md hover:bg-primary/10 hover:border-primary/30 transition-all group z-50"
+          >
+            <motion.div
+              animate={{ rotate: sidebarCollapsed ? 180 : 0 }}
+              transition={{ duration: 0.3, ease: "easeInOut" }}
+            >
+              <PanelLeftClose className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
+            </motion.div>
+          </button>
         </aside>
 
         <div className="flex-1 flex flex-col min-h-screen">
