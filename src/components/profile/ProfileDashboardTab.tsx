@@ -62,7 +62,9 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     if (!user) return;
     setLoading(true);
 
-    const [ordersRes, pointsRes, couponsRes, remindersRes, petRes, diaryRes, notifRes] = await Promise.all([
+    const sixMonthsAgo = subMonths(new Date(), 6).toISOString();
+
+    const [ordersRes, pointsRes, couponsRes, remindersRes, petRes, diaryRes, notifRes, treatmentLogsRes, pointsHistRes] = await Promise.all([
       supabase.from("orders").select("id, status, total, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
       supabase.from("loyalty_points").select("points").eq("user_id", user.id),
       supabase.from("user_coupons").select("id").eq("user_id", user.id).eq("used", false).gte("expires_at", new Date().toISOString()),
@@ -70,11 +72,35 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       supabase.from("pets").select("name, breed, weight_kg, photo_url").eq("user_id", user.id).limit(1).maybeSingle(),
       supabase.from("treatment_logs").select("log_date, notes").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("user_notifications").select("id, title, message, type, created_at, read").eq("user_id", user.id).eq("read", false).order("created_at", { ascending: false }).limit(3),
+      supabase.from("treatment_logs").select("log_date").eq("user_id", user.id).gte("log_date", sixMonthsAgo.split("T")[0]),
+      supabase.from("loyalty_points").select("points, created_at").eq("user_id", user.id).gte("created_at", sixMonthsAgo),
     ]);
 
     const orders = ordersRes.data || [];
     const totalPoints = (pointsRes.data || []).reduce((sum, p) => sum + p.points, 0);
     const reminders = remindersRes.data || [];
+
+    // Group treatment logs by month
+    const treatmentByMonth: Record<string, number> = {};
+    (treatmentLogsRes.data || []).forEach((log) => {
+      const key = format(new Date(log.log_date), "MMM/yy", { locale: ptBR });
+      treatmentByMonth[key] = (treatmentByMonth[key] || 0) + 1;
+    });
+
+    // Group points by month
+    const pointsByMonth: Record<string, number> = {};
+    (pointsHistRes.data || []).forEach((p) => {
+      const key = format(new Date(p.created_at), "MMM/yy", { locale: ptBR });
+      pointsByMonth[key] = (pointsByMonth[key] || 0) + p.points;
+    });
+
+    // Build ordered arrays for last 6 months
+    const months: string[] = [];
+    for (let i = 5; i >= 0; i--) {
+      months.push(format(subMonths(new Date(), i), "MMM/yy", { locale: ptBR }));
+    }
+    const treatmentChart = months.map((m) => ({ month: m, registros: treatmentByMonth[m] || 0 }));
+    const pointsChart = months.map((m) => ({ month: m, pontos: pointsByMonth[m] || 0 }));
 
     setData({
       ordersCount: orders.length,
@@ -86,6 +112,8 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       pet: petRes.data,
       lastDiary: diaryRes.data,
       notifications: notifRes.data || [],
+      treatmentChart,
+      pointsChart,
     });
     setLoading(false);
   };
