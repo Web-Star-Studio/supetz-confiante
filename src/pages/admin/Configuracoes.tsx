@@ -8,6 +8,7 @@ import { useAuditLog } from "@/hooks/useAuditLog";
 
 export default function AdminConfiguracoes() {
   const { user } = useAuth();
+  const { log } = useAuditLog();
   const [newPassword, setNewPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
