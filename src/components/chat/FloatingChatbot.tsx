@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, X, Send, Loader2, ThumbsUp, ThumbsDown,
-  Sparkles, Trash2, PawPrint, ChevronDown,
+  Sparkles, Trash2, PawPrint, ChevronDown, AlertTriangle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -16,6 +16,7 @@ type Msg = {
   content: string;
   feedback?: "positive" | "negative" | null;
   isStreaming?: boolean;
+  isEmergency?: boolean;
 };
 
 const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chatbot`;
@@ -132,6 +133,18 @@ export default function FloatingChatbot() {
       if (!resp.ok) {
         const err = await resp.json().catch(() => ({ error: "Erro de rede" }));
         throw new Error(err.error || `Erro ${resp.status}`);
+      }
+
+      // Check for emergency JSON response (non-streaming)
+      const contentType = resp.headers.get("Content-Type") || "";
+      if (contentType.includes("application/json")) {
+        const data = await resp.json();
+        if (data.isEmergency) {
+          assistantText = data.content;
+          setMessages((prev) => [...prev, { role: "assistant", content: assistantText, isEmergency: true }]);
+          setLoading(false);
+          return;
+        }
       }
 
       const reader = resp.body!.getReader();
@@ -306,10 +319,18 @@ export default function FloatingChatbot() {
                     <div className={`rounded-2xl px-4 py-2.5 text-[13px] leading-relaxed ${
                       m.role === "user"
                         ? "bg-primary text-primary-foreground rounded-br-md"
-                        : "bg-muted text-foreground rounded-bl-md"
+                        : m.isEmergency
+                          ? "bg-destructive/10 border-2 border-destructive/30 text-foreground rounded-bl-md"
+                          : "bg-muted text-foreground rounded-bl-md"
                     }`}>
                       {m.role === "assistant" ? (
                         <div className="prose prose-sm max-w-none dark:prose-invert [&>p]:mb-1.5 [&>p:last-child]:mb-0 [&>ul]:mb-1.5 [&>ol]:mb-1.5">
+                          {m.isEmergency && (
+                            <div className="flex items-center gap-1.5 mb-2">
+                              <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                              <span className="text-xs font-bold text-destructive uppercase">Emergência</span>
+                            </div>
+                          )}
                           <ReactMarkdown>{m.content}</ReactMarkdown>
                           {m.isStreaming && (
                             <span className="inline-block w-1.5 h-4 bg-foreground/50 animate-pulse ml-0.5 align-text-bottom" />

@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageCircle, Sparkles, Send, Loader2, BookOpen, ChefHat,
-  Activity, Brain, PawPrint, RefreshCw, Lightbulb, HeartPulse, Calendar,
+  Activity, Brain, PawPrint, RefreshCw, Lightbulb, HeartPulse, Calendar, AlertTriangle,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import supetIaAvatar from "@/assets/supet-ia-avatar.png";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; isEmergency?: boolean };
 type AIMode = "assistant" | "tips" | "analysis" | "recipes" | "fun_facts" | "health_plan";
 
 interface PetInfo {
@@ -88,7 +88,16 @@ export default function AIPetAssistantTab() {
       const err = await resp.json().catch(() => ({ error: "Erro de rede" }));
       throw new Error(err.error || "Erro ao conectar com IA");
     }
-    return resp;
+    // Check for emergency JSON response
+    const contentType = resp.headers.get("Content-Type") || "";
+    if (contentType.includes("application/json")) {
+      const data = await resp.json();
+      if (data.isEmergency) {
+        return { isEmergency: true, content: data.content, resp: null };
+      }
+      return { isEmergency: false, content: data.content, resp: null };
+    }
+    return { isEmergency: false, content: null, resp };
   };
 
   // Streaming chat
@@ -111,8 +120,13 @@ export default function AIPetAssistantTab() {
     };
 
     try {
-      const resp = await callAI("assistant", newMessages);
-      const reader = resp.body!.getReader();
+      const result = await callAI("assistant", newMessages);
+      if (result.isEmergency) {
+        setMessages((prev) => [...prev, { role: "assistant", content: result.content, isEmergency: true }]);
+        setLoading(false);
+        return;
+      }
+      const reader = result.resp!.body!.getReader();
       const decoder = new TextDecoder();
       let buf = "";
 
@@ -146,10 +160,17 @@ export default function AIPetAssistantTab() {
     if (loading) return;
     setLoading(true);
     try {
-      const resp = await callAI(aiMode);
+      const result = await callAI(aiMode);
+
+      if (result.isEmergency) {
+        // Emergency responses shouldn't happen for non-assistant modes, but handle gracefully
+        toast.error(result.content);
+        setLoading(false);
+        return;
+      }
 
       if (aiMode === "analysis") {
-        const reader = resp.body!.getReader();
+        const reader = result.resp!.body!.getReader();
         const decoder = new TextDecoder();
         let buf = "";
         let text = "";
@@ -175,8 +196,7 @@ export default function AIPetAssistantTab() {
           }
         }
       } else {
-        const data = await resp.json();
-        const content = data.content || "";
+        const content = result.content || "";
         const jsonMatch = content.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
           const parsed = JSON.parse(jsonMatch[0]);
@@ -215,8 +235,9 @@ export default function AIPetAssistantTab() {
     setLoading(true);
     setAnalysisText("");
     try {
-      const resp = await callAI("analysis", [{ role: "user", content: `Registros de tratamento:\n${logsText}\n\nAnalise a evolução do tratamento e dê insights.` }]);
-      const reader = resp.body!.getReader();
+      const result = await callAI("analysis", [{ role: "user", content: `Registros de tratamento:\n${logsText}\n\nAnalise a evolução do tratamento e dê insights.` }]);
+      if (result.isEmergency) { setLoading(false); return; }
+      const reader = result.resp!.body!.getReader();
       const decoder = new TextDecoder();
       let buf = "";
       let text = "";
@@ -308,10 +329,20 @@ export default function AIPetAssistantTab() {
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                  m.role === "user" ? "bg-primary text-primary-foreground rounded-br-md" : "bg-supet-bg text-foreground rounded-bl-md"
+                  m.role === "user"
+                    ? "bg-primary text-primary-foreground rounded-br-md"
+                    : m.isEmergency
+                      ? "bg-destructive/10 border-2 border-destructive/30 text-foreground rounded-bl-md"
+                      : "bg-supet-bg text-foreground rounded-bl-md"
                 }`}>
                   {m.role === "assistant" ? (
                     <div className="prose prose-sm max-w-none dark:prose-invert [&>p]:mb-2 [&>ul]:mb-2">
+                      {m.isEmergency && (
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                          <span className="text-xs font-bold text-destructive uppercase">Emergência</span>
+                        </div>
+                      )}
                       <ReactMarkdown>{m.content}</ReactMarkdown>
                     </div>
                   ) : m.content}
