@@ -938,7 +938,7 @@ export default function BaseConhecimento() {
   const totalCategories = knowledgeBase.length;
 
   // Save article
-  const handleSaveArticle = async (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string }) => {
+  const handleSaveArticle = async (data: { id?: string; category: string; title: string; tags: string[]; content: string; icon: string; staticId?: string }) => {
     if (data.id) {
       const { error } = await supabase.from("kb_articles").update({
         category: data.category, title: data.title, tags: data.tags, content: data.content, icon: data.icon, updated_at: new Date().toISOString(),
@@ -946,11 +946,13 @@ export default function BaseConhecimento() {
       if (error) { toast.error("Erro ao salvar"); return; }
       toast.success("Artigo atualizado!");
     } else {
-      const { error } = await supabase.from("kb_articles").insert({
+      const insertData: any = {
         category: data.category, title: data.title, tags: data.tags, content: data.content, icon: data.icon,
-      });
+      };
+      if (data.staticId) insertData.static_id = data.staticId;
+      const { error } = await supabase.from("kb_articles").insert(insertData);
       if (error) { toast.error("Erro ao criar artigo"); return; }
-      toast.success("Artigo criado!");
+      toast.success(data.staticId ? "Artigo personalizado!" : "Artigo criado!");
     }
     setEditorOpen(false);
     setEditingArticle(null);
