@@ -1,9 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail,
-  PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, Store, Menu, X,
+  PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, ChevronLeft, Store, Menu, X,
   Sparkles, Trophy, LayoutDashboard, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -36,6 +36,81 @@ const navItems = [
   { key: "cupons", label: "Cupons", icon: Ticket },
   { key: "seguranca", label: "Segurança", icon: Shield },
 ];
+
+function MobileTabScroller({ activeTab, setActiveTab }: { activeTab: string; setActiveTab: (tab: string) => void }) {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [showLeft, setShowLeft] = useState(false);
+  const [showRight, setShowRight] = useState(true);
+
+  const checkScroll = useCallback(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    setShowLeft(el.scrollLeft > 8);
+    setShowRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 8);
+  }, []);
+
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    checkScroll();
+    el.addEventListener("scroll", checkScroll, { passive: true });
+    return () => el.removeEventListener("scroll", checkScroll);
+  }, [checkScroll]);
+
+  const scroll = (dir: "left" | "right") => {
+    scrollRef.current?.scrollBy({ left: dir === "left" ? -120 : 120, behavior: "smooth" });
+  };
+
+  return (
+    <div className="relative px-3 pb-3 pt-2">
+      {/* Left arrow */}
+      <div
+        className={`absolute left-0 top-0 bottom-0 z-10 flex items-center pl-1 transition-opacity duration-200 ${showLeft ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      >
+        <button
+          onClick={() => scroll("left")}
+          className="h-8 w-8 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm"
+          aria-label="Scroll left"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* Right arrow */}
+      <div
+        className={`absolute right-0 top-0 bottom-0 z-10 flex items-center pr-1 transition-opacity duration-200 ${showRight ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+      >
+        <button
+          onClick={() => scroll("right")}
+          className="h-8 w-8 rounded-full bg-primary/90 text-primary-foreground shadow-md flex items-center justify-center backdrop-blur-sm"
+          aria-label="Scroll right"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div ref={scrollRef} className="overflow-x-auto scrollbar-hide scroll-snap-x">
+        <div className="w-max min-w-full rounded-full bg-supet-bg-alt p-1 flex gap-0.5">
+          {navItems.map((item) => (
+            <button
+              key={item.key}
+              onClick={() => setActiveTab(item.key)}
+              className={`rounded-full px-3 py-2 text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 transition-colors ${
+                activeTab === item.key
+                  ? "bg-primary text-primary-foreground"
+                  : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <item.icon className="h-3 w-3" />
+              {item.label}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Perfil() {
   const { user, isLoading: authLoading, resetPassword, signOut } = useAuth();
@@ -377,24 +452,7 @@ export default function Perfil() {
               </div>
               <UserNotificationCenter />
             </div>
-            <div className="overflow-x-auto px-3 pb-3 pt-2 scrollbar-hide scroll-snap-x">
-              <div className="w-max min-w-full rounded-full bg-supet-bg-alt p-1 flex gap-0.5">
-                {navItems.map((item) => (
-                  <button
-                    key={item.key}
-                    onClick={() => setActiveTab(item.key)}
-                    className={`rounded-full px-3 py-2 text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 transition-colors ${
-                      activeTab === item.key
-                        ? "bg-primary text-primary-foreground"
-                        : "text-muted-foreground hover:text-foreground"
-                    }`}
-                  >
-                    <item.icon className="h-3 w-3" />
-                    {item.label}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <MobileTabScroller activeTab={activeTab} setActiveTab={setActiveTab} />
           </div>
 
           <main className="flex-1 p-3 md:p-6 lg:p-10">
