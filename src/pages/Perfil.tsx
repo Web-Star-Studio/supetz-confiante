@@ -470,6 +470,50 @@ export default function Perfil() {
       </div>
 
       {/* Footer hidden on mobile — bottom nav handles it */}
+
+      {/* Logout confirmation modal */}
+      <AnimatePresence>
+        {showLogoutModal && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[60] flex items-center justify-center bg-foreground/30 backdrop-blur-sm px-4"
+            onClick={() => setShowLogoutModal(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: "spring", stiffness: 400, damping: 30 }}
+              onClick={(e) => e.stopPropagation()}
+              className="w-full max-w-sm rounded-3xl bg-card border border-border shadow-2xl p-6 text-center space-y-4"
+            >
+              <div className="mx-auto w-14 h-14 rounded-full bg-destructive/10 flex items-center justify-center">
+                <LogOut className="w-6 h-6 text-destructive" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold text-foreground font-display">Sair da conta?</h3>
+                <p className="text-sm text-muted-foreground mt-1">Você precisará fazer login novamente para acessar seu perfil.</p>
+              </div>
+              <div className="flex gap-3 pt-1">
+                <button
+                  onClick={() => setShowLogoutModal(false)}
+                  className="flex-1 rounded-full py-2.5 text-sm font-semibold bg-muted text-muted-foreground hover:bg-muted/80 transition-colors"
+                >
+                  Cancelar
+                </button>
+                <button
+                  onClick={() => { setShowLogoutModal(false); handleSignOut(); }}
+                  className="flex-1 rounded-full py-2.5 text-sm font-semibold bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors"
+                >
+                  Sair
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }
