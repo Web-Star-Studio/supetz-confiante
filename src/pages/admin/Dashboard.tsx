@@ -241,6 +241,11 @@ export default function AdminDashboard() {
               </div>
             )}
           </div>
+
+          {/* Emergency Analytics */}
+          <div className="mt-10">
+            <EmergencyAnalytics />
+          </div>
         </>
       )}
     </AdminLayout>
