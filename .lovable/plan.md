@@ -1,58 +1,39 @@
 
 
-## Plano: Melhorias de Seguranca e Inteligencia na Super Pet AI e Super IA
+## Plano: Melhorias de Inteligencia na IA da Supet
 
-### Problema
+### Melhorias planejadas
 
-Os prompts atuais das duas IAs (pet-ai e chatbot) nao possuem disclaimers legais robustos. A IA pode gerar informacoes incorretas sobre saude animal sem avisos adequados, expondo a empresa a riscos juridicos.
+#### 1. Super Pet AI — Novo modo "Plano de Saude" (edge function + frontend)
+Adicionar um 6o modo chamado `health_plan` que gera um plano semanal de cuidados personalizado para o pet (exercicios, higiene, alimentacao) baseado na raca, peso e idade. Retorna JSON estruturado.
 
-### Alteracoes
+#### 2. Contexto mais rico no chatbot (edge function)
+O chatbot Super IA atualmente carrega perfil, pets e pedidos. Adicionar tambem:
+- Cupons ativos do usuario (para poder informar sobre descontos disponiveis)
+- Pontos de fidelidade acumulados
+- Lembretes de reposicao proximos
 
-#### 1. Edge Function `supabase/functions/pet-ai/index.ts`
+Isso permite respostas como "Voce tem 150 pontos e um cupom de 10% ativo!"
 
-Reescrever todos os system prompts com regras de seguranca:
+#### 3. Sugestoes contextuais pos-resposta (frontend chatbot)
+Apos cada resposta da Super IA, mostrar 2-3 botoes de follow-up gerados com base no contexto (ex: "Saber mais", "Ver produtos", "Dosagem para meu pet"). Implementado com chips clicaveis abaixo da mensagem.
 
-- **Disclaimer obrigatorio**: Toda resposta deve terminar com aviso de que e gerada por IA e nao substitui consulta veterinaria
-- **Proibicoes explicitas**: Nao diagnosticar doencas, nao prescrever medicamentos, nao recomendar dosagens de remedios
-- **Linguagem cautelosa**: Usar "pode ser", "consulte um veterinario", "geralmente recomenda-se" em vez de afirmacoes absolutas
-- **Recusa ativa**: Se o usuario descrever emergencia (vomito com sangue, convulsao, etc), a IA deve recusar dar conselho e mandar ir ao veterinario imediatamente
-- **Renomear** de "SuperPet AI" para "Super Pet AI" (consistencia com o nome pedido)
-- Adicionar regra de temperatura conservadora no prompt (evitar respostas criativas demais em saude)
+#### 4. Historico de conversas persistente (frontend chatbot)
+Ao abrir o chat, carregar as ultimas mensagens da conversa anterior do banco (tabela `chat_messages`) para que o usuario nao perca contexto entre sessoes.
 
-Exemplo de bloco de seguranca adicionado a todos os prompts:
+#### 5. Avatar da veterinaria na Super Pet AI (frontend)
+Usar o mesmo avatar `supet-ia-avatar.png` ja criado no header da Super Pet AI (atualmente usa icone generico Sparkles).
 
-```
-REGRAS DE SEGURANÇA (OBRIGATÓRIAS):
-1. Você NÃO é veterinário. NUNCA diagnostique doenças ou prescreva medicamentos.
-2. Para sintomas graves (sangue, convulsões, dificuldade respiratória, intoxicação), instrua o tutor a procurar um veterinário IMEDIATAMENTE.
-3. Sempre encerre respostas sobre saúde com: "⚠️ Lembre-se: estas são orientações gerais de uma IA. Consulte sempre um veterinário para diagnósticos e tratamentos."
-4. Use linguagem como "geralmente", "pode ser", "é recomendável consultar" — nunca afirmações absolutas sobre saúde.
-5. Não recomende doses de medicamentos em hipótese alguma.
-6. Sobre os produtos Supet, seja honesto: são suplementos naturais, NÃO são medicamentos.
-```
+### Arquivos alterados
 
-#### 2. Edge Function `supabase/functions/chatbot/index.ts`
-
-Mesmo tratamento de seguranca no system prompt do chatbot Super IA:
-- Adicionar bloco de regras de seguranca similar
-- Reforcar que produtos Supet sao suplementos naturais, nao medicamentos
-- Instruir a IA a nunca fazer promessas de cura
-
-#### 3. Frontend `src/components/profile/AIPetAssistantTab.tsx`
-
-- Renomear "SuperPet AI" para "Super Pet AI" no header (linha 272)
-- Adicionar disclaimer visual fixo abaixo do chat e de cada modo:
-  - Banner discreto: "⚠️ Informacoes geradas por IA. Consulte sempre um veterinario profissional."
-- Atualizar texto de boas-vindas com aviso inicial
-
-#### 4. Frontend `src/components/chat/FloatingChatbot.tsx`
-
-- Adicionar disclaimer visual no rodape do chat (acima do input)
-- Texto: "As respostas sao geradas por IA e podem conter imprecisoes."
+1. **`supabase/functions/chatbot/index.ts`** — Adicionar queries de cupons, pontos e lembretes ao contexto do usuario
+2. **`supabase/functions/pet-ai/index.ts`** — Adicionar modo `health_plan` com prompt e schema JSON
+3. **`src/components/chat/FloatingChatbot.tsx`** — Carregar historico ao abrir; adicionar sugestoes pos-resposta
+4. **`src/components/profile/AIPetAssistantTab.tsx`** — Adicionar modo "Plano de Saude" no seletor; usar avatar da veterinaria no header
 
 ### Detalhes tecnicos
 
-- Nenhuma alteracao no banco de dados
-- Apenas edicao de 4 arquivos existentes
-- Prompts mais longos mas necessarios para protecao legal
+- Nenhuma alteracao no banco de dados (tabelas e RLS ja existem)
+- Edge functions redeployadas automaticamente
+- Historico carregado com query limitada a 20 mensagens mais recentes do `conversation_id` mais recente
 
