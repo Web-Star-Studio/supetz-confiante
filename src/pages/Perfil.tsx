@@ -183,7 +183,7 @@ export default function Perfil() {
       </div>
 
       {!sidebarCollapsed && (
-        <div className="px-6 pb-4 text-center">
+        <div className="px-4 lg:px-6 pb-3 lg:pb-4 text-center">
           {avatarBlock}
           <h2 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h2>
           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
