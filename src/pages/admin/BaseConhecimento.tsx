@@ -889,7 +889,7 @@ export default function BaseConhecimento() {
       const mapped = articles.map(a => ({
         id: a.id, title: a.title,
         icon: ICON_MAP[a.icon] || <FileText className="w-4 h-4" />,
-        iconName: a.icon, tags: a.tags || [], content: a.content, isCustom: true,
+        iconName: a.icon, tags: a.tags || [], content: a.content, isCustom: true, staticId: undefined as string | undefined,
       }));
       if (existing) {
         existing.articles.push(...mapped);
