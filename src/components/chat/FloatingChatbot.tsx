@@ -29,10 +29,14 @@ const quickQuestions = [
 ];
 
 // Extract follow-up suggestions from AI response
+function stripMarkdown(text: string): string {
+  return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/__/g, '').replace(/_/g, '').replace(/`/g, '').replace(/#+\s?/g, '').trim();
+}
+
 function extractSuggestions(content: string): { cleanContent: string; suggestions: string[] } {
   const match = content.match(/💡\s*Você pode perguntar:\s*(.+)$/m);
   if (!match) return { cleanContent: content, suggestions: [] };
-  const suggestions = match[1].split("|").map(s => s.trim()).filter(Boolean);
+  const suggestions = match[1].split("|").map(s => stripMarkdown(s)).filter(Boolean);
   const cleanContent = content.replace(match[0], "").trim();
   return { cleanContent, suggestions };
 }
