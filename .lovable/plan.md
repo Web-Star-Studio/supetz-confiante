@@ -1,36 +1,40 @@
 
 
-## Plano: Seletor de Racas de Cachorro com Busca
+## Plano: Base de Conhecimento por Raça + Ficha do Pet Personalizada
 
 ### O que sera feito
 
-Substituir o campo de texto livre "Raca" no formulario de cadastro de pet por um **dropdown com busca** (combobox) contendo todas as principais racas de cachorro encontradas no Brasil, em portugues. Incluir tambem a opcao "SRD (Sem Raca Definida)" e "Outra" para flexibilidade.
+1. **Criar base de dados detalhada por raça** (`src/data/breedInfo.ts`) — um mapa com informações específicas de cada raça da lista `DOG_BREEDS`: porte, expectativa de vida, nível de energia, tipo de pelagem, predisposições de saúde, necessidade de exercício, cuidados especiais e temperamento.
 
-### Lista de racas (75+ racas)
+2. **Mostrar ficha da raça no PetProfileTab** — Após o usuário selecionar uma raça no combobox, exibir um card informativo com os dados da raça (porte, energia, cuidados, predisposições). Isso ajuda o tutor a conhecer melhor seu pet.
 
-Baseado em pesquisa do Patas da Casa e fontes brasileiras:
+3. **Enriquecer o contexto enviado à IA** — No `pet-ai/index.ts`, usar a raça do pet para injetar informações específicas no prompt (em vez de depender apenas da base genérica). Exemplo: se o pet é um Pug, o prompt recebe automaticamente "braquicefálico, sensível ao calor, propenso a problemas respiratórios".
 
-Akita, Akita Americano, American Bully, American Staffordshire Terrier, Basenji, Basset Hound, Beagle, Bichon Frise, Boerboel, Boiadeiro Australiano, Boiadeiro de Berna, Border Collie, Borzoi, Boston Terrier, Boxer, Bulldog Frances, Bulldog Ingles, Bull Terrier, Cane Corso, Cao de Crista Chines, Cavalier King Charles Spaniel, Chihuahua, Chow Chow, Cocker Spaniel, Collie, Dachshund, Dalmata, Doberman, Dogo Argentino, Dogue Alemao, Dogue de Bordeaux, Fila Brasileiro, Fox Terrier, Galgo Ingles, Golden Retriever, Husky Siberiano, Jack Russell Terrier, Kangal, Komondor, Labrador, Lhasa Apso, Lulu da Pomerania, Malamute do Alasca, Maltes, Mastiff Ingles, Mastim Napolitano, Mastim Tibetano, Pastor Alemao, Pastor Australiano, Pastor Belga, Pastor de Shetland, Pequines, Pinscher, Pitbull, Poodle, Pug, Rottweiler, Samoieda, Sao Bernardo, Schnauzer, Setter Irlandes, Shar Pei, Shiba Inu, Shih Tzu, Staffordshire Bull Terrier, Terra Nova, Terrier Brasileiro, Weimaraner, West Highland White Terrier, Whippet, Yorkshire, SRD (Sem Raca Definida), Outra
+4. **Expandir a base de conhecimento da edge function** — Adicionar seções sobre: doenças comuns por porte, cuidados sazonais (calor/frio no Brasil), socialização por temperamento e orientações de adestramento por nível de energia.
 
-### Alteracoes
+### Arquivos
 
-**Novo arquivo: `src/data/dogBreeds.ts`**
-- Exportar array `DOG_BREEDS` com todas as racas ordenadas alfabeticamente
-- Inclui "SRD (Sem Raca Definida)" no topo da lista
+**Novo: `src/data/breedInfo.ts`**
+- Exportar `BREED_INFO: Record<string, BreedDetails>` com dados para todas as 75+ raças
+- Interface `BreedDetails`: `{ porte, expectativaVida, energia, pelagem, predisposicoes, exercicio, cuidadosEspeciais, temperamento }`
 
-**Arquivo: `src/components/profile/PetProfileTab.tsx`**
-- Importar `DOG_BREEDS` e componentes Popover + Command do shadcn
-- Substituir o `<input>` de raca por um **Combobox** (Popover + Command) com:
-  - Campo de busca para filtrar racas pelo nome
-  - Lista scrollavel com todas as racas
-  - Opcao "Outra" no final que permite digitar manualmente
-- Manter compatibilidade: se o pet ja tem uma raca salva que nao esta na lista, exibir normalmente
-- Estado `breedSearch` para filtrar a lista em tempo real
-- Estado `showCustomBreed` para quando usuario seleciona "Outra"
+**`src/components/profile/PetProfileTab.tsx`**
+- Importar `BREED_INFO`
+- Após seleção de raça, renderizar card com informações da raça abaixo do combobox
+- Card com badges coloridos por porte/energia e lista de cuidados
+
+**`supabase/functions/pet-ai/index.ts`**
+- Criar mapa `BREED_SPECIFIC_INFO` com dados condensados das raças mais populares (top 30)
+- No `petContext`, se a raça do pet existir no mapa, injetar informações específicas automaticamente
+- Adicionar seções ao `DOG_KNOWLEDGE_BASE`: cuidados sazonais Brasil, doenças por porte, socialização
+
+**`supabase/functions/chatbot/index.ts`**
+- Mesmo enriquecimento de contexto por raça no chatbot flutuante
 
 ### Detalhes tecnicos
 
-- Usa componentes ja existentes: `Popover`, `PopoverTrigger`, `PopoverContent` de `@/components/ui/popover` e `Command` de `@/components/ui/command`
-- Nenhuma alteracao no banco de dados (campo `breed` continua sendo `text`)
-- Estilo consistente com o design atual (rounded-full, bg-supet-bg)
+- `BREED_INFO` no frontend é completo (75+ raças) para exibição visual
+- `BREED_SPECIFIC_INFO` na edge function é condensado (top 30 raças) para não exceder limites de tokens no prompt
+- Nenhuma alteração no banco de dados
+- Raças não mapeadas recebem informações genéricas baseadas no porte estimado pelo peso
 
