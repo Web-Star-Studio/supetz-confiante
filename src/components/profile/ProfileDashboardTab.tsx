@@ -178,7 +178,55 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
         ))}
       </div>
 
+      {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className={cardClass}>
+          <div className="flex items-center gap-2 mb-4">
+            <BookOpen className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Evolução do Tratamento</h3>
+          </div>
+          {data.treatmentChart.some((d) => d.registros > 0) ? (
+            <ChartContainer config={{ registros: { label: "Registros", color: "hsl(var(--primary))" } }} className="h-[180px] w-full">
+              <AreaChart data={data.treatmentChart}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area type="monotone" dataKey="registros" fill="hsl(var(--primary) / 0.2)" stroke="hsl(var(--primary))" strokeWidth={2} />
+              </AreaChart>
+            </ChartContainer>
+          ) : (
+            <div className="h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+              <BookOpen className="w-8 h-8 opacity-40" />
+              <p className="text-sm">Sem registros ainda</p>
+            </div>
+          )}
+        </div>
+
+        <div className={cardClass}>
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Histórico de Pontos</h3>
+          </div>
+          {data.pointsChart.some((d) => d.pontos > 0) ? (
+            <ChartContainer config={{ pontos: { label: "Pontos", color: "hsl(var(--chart-2))" } }} className="h-[180px] w-full">
+              <BarChart data={data.pointsChart}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="pontos" fill="hsl(var(--chart-2))" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          ) : (
+            <div className="h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+              <BarChart3 className="w-8 h-8 opacity-40" />
+              <p className="text-sm">Sem pontos ainda</p>
+            </div>
+          )}
+        </div>
+      </div>
+
         {/* Pet Summary */}
         <button onClick={() => setActiveTab("pet")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
           <div className="flex items-center gap-2 mb-3">
