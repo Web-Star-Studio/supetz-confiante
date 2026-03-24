@@ -236,10 +236,10 @@ export default function FloatingChatbot() {
                   </div>
                   <div>
                     <h4 className="text-sm font-bold text-foreground">
-                      Olá{user ? "!" : "!"} 🐾
+                      Olá! 🐾
                     </h4>
                     <p className="text-xs text-muted-foreground mt-1">
-                      Sou o assistente da Supet. Como posso ajudar?
+                      Sou a Super IA da Supet. Como posso ajudar?
                     </p>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
