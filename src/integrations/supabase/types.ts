@@ -117,6 +117,33 @@ export type Database = {
         }
         Relationships: []
       }
+      emergency_logs: {
+        Row: {
+          created_at: string
+          id: string
+          matched_keyword: string | null
+          message_content: string
+          source: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          matched_keyword?: string | null
+          message_content: string
+          source?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          matched_keyword?: string | null
+          message_content?: string
+          source?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       loyalty_points: {
         Row: {
           created_at: string
