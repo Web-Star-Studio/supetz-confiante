@@ -204,7 +204,7 @@ export default function Perfil() {
         </div>
       )}
 
-      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 p-1.5 lg:p-2 xl:p-3 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
           return (
