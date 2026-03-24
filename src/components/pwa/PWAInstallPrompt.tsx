@@ -77,7 +77,7 @@ export default function PWAInstallPrompt() {
           transition={{ type: "spring", damping: 25, stiffness: 300 }}
           className="fixed bottom-[88px] left-3 right-3 z-[60] sm:left-auto sm:right-6 sm:w-80"
         >
-          <div className="bg-card rounded-2xl shadow-2xl border border-border p-4 space-y-3">
+          <div className="bg-background rounded-2xl shadow-2xl border border-border p-4 space-y-3">
             <div className="flex items-start gap-3">
               <div className="h-12 w-12 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
                 <img src="/favicon.png" alt="Supet" className="h-8 w-8 rounded-lg" />
