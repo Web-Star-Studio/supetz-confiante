@@ -227,6 +227,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
         </div>
       </div>
 
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
         {/* Pet Summary */}
         <button onClick={() => setActiveTab("pet")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
           <div className="flex items-center gap-2 mb-3">
