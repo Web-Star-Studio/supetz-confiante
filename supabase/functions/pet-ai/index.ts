@@ -58,6 +58,156 @@ REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
 8. Não recomende dietas restritivas, jejuns prolongados ou procedimentos caseiros invasivos.
 `;
 
+const DOG_KNOWLEDGE_BASE = `
+BASE DE CONHECIMENTO — CUIDADOS CANINOS
+
+## GRUPOS DE RAÇAS E CARACTERÍSTICAS
+
+### Raças de Pequeno Porte (até 10kg)
+- **Yorkshire Terrier**: Pelo longo sedoso, precisa de escovação diária. Propenso a problemas dentários e luxação patelar. Energia moderada, 20-30min de exercício/dia.
+- **Shih Tzu**: Braquicefálico (focinho curto), sensível ao calor. Pelo longo precisa de manutenção constante. Propenso a problemas oculares e respiratórios.
+- **Pinscher Miniatura**: Muito ativo apesar do tamanho. Sensível ao frio (precisa de roupinha no inverno). Propenso a luxação patelar e problemas dentários.
+- **Maltês**: Pelo branco que mancha facilmente. Hipoalergênico. Propenso a manchas de lágrima e problemas dentários.
+- **Chihuahua**: Menor raça do mundo. Moleira pode não fechar completamente. Propenso a hipoglicemia e problemas dentários.
+- **Pomerânia/Spitz Alemão**: Pelagem dupla e densa, troca intensa de pelos. Propenso a luxação patelar e alopecia.
+- **Lhasa Apso**: Pelo longo e denso, escovação frequente. Propenso a problemas renais e oculares. Independente mas leal.
+- **Pug**: Braquicefálico, muito sensível ao calor. Propenso a problemas respiratórios, oculares e de pele (dobras faciais precisam de limpeza).
+
+### Raças de Médio Porte (10-25kg)
+- **Bulldog Francês**: Braquicefálico, não tolera calor nem exercício intenso. Propenso a alergias de pele, problemas respiratórios e de coluna.
+- **Beagle**: Muito olfativo e curioso. Propenso a obesidade, otite (orelhas longas) e epilepsia. Precisa de bastante exercício.
+- **Cocker Spaniel**: Orelhas longas propensas a otite. Precisa de escovação frequente. Propenso a problemas oculares e de ouvido.
+- **Border Collie**: Extremamente inteligente, precisa de estímulo mental diário. Propenso a displasia de quadril e problemas oculares.
+- **SRD (Sem Raça Definida)**: Geralmente mais saudáveis por vigor híbrido. Cada indivíduo é único. Importante avaliar porte estimado para adequar alimentação.
+
+### Raças de Grande Porte (25-45kg)
+- **Golden Retriever**: Dócil e familiar. Propenso a displasia de quadril/cotovelo, problemas cardíacos e câncer. Precisa de exercício moderado a alto.
+- **Labrador Retriever**: Muito ativo, adora água. Altamente propenso a obesidade. Propenso a displasia e problemas articulares.
+- **Pastor Alemão**: Inteligente e versátil. Propenso a displasia de quadril, problemas digestivos e dermatite.
+- **Rottweiler**: Forte e protetor. Propenso a displasia, problemas cardíacos e osteossarcoma. Socialização precoce importante.
+- **Boxer**: Braquicefálico de grande porte. Propenso a cardiomiopatia, câncer e problemas digestivos.
+- **Pit Bull (American Pit Bull Terrier)**: Forte e atlético. Propenso a alergias de pele e displasia. Precisa de socialização e exercício intenso.
+- **Husky Siberiano**: Pelagem dupla densa, sofre muito com calor no Brasil. Precisa de exercício intenso. Propenso a problemas oculares e de pele.
+
+### Raças Gigantes (acima de 45kg)
+- **Dogue Alemão**: Maior raça do mundo. Expectativa de vida curta (6-8 anos). Propenso a torção gástrica, cardiomiopatia e problemas articulares.
+- **São Bernardo**: Pelagem densa, sofre com calor. Propenso a displasia, problemas cardíacos e de pele.
+- **Mastiff/Mastim**: Gigante e calmo. Propenso a displasia, torção gástrica e problemas articulares.
+
+## NUTRIÇÃO CANINA
+
+### Alimentos SEGUROS para cães
+- Frutas: banana, maçã (sem sementes), melancia (sem sementes), manga, morango, blueberry, pera
+- Legumes: cenoura, batata-doce cozida, abóbora cozida, brócolis (pouca quantidade), pepino, abobrinha
+- Proteínas: frango cozido sem tempero, peito de peru, ovos cozidos, peixe cozido (sem espinhas)
+- Outros: arroz, aveia cozida, pasta de amendoim (sem xilitol)
+
+### Alimentos TÓXICOS para cães (NUNCA oferecer)
+- **Chocolate**: Contém teobromina, tóxico mesmo em pequenas quantidades. Chocolate amargo é o mais perigoso.
+- **Uva e passa**: Podem causar insuficiência renal aguda mesmo em pequenas quantidades.
+- **Cebola e alho**: Danificam os glóbulos vermelhos, causando anemia hemolítica.
+- **Xilitol**: Adoçante presente em chicletes, balas e alguns alimentos. Causa hipoglicemia grave e insuficiência hepática.
+- **Macadâmia**: Causa vômito, tremores e hipertermia.
+- **Abacate**: A persina pode causar problemas gastrointestinais.
+- **Cafeína**: Pode causar arritmia cardíaca e convulsões.
+- **Álcool**: Tóxico mesmo em pequenas doses.
+- **Ossos cozidos**: Podem estilhaçar e causar perfuração intestinal.
+
+### Orientações gerais de alimentação
+- Filhotes (2-6 meses): 3-4 refeições/dia
+- Filhotes (6-12 meses): 2-3 refeições/dia
+- Adultos: 2 refeições/dia
+- Idosos: 2-3 refeições menores/dia
+- Quantidade varia com peso, idade, nível de atividade e metabolismo
+- Transição alimentar deve ser gradual (7-10 dias)
+
+## CUIDADOS POR FASE DA VIDA
+
+### Filhotes (0-12 meses)
+- Vacinação: V8/V10, antirrábica (consultar veterinário para calendário)
+- Socialização: Período crítico entre 3-16 semanas
+- Vermifugação regular (a cada 2-4 semanas até 3 meses, depois mensal até 6 meses)
+- Não passear em locais públicos antes da vacinação completa
+- Treinamento básico desde cedo: nome, sentar, ficar
+
+### Adultos (1-7 anos)
+- Check-up veterinário anual
+- Vacinação de reforço conforme orientação veterinária
+- Exercício adequado ao porte e raça
+- Escovação dos dentes 2-3x por semana
+- Controle de peso regular
+- Vermifugação e controle de pulgas/carrapatos regular
+
+### Idosos (7+ anos, gigantes 5+ anos)
+- Check-up veterinário semestral
+- Atenção a sinais de artrite: dificuldade para levantar, claudicação
+- Alimentação adequada para idosos (menos calórica, suporte articular)
+- Exercício mais leve e frequente
+- Atenção a mudanças comportamentais (podem indicar disfunção cognitiva)
+- Rampas para subir/descer de móveis
+
+## HIGIENE E CUIDADOS
+
+### Banho
+- Frequência geral: a cada 15-30 dias (varia com raça e estilo de vida)
+- Usar shampoo específico para cães (pH da pele canina é diferente)
+- Secar bem, especialmente orelhas e dobras de pele
+- Raças com dobras (Bulldog, Shar-Pei): limpar dobras regularmente
+
+### Escovação
+- Pelos curtos: 1-2x por semana
+- Pelos médios: 2-3x por semana
+- Pelos longos: diariamente
+- Período de troca de pelo: escovação diária para todas as raças
+
+### Unhas
+- Cortar a cada 2-4 semanas
+- Atenção ao sabugo (veia interna da unha)
+- Unhas compridas causam problemas posturais e podem encravar
+
+### Dentes
+- Escovação 2-3x por semana com pasta canina
+- Nunca usar pasta de dente humana (flúor é tóxico)
+- Petiscos dentais podem ajudar, mas não substituem escovação
+- Limpeza profissional anual recomendada
+
+### Orelhas
+- Limpeza semanal com produto específico
+- Raças de orelha caída: mais propensas a otite, limpar com mais frequência
+- Nunca usar cotonete dentro do canal auditivo
+
+## BEM-ESTAR E COMPORTAMENTO
+
+### Sinais de estresse em cães
+- Lamber os lábios excessivamente, bocejar fora de contexto
+- Orelhas para trás, rabo entre as pernas
+- Arquejar sem calor ou exercício
+- Morder/lamber patas compulsivamente
+- Destruir objetos, latir excessivamente
+- Esconder-se, evitar contato
+
+### Enriquecimento ambiental
+- Brinquedos interativos (Kong, tapete de lamber)
+- Passeios com tempo para farejar
+- Treinamento com reforço positivo
+- Rodízio de brinquedos
+- Brincadeiras de buscar e puxar
+
+### Exercício por porte
+- Pequeno porte: 20-40 min/dia de caminhadas leves e brincadeiras
+- Médio porte: 40-60 min/dia de caminhadas e atividades
+- Grande porte: 60-90 min/dia de exercício variado
+- Gigantes: 30-60 min/dia (exercício moderado, sem impacto excessivo em filhotes)
+- Braquicefálicos: exercício leve, evitar calor, pausas frequentes
+
+## PRIMEIROS SOCORROS BÁSICOS (orientações gerais, sempre consultar veterinário)
+- Cortes superficiais: lavar com soro fisiológico, pressionar com gaze limpa
+- Queimaduras: resfriar com água corrente, não aplicar pomadas caseiras
+- Engasgo: NÃO tentar manobra de Heimlich sem orientação veterinária
+- Golpe de calor: molhar com água fresca (não gelada), ventilar, ir ao veterinário
+- Picada de inseto: observar inchaço e reação alérgica, ir ao veterinário se necessário
+`;
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
