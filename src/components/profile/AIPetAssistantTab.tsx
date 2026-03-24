@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import supetIaAvatar from "@/assets/supet-ia-avatar.png";
 
-type Msg = { role: "user" | "assistant"; content: string };
+type Msg = { role: "user" | "assistant"; content: string; isEmergency?: boolean };
 type AIMode = "assistant" | "tips" | "analysis" | "recipes" | "fun_facts" | "health_plan";
 
 interface PetInfo {
