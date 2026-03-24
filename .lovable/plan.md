@@ -1,96 +1,75 @@
 
 
-## Plano: Sistema de Creditos de Acesso ao SuperPet AI (30 dias por compra)
+## Plano: Supet PWA Nativo — Responsividade 100% Mobile-First
+
+### Contexto atual
+
+O app ja tem uma base PWA (vite-plugin-pwa, manifest, bottom nav, install prompt, service worker). Porem, varios elementos ainda nao estao otimizados para uma experiencia nativa mobile. A screenshot mostra que o perfil funciona mas ha espacos desperdicados e elementos que nao se comportam como um app nativo.
 
 ### O que sera feito
 
-Cada compra concede **30 dias de acesso ao SuperPet AI por produto comprado** (3 produtos = 90 dias, acumulativos). Quando o credito expira, o usuario ve uma tela informando que precisa comprar para reativar.
+1. **Header mobile compacto e nativo** — No mobile, reduzir o header para uma barra minima (logo + notificacao) ja que a navegacao principal esta no bottom nav. Esconder links de nav duplicados.
 
-### Alteracoes
+2. **Footer oculto no mobile** — Apps nativos nao tem footer. Esconder o footer no mobile e mover links importantes (FAQ, Sobre, etc.) para o menu mobile ou bottom nav.
 
-#### 1. Migracao SQL — tabela `ai_access_credits`
+3. **Chatbot reposicionado** — Mover o botao flutuante do chatbot para acima do bottom nav no mobile (bottom-20 → bottom-24) para nao sobrepor.
 
-```sql
-CREATE TABLE public.ai_access_credits (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  order_id uuid REFERENCES public.orders(id),
-  days_granted integer NOT NULL DEFAULT 30,
-  granted_at timestamptz NOT NULL DEFAULT now(),
-  expires_at timestamptz NOT NULL
-);
+4. **StickyCartBar ajustado** — Garantir que a barra sticky de compra nao sobreponha o bottom nav.
 
-ALTER TABLE public.ai_access_credits ENABLE ROW LEVEL SECURITY;
+5. **Perfil mobile otimizado** — Reduzir padding superior, compactar avatar section, melhorar scroll horizontal dos tabs para parecer nativo.
 
--- RLS: usuarios veem apenas seus proprios creditos
-CREATE POLICY "Users can view own credits" ON public.ai_access_credits
-  FOR SELECT TO public USING (auth.uid() = user_id);
+6. **Touch interactions** — Adicionar `touch-action: manipulation` global para eliminar delay de 300ms em taps. Adicionar `-webkit-tap-highlight-color: transparent`.
 
--- Funcao que concede creditos automaticamente ao criar pedido
-CREATE OR REPLACE FUNCTION public.grant_ai_access_on_order()
-RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path TO 'public' AS $$
-DECLARE
-  item_count integer;
-  latest_expiry timestamptz;
-  new_start timestamptz;
-BEGIN
-  -- Contar quantidade total de itens no pedido
-  SELECT COALESCE(SUM((item->>'quantity')::integer), 1)
-  INTO item_count
-  FROM jsonb_array_elements(NEW.items) AS item;
+7. **Splash screen / status bar** — Adicionar meta tags para splash screen no iOS e configurar status bar translucida.
 
-  -- Buscar a data de expiracao mais recente do usuario
-  SELECT MAX(expires_at) INTO latest_expiry
-  FROM public.ai_access_credits WHERE user_id = NEW.user_id;
+8. **Transicoes nativas** — Garantir que as transicoes de pagina sejam suaves e nao tenham jank.
 
-  -- Se ja tem credito ativo, acumular a partir da expiracao; senao, a partir de agora
-  new_start := GREATEST(COALESCE(latest_expiry, now()), now());
+9. **Service Worker reativado** — O `main.tsx` atual desregistra todos os service workers. Remover essa logica para permitir funcionamento offline e cache do PWA.
 
-  INSERT INTO public.ai_access_credits (user_id, order_id, days_granted, expires_at)
-  VALUES (NEW.user_id, NEW.id, item_count * 30, new_start + (item_count * 30 || ' days')::interval);
+10. **Push notifications base** — Preparar a infraestrutura para notificacoes push (registrar subscription no banco, edge function para envio).
 
-  RETURN NEW;
-END;
-$$;
+### Arquivos alterados
 
-CREATE TRIGGER on_order_grant_ai_access
-AFTER INSERT ON public.orders
-FOR EACH ROW EXECUTE FUNCTION public.grant_ai_access_on_order();
-```
+**`src/index.css`**
+- Adicionar `touch-action: manipulation` e `-webkit-tap-highlight-color: transparent` no body
+- Ajustar padding-bottom mobile para acomodar bottom nav + sticky cart
+- Adicionar `scroll-snap` para tabs horizontais
 
-#### 2. `src/components/profile/AIPetAssistantTab.tsx`
+**`src/main.tsx`**
+- Remover o bloco que desregistra service workers (necessario para PWA funcionar)
 
-- Adicionar estado `aiAccessExpiry: Date | null` e `aiAccessLoading: boolean`
-- No `useEffect` inicial, consultar `ai_access_credits` para buscar o `MAX(expires_at)` do usuario
-- Se `expires_at < now()` ou nenhum registro existir: renderizar tela de bloqueio com:
-  - Icone de cadeado estilizado
-  - Mensagem: "Seu acesso ao SuperPet AI expirou"
-  - Dias restantes (se ainda ativo) em barra de progresso
-  - Botao "Comprar agora" linkando para `/shop`
-- Se ativo: mostrar badge com dias restantes no header do pet selecionado
-- Consulta: `supabase.from("ai_access_credits").select("expires_at").eq("user_id", user.id).order("expires_at", { ascending: false }).limit(1)`
+**`src/components/layout/Header.tsx`**
+- No mobile: renderizar apenas logo + icone perfil + carrinho (sem hamburger menu, sem nav links duplicados — bottom nav ja cuida disso)
 
-#### 3. `supabase/functions/pet-ai/index.ts`
+**`src/components/layout/Footer.tsx`**
+- Adicionar `hidden md:block` ou classe similar para esconder no mobile (bottom nav substitui)
 
-- Antes de chamar a IA, verificar se o usuario tem credito ativo:
-  ```ts
-  const { data: credit } = await supabaseAdmin
-    .from("ai_access_credits")
-    .select("expires_at")
-    .eq("user_id", userId)
-    .order("expires_at", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-  
-  if (!credit || new Date(credit.expires_at) < new Date()) {
-    return new Response(JSON.stringify({ error: "Seu acesso ao SuperPet AI expirou. Faça uma compra para reativar!" }), { status: 403 });
-  }
-  ```
+**`src/components/chat/FloatingChatbot.tsx`**
+- Ajustar posicao do botao flutuante para `bottom-24 md:bottom-6` no mobile
+
+**`src/components/layout/StickyCartBar.tsx`**
+- Ajustar bottom position para ficar acima do bottom nav
+
+**`src/pages/Perfil.tsx`**
+- Compactar header mobile (avatar menor, menos padding)
+- Melhorar tabs com scroll-snap
+
+**`index.html`**
+- Adicionar meta tags para iOS splash screen
+- Adicionar `apple-mobile-web-app-status-bar-style` como `black-translucent`
+
+**`supabase/migrations/` — nova tabela `push_subscriptions`**
+- Tabela para armazenar subscriptions de push notification por usuario
+- Campos: user_id, endpoint, p256dh, auth, created_at
+
+**`src/components/pwa/PushNotificationManager.tsx`** (novo)
+- Componente que solicita permissao de notificacao
+- Registra subscription via Push API e salva no banco
 
 ### Detalhes tecnicos
 
-- Creditos sao **acumulativos**: comprar com credito ativo estende a data final
-- A contagem de produtos usa o campo `quantity` de cada item no JSON `items` do pedido
-- Verificacao server-side na edge function impede bypass
-- Nenhuma alteracao no fluxo de checkout existente — o trigger cuida de tudo automaticamente
+- Nenhuma mudanca de framework — tudo CSS/React
+- Push notifications usam Web Push API (VAPID) — requer gerar chaves VAPID e armazenar como secrets
+- O service worker do vite-plugin-pwa ja suporta push events via customizacao do workbox
+- Todas as alteracoes sao backward-compatible com desktop
 
