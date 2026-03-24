@@ -469,6 +469,42 @@ export type Database = {
         }
         Relationships: []
       }
+      kb_articles: {
+        Row: {
+          category: string
+          content: string
+          created_at: string
+          icon: string
+          id: string
+          sort_order: number
+          tags: string[]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          content: string
+          created_at?: string
+          icon?: string
+          id?: string
+          sort_order?: number
+          tags?: string[]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          created_at?: string
+          icon?: string
+          id?: string
+          sort_order?: number
+          tags?: string[]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       loyalty_points: {
         Row: {
           created_at: string
