@@ -86,6 +86,17 @@ export default function BlogAdmin() {
   const [showPreview, setShowPreview] = useState(false);
   const [autoSaveTimer, setAutoSaveTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
   const [isDirty, setIsDirty] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingBlockImg, setUploadingBlockImg] = useState<number | null>(null);
+
+  const uploadImage = async (file: File): Promise<string | null> => {
+    const ext = file.name.split(".").pop();
+    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const { error } = await supabase.storage.from("blog-images").upload(fileName, file);
+    if (error) { toast.error("Erro ao enviar imagem"); return null; }
+    const { data: urlData } = supabase.storage.from("blog-images").getPublicUrl(fileName);
+    return urlData.publicUrl;
+  };
 
   useEffect(() => { loadPosts(); }, []);
 
@@ -443,9 +454,30 @@ export default function BlogAdmin() {
                         </div>
                       ) : block.type === "image" ? (
                         <div className="space-y-2">
-                          <Input value={block.content || ""} onChange={(e) => updateBlock(idx, { content: e.target.value })} placeholder="URL da imagem..." className="text-xs" />
+                          {!block.content && (
+                            <label className="flex flex-col items-center justify-center w-full h-28 rounded-lg bg-muted/30 border-2 border-dashed border-border cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                              {uploadingBlockImg === idx ? <Loader2 className="w-5 h-5 animate-spin text-primary" /> : (
+                                <><Image className="w-5 h-5 text-muted-foreground mb-1" /><span className="text-[10px] text-muted-foreground">Upload de imagem</span></>
+                              )}
+                              <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                                const file = e.target.files?.[0]; if (!file) return;
+                                setUploadingBlockImg(idx);
+                                const url = await uploadImage(file);
+                                if (url) updateBlock(idx, { content: url });
+                                setUploadingBlockImg(null);
+                              }} />
+                            </label>
+                          )}
+                          <Input value={block.content || ""} onChange={(e) => updateBlock(idx, { content: e.target.value })} placeholder="Ou cole a URL da imagem..." className="text-xs" />
                           <Input value={block.alt || ""} onChange={(e) => updateBlock(idx, { alt: e.target.value })} placeholder="Texto alternativo (alt)..." className="text-xs" />
-                          {block.content && <img src={block.content} alt={block.alt || ""} className="w-full max-h-40 object-cover rounded-lg" />}
+                          {block.content && (
+                            <div className="relative">
+                              <img src={block.content} alt={block.alt || ""} className="w-full max-h-40 object-cover rounded-lg" />
+                              <Button variant="destructive" size="sm" className="absolute top-1 right-1 h-6 w-6 p-0" onClick={(e) => { e.stopPropagation(); updateBlock(idx, { content: "" }); }}>
+                                <X className="w-3 h-3" />
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <Textarea value={block.content || ""} onChange={(e) => updateBlock(idx, { content: e.target.value })} rows={block.type === "paragraph" ? 4 : 2} className="text-xs font-mono" placeholder={block.type === "paragraph" ? "Texto do parágrafo..." : block.type === "heading" ? "Título da seção..." : "Texto da citação..."} />
@@ -469,8 +501,31 @@ export default function BlogAdmin() {
               {/* Cover Image */}
               <div className="rounded-xl border border-border bg-card p-5 space-y-3">
                 <h3 className="text-sm font-bold text-foreground flex items-center gap-2"><Image className="w-4 h-4 text-primary" /> Capa</h3>
-                <Input value={editPost.cover_image || ""} onChange={(e) => { setEditPost(p => ({ ...p, cover_image: e.target.value })); markDirty(); }} placeholder="URL da imagem de capa..." className="text-xs" />
-                {editPost.cover_image && <img src={editPost.cover_image} alt="Capa" className="w-full aspect-video object-cover rounded-lg" />}
+                {editPost.cover_image ? (
+                  <div className="relative">
+                    <img src={editPost.cover_image} alt="Capa" className="w-full aspect-video object-cover rounded-lg" />
+                    <Button variant="destructive" size="sm" className="absolute top-2 right-2 h-7 w-7 p-0" onClick={() => { setEditPost(p => ({ ...p, cover_image: "" })); markDirty(); }}>
+                      <X className="w-3.5 h-3.5" />
+                    </Button>
+                  </div>
+                ) : (
+                  <label className="flex flex-col items-center justify-center w-full aspect-video rounded-lg bg-muted/30 border-2 border-dashed border-border cursor-pointer hover:border-primary/40 hover:bg-primary/5 transition-colors">
+                    {uploadingCover ? <Loader2 className="w-6 h-6 animate-spin text-primary" /> : (
+                      <>
+                        <Image className="w-6 h-6 text-muted-foreground mb-1" />
+                        <span className="text-xs text-muted-foreground">Clique para enviar</span>
+                      </>
+                    )}
+                    <input type="file" accept="image/*" className="hidden" onChange={async (e) => {
+                      const file = e.target.files?.[0]; if (!file) return;
+                      setUploadingCover(true);
+                      const url = await uploadImage(file);
+                      if (url) { setEditPost(p => ({ ...p, cover_image: url })); markDirty(); }
+                      setUploadingCover(false);
+                    }} />
+                  </label>
+                )}
+                <Input value={editPost.cover_image || ""} onChange={(e) => { setEditPost(p => ({ ...p, cover_image: e.target.value })); markDirty(); }} placeholder="Ou cole a URL da imagem..." className="text-xs" />
               </div>
 
               {/* Category */}
