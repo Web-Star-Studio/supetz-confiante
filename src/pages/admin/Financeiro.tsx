@@ -161,6 +161,7 @@ export default function AdminFinanceiro() {
     setExpForm({ category: "other", description: "", amount: 0, date: new Date().toISOString().slice(0, 10), recurring: false, recurring_period: "monthly" });
     setShowAddExpense(false);
     setSaving(false);
+    log({ action: "create", entity_type: "expense", details: { description: expForm.description, amount: expForm.amount } });
     fetchData();
   }
 
