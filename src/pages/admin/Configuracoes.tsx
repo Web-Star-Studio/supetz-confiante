@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Loader2, CheckCircle, Store } from "lucide-react";
+import { useAuditLog } from "@/hooks/useAuditLog";
 
 export default function AdminConfiguracoes() {
   const { user } = useAuth();
