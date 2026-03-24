@@ -329,10 +329,20 @@ export default function AIPetAssistantTab() {
             {messages.map((m, i) => (
               <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
-                  m.role === "user" ? "bg-primary text-primary-foreground rounded-br-md" : "bg-supet-bg text-foreground rounded-bl-md"
+                  m.role === "user"
+                    ? "bg-primary text-primary-foreground rounded-br-md"
+                    : m.isEmergency
+                      ? "bg-destructive/10 border-2 border-destructive/30 text-foreground rounded-bl-md"
+                      : "bg-supet-bg text-foreground rounded-bl-md"
                 }`}>
                   {m.role === "assistant" ? (
                     <div className="prose prose-sm max-w-none dark:prose-invert [&>p]:mb-2 [&>ul]:mb-2">
+                      {m.isEmergency && (
+                        <div className="flex items-center gap-1.5 mb-2">
+                          <AlertTriangle className="h-4 w-4 text-destructive shrink-0" />
+                          <span className="text-xs font-bold text-destructive uppercase">Emergência</span>
+                        </div>
+                      )}
                       <ReactMarkdown>{m.content}</ReactMarkdown>
                     </div>
                   ) : m.content}
