@@ -417,10 +417,10 @@ Adicional: O plano deve ser de BEM-ESTAR GERAL, não médico. Adapte exercícios
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-3-flash-preview",
+        model,
         messages: aiMessages,
         stream: isStreamMode,
-        temperature: 0.4,
+        temperature,
       }),
     });
 
