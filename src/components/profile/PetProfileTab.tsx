@@ -223,6 +223,10 @@ export default function PetProfileTab() {
             onChange={(val) => setEditingPet((p) => p ? { ...p, breed: val } : p)}
           />
         </div>
+        {/* Breed Info Card */}
+        {editingPet.breed && BREED_INFO[editingPet.breed] && (
+          <BreedInfoCard breed={editingPet.breed} />
+        )}
         <div className="grid grid-cols-2 gap-4">
           <div>
             <label className="mb-1.5 text-sm font-semibold text-foreground">Peso (kg)</label>
