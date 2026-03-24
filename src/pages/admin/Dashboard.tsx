@@ -1,9 +1,19 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import RevenueChart from "@/components/admin/RevenueChart";
 import { supabase } from "@/integrations/supabase/client";
 import { ShoppingCart, Package, Users, TrendingUp, ArrowUpRight, ArrowDownRight } from "lucide-react";
 import { motion } from "framer-motion";
+
+type Period = "7d" | "1m" | "3m" | "6m" | "1y";
+
+const periodDays: Record<Period, number> = {
+  "7d": 7,
+  "1m": 30,
+  "3m": 90,
+  "6m": 180,
+  "1y": 365,
+};
 
 interface Stats {
   totalOrders: number;
@@ -21,7 +31,7 @@ function StatsCard({ icon: Icon, label, value, color, delay, trend }: { icon: an
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay, duration: 0.4 }}
       whileHover={{ scale: 1.03, transition: { duration: 0.2 } }}
-      className="bg-supet-bg-alt rounded-3xl p-6 cursor-default"
+      className="bg-muted/50 rounded-3xl p-6 cursor-default"
     >
       <div className="flex items-center gap-4">
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${color}`}>
@@ -47,7 +57,7 @@ function DashboardSkeleton() {
     <>
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4 mb-10">
         {[1, 2, 3, 4].map((i) => (
-          <div key={i} className="bg-supet-bg-alt rounded-3xl p-6 animate-pulse">
+          <div key={i} className="bg-muted/50 rounded-3xl p-6 animate-pulse">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-border" />
               <div className="space-y-2">
@@ -58,24 +68,70 @@ function DashboardSkeleton() {
           </div>
         ))}
       </div>
-      <div className="bg-supet-bg-alt rounded-3xl p-6 mb-10 animate-pulse">
+      <div className="bg-muted/50 rounded-3xl p-6 mb-10 animate-pulse">
         <div className="h-5 w-32 rounded-full bg-border mb-4" />
         <div className="h-48 rounded-2xl bg-border" />
-      </div>
-      <div className="bg-supet-bg-alt rounded-3xl p-6 animate-pulse">
-        <div className="h-5 w-32 rounded-full bg-border mb-4" />
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => <div key={i} className="h-12 rounded-xl bg-border" />)}
-        </div>
       </div>
     </>
   );
 }
 
+function buildChartData(orders: any[], days: number): { day: string; revenue: number; orders: number; date: string }[] {
+  const result: { day: string; revenue: number; orders: number; date: string }[] = [];
+
+  // For longer periods, group by week or month
+  if (days <= 14) {
+    // Daily
+    for (let i = days - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const dayStr = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
+      const dateStr = d.toDateString();
+      const dayOrders = orders.filter(o => new Date(o.created_at).toDateString() === dateStr);
+      result.push({ day: dayStr, revenue: dayOrders.reduce((s, o) => s + Number(o.total), 0), orders: dayOrders.length, date: d.toISOString() });
+    }
+  } else if (days <= 90) {
+    // Weekly
+    const weeks = Math.ceil(days / 7);
+    for (let i = weeks - 1; i >= 0; i--) {
+      const weekEnd = new Date();
+      weekEnd.setDate(weekEnd.getDate() - i * 7);
+      const weekStart = new Date(weekEnd);
+      weekStart.setDate(weekStart.getDate() - 6);
+      
+      const label = `${weekStart.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" })}`;
+      const weekOrders = orders.filter(o => {
+        const d = new Date(o.created_at);
+        return d >= weekStart && d <= weekEnd;
+      });
+      result.push({ day: label, revenue: weekOrders.reduce((s, o) => s + Number(o.total), 0), orders: weekOrders.length, date: weekStart.toISOString() });
+    }
+  } else {
+    // Monthly
+    const months = Math.ceil(days / 30);
+    for (let i = months - 1; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const monthStart = new Date(d.getFullYear(), d.getMonth(), 1);
+      const monthEnd = new Date(d.getFullYear(), d.getMonth() + 1, 0, 23, 59, 59);
+
+      const label = d.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "");
+      const monthOrders = orders.filter(o => {
+        const od = new Date(o.created_at);
+        return od >= monthStart && od <= monthEnd;
+      });
+      result.push({ day: label, revenue: monthOrders.reduce((s, o) => s + Number(o.total), 0), orders: monthOrders.length, date: monthStart.toISOString() });
+    }
+  }
+
+  return result;
+}
+
 export default function AdminDashboard() {
   const [stats, setStats] = useState<Stats>({ totalOrders: 0, totalRevenue: 0, totalProducts: 0, totalCustomers: 0, todayOrders: 0, todayRevenue: 0 });
+  const [allOrders, setAllOrders] = useState<any[]>([]);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [chartData, setChartData] = useState<{ day: string; revenue: number; orders: number }[]>([]);
+  const [period, setPeriod] = useState<Period>("1m");
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -101,21 +157,20 @@ export default function AdminDashboard() {
         todayOrders: todayOrders.length,
         todayRevenue: todayOrders.reduce((s, o) => s + Number(o.total), 0),
       });
+      setAllOrders(orders);
       setRecentOrders(orders.slice(0, 5));
-
-      const days: { day: string; revenue: number; orders: number }[] = [];
-      for (let i = 6; i >= 0; i--) {
-        const d = new Date();
-        d.setDate(d.getDate() - i);
-        const dayStr = d.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" });
-        const dayOrders = orders.filter(o => new Date(o.created_at).toDateString() === d.toDateString());
-        days.push({ day: dayStr, revenue: dayOrders.reduce((s, o) => s + Number(o.total), 0), orders: dayOrders.length });
-      }
-      setChartData(days);
       setLoading(false);
     }
     fetchStats();
   }, []);
+
+  const chartData = useMemo(() => {
+    const days = periodDays[period];
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    const filtered = allOrders.filter(o => new Date(o.created_at) >= cutoff);
+    return buildChartData(filtered, days);
+  }, [allOrders, period]);
 
   const statusLabels: Record<string, { label: string; className: string }> = {
     pending: { label: "Pendente", className: "bg-amber-100 text-amber-700" },
@@ -144,10 +199,10 @@ export default function AdminDashboard() {
           </div>
 
           <div className="mb-10">
-            <RevenueChart data={chartData} />
+            <RevenueChart data={chartData} period={period} onPeriodChange={setPeriod} />
           </div>
 
-          <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
+          <div className="bg-muted/50 rounded-3xl overflow-hidden">
             <div className="p-6">
               <h2 className="text-lg font-bold text-foreground font-display">Pedidos Recentes</h2>
             </div>
@@ -157,7 +212,7 @@ export default function AdminDashboard() {
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-supet-bg/60">
+                    <tr className="bg-background/60">
                       <th className="text-left px-6 py-3 font-semibold text-muted-foreground">ID</th>
                       <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Cliente</th>
                       <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Status</th>
@@ -169,7 +224,7 @@ export default function AdminDashboard() {
                     {recentOrders.map((order, i) => {
                       const status = statusLabels[order.status] || { label: order.status, className: "bg-muted text-muted-foreground" };
                       return (
-                        <tr key={order.id} className={`transition-colors hover:bg-primary/5 ${i % 2 === 1 ? "bg-supet-bg/30" : ""}`}>
+                        <tr key={order.id} className={`transition-colors hover:bg-primary/5 ${i % 2 === 1 ? "bg-background/30" : ""}`}>
                           <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{order.id.slice(0, 8)}</td>
                           <td className="px-6 py-4 font-medium text-foreground">{order.customer_name || "—"}</td>
                           <td className="px-6 py-4">
