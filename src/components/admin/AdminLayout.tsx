@@ -12,6 +12,7 @@ const navItems = [
   { label: "Dashboard", path: "/admin", icon: LayoutDashboard },
   { label: "Pedidos", path: "/admin/pedidos", icon: ShoppingCart },
   { label: "Produtos", path: "/admin/produtos", icon: Package },
+  { label: "Estoque", path: "/admin/estoque", icon: Boxes },
   { label: "Clientes", path: "/admin/clientes", icon: Users },
   { label: "CRM", path: "/admin/crm", icon: ContactRound },
   { label: "Fidelização", path: "/admin/fidelizacao", icon: Gift },
