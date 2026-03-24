@@ -205,11 +205,11 @@ export default function FloatingChatbot() {
           >
             {/* Header */}
             <div className="bg-primary px-5 py-4 flex items-center gap-3 shrink-0">
-              <div className="h-9 w-9 rounded-full bg-primary-foreground/20 flex items-center justify-center">
-                <Sparkles className="h-4.5 w-4.5 text-primary-foreground" />
+              <div className="h-9 w-9 rounded-full overflow-hidden border-2 border-primary-foreground/20">
+                <img src={supetIaAvatar} alt="Super IA" className="h-full w-full object-cover" />
               </div>
               <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-bold text-primary-foreground">Supet Assistant</h3>
+                <h3 className="text-sm font-bold text-primary-foreground">Super IA</h3>
                 <p className="text-[11px] text-primary-foreground/70 flex items-center gap-1">
                   <span className="h-1.5 w-1.5 rounded-full bg-green-400 inline-block" />
                   Online agora
