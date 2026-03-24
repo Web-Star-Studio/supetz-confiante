@@ -3,9 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { Camera, Check, ChevronDown, Loader2, PawPrint, Plus, Trash2, CheckCircle2, Heart, Zap, Clock, AlertTriangle, Scissors, Activity } from "lucide-react";
+import { Camera, Check, ChevronDown, ChevronUp, Loader2, PawPrint, Plus, Trash2, CheckCircle2, Heart, Zap, Clock, AlertTriangle, Scissors, Activity, Info } from "lucide-react";
 import { DOG_BREEDS } from "@/data/dogBreeds";
-import { BREED_INFO, getPorteColor, getEnergiaColor } from "@/data/breedInfo";
+import { BREED_INFO, type BreedDetails, getPorteColor, getEnergiaColor } from "@/data/breedInfo";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 
@@ -152,6 +152,38 @@ function BreedInfoCard({ breed }: { breed: string }) {
   );
 }
 
+function ExpandableBreedInfo({ info }: { info: BreedDetails }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="border-t border-border/50">
+      <button onClick={() => setExpanded(!expanded)} className="w-full px-5 sm:px-6 py-2.5 flex items-center justify-between text-xs font-semibold text-primary hover:bg-primary/5 transition-colors">
+        <span className="flex items-center gap-1.5"><Info className="h-3.5 w-3.5" /> Informações da raça</span>
+        {expanded ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
+      </button>
+      {expanded && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="px-5 sm:px-6 pb-5 space-y-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-muted-foreground">
+            <div className="flex items-start gap-1.5"><Scissors className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Pelagem:</strong> {info.pelagem}</span></div>
+            <div className="flex items-start gap-1.5"><Activity className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Exercício:</strong> {info.exercicio}</span></div>
+          </div>
+          <div className="flex items-start gap-1.5 text-xs"><Heart className="h-3.5 w-3.5 mt-0.5 text-primary flex-shrink-0" /><span><strong>Temperamento:</strong> {info.temperamento.join(", ")}</span></div>
+          {info.predisposicoes.length > 0 && (
+            <div className="flex items-start gap-1.5 text-xs"><AlertTriangle className="h-3.5 w-3.5 mt-0.5 text-amber-500 flex-shrink-0" /><span><strong>Atenção:</strong> {info.predisposicoes.join(", ")}</span></div>
+          )}
+          {info.cuidadosEspeciais.length > 0 && (
+            <div className="text-xs space-y-0.5">
+              <p className="font-semibold text-foreground flex items-center gap-1"><Zap className="h-3.5 w-3.5 text-primary" /> Cuidados especiais:</p>
+              <ul className="list-disc list-inside text-muted-foreground space-y-0.5 ml-1">
+                {info.cuidadosEspeciais.map((c, idx) => <li key={idx}>{c}</li>)}
+              </ul>
+            </div>
+          )}
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
 export default function PetProfileTab() {
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -290,29 +322,42 @@ export default function PetProfileTab() {
             <p className="text-sm text-muted-foreground mt-1">Cadastre seu pet para personalizar recomendações.</p>
           </div>
         ) : (
-          pets.map((pet, i) => (
-            <motion.div key={pet.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="rounded-3xl bg-supet-bg-alt p-5 sm:p-6 flex items-center gap-4">
-              {pet.photo_url ? (
-                <img src={pet.photo_url} alt={pet.name} className="h-16 w-16 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
-              ) : (
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/20 flex-shrink-0">
-                  <PawPrint className="h-7 w-7 text-primary/40" />
+          pets.map((pet, i) => {
+            const breedInfo = pet.breed ? BREED_INFO[pet.breed] : null;
+            return (
+              <motion.div key={pet.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }} className="rounded-3xl bg-supet-bg-alt overflow-hidden">
+                <div className="p-5 sm:p-6 flex items-center gap-4">
+                  {pet.photo_url ? (
+                    <img src={pet.photo_url} alt={pet.name} className="h-16 w-16 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
+                  ) : (
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-supet-bg border-2 border-primary/20 flex-shrink-0">
+                      <PawPrint className="h-7 w-7 text-primary/40" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-base font-bold text-foreground truncate">{pet.name}</p>
+                    {pet.breed && <p className="text-sm text-muted-foreground">{pet.breed}</p>}
+                    <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
+                      {pet.weight_kg && <span>{pet.weight_kg} kg</span>}
+                      {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
+                    </div>
+                    {breedInfo && (
+                      <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${getPorteColor(breedInfo.porte)}`}>{breedInfo.porte}</span>
+                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${getEnergiaColor(breedInfo.energia)}`}>⚡ {breedInfo.energia}</span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-muted text-muted-foreground flex items-center gap-0.5"><Clock className="h-2.5 w-2.5" />{breedInfo.expectativaVida}</span>
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex gap-2 flex-shrink-0">
+                    <button onClick={() => handleEdit(pet)} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">Editar</button>
+                    <button onClick={() => setDeleteTarget(pet)} className="rounded-full bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20 transition-colors"><Trash2 className="h-4 w-4" /></button>
+                  </div>
                 </div>
-              )}
-              <div className="flex-1 min-w-0">
-                <p className="text-base font-bold text-foreground truncate">{pet.name}</p>
-                {pet.breed && <p className="text-sm text-muted-foreground">{pet.breed}</p>}
-                <div className="flex gap-3 mt-1 text-xs text-muted-foreground">
-                  {pet.weight_kg && <span>{pet.weight_kg} kg</span>}
-                  {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
-                </div>
-              </div>
-              <div className="flex gap-2 flex-shrink-0">
-                <button onClick={() => handleEdit(pet)} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/20 transition-colors">Editar</button>
-                <button onClick={() => setDeleteTarget(pet)} className="rounded-full bg-destructive/10 p-1.5 text-destructive hover:bg-destructive/20 transition-colors"><Trash2 className="h-4 w-4" /></button>
-              </div>
-            </motion.div>
-          ))
+                {breedInfo && <ExpandableBreedInfo info={breedInfo} />}
+              </motion.div>
+            );
+          })
         )}
         <button onClick={handleAdd} className="w-full rounded-full border-2 border-dashed border-primary/30 py-3 text-sm font-bold text-primary hover:border-primary/60 hover:bg-primary/5 transition-colors flex items-center justify-center gap-2">
           <Plus className="h-4 w-4" /> Adicionar pet
