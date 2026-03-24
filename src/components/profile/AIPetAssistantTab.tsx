@@ -288,7 +288,15 @@ export default function AIPetAssistantTab() {
     setLoading(false);
   };
 
-  if (!pet) {
+  if (petsLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (pets.length === 0) {
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
         className="rounded-3xl bg-supet-bg-alt p-8 text-center space-y-4">
@@ -299,8 +307,80 @@ export default function AIPetAssistantTab() {
     );
   }
 
+  const calcAge = (birthDate: string | null) => {
+    if (!birthDate) return null;
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const totalMonths = (now.getFullYear() - birth.getFullYear()) * 12 + (now.getMonth() - birth.getMonth());
+    if (totalMonths < 12) return `${totalMonths}m`;
+    const y = Math.floor(totalMonths / 12);
+    return `${y} ano${y > 1 ? "s" : ""}`;
+  };
+
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
+      {/* Pet Selector */}
+      {pets.length > 1 && (
+        <div className="rounded-3xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">Selecione o pet</p>
+          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+            {pets.map((p) => {
+              const isActive = pet?.id === p.id;
+              return (
+                <button key={p.id} onClick={() => selectPet(p)}
+                  className={`flex flex-col items-center gap-1.5 min-w-[80px] transition-all ${isActive ? "scale-105" : "opacity-60 hover:opacity-90"}`}>
+                  <div className={`relative h-16 w-16 rounded-full overflow-hidden border-[3px] transition-all ${
+                    isActive ? "border-primary shadow-lg shadow-primary/20" : "border-border"
+                  }`}>
+                    {p.photo_url ? (
+                      <img src={p.photo_url} alt={p.name} className="h-full w-full object-cover" />
+                    ) : (
+                      <div className="h-full w-full flex items-center justify-center bg-supet-bg">
+                        <PawPrint className={`h-6 w-6 ${isActive ? "text-primary" : "text-muted-foreground"}`} />
+                      </div>
+                    )}
+                    {isActive && (
+                      <motion.div layoutId="petSelector" className="absolute inset-0 rounded-full border-[3px] border-primary" />
+                    )}
+                  </div>
+                  <span className={`text-xs font-semibold truncate max-w-[80px] ${isActive ? "text-primary" : "text-muted-foreground"}`}>
+                    {p.name}
+                  </span>
+                  {p.breed && (
+                    <span className="text-[10px] text-muted-foreground truncate max-w-[80px]">{p.breed}</span>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Active Pet Header */}
+      {pet && (
+        <div className="rounded-3xl bg-supet-bg-alt p-4 flex items-center gap-4">
+          <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-primary/20 flex-shrink-0">
+            {pet.photo_url ? (
+              <img src={pet.photo_url} alt={pet.name} className="h-full w-full object-cover" />
+            ) : (
+              <div className="h-full w-full flex items-center justify-center bg-supet-bg">
+                <PawPrint className="h-6 w-6 text-primary/40" />
+              </div>
+            )}
+          </div>
+          <div className="min-w-0">
+            <h3 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-primary" /> Super Pet AI para {pet.name}
+            </h3>
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-0.5 flex-wrap">
+              {pet.breed && <span className="bg-primary/10 text-primary px-2 py-0.5 rounded-full font-medium">{pet.breed}</span>}
+              {pet.weight_kg && <span>{pet.weight_kg}kg</span>}
+              {pet.birth_date && <span>{calcAge(pet.birth_date)}</span>}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Mode selector */}
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {(Object.keys(modeConfig) as AIMode[]).map((key) => {
@@ -318,7 +398,7 @@ export default function AIPetAssistantTab() {
       </div>
 
       {/* Chat mode */}
-      {mode === "assistant" && (
+      {mode === "assistant" && pet && (
         <div className="rounded-3xl bg-supet-bg-alt overflow-hidden flex flex-col" style={{ height: "480px" }}>
           <div className="bg-primary px-5 py-4 flex items-center gap-3">
             <div className="h-10 w-10 rounded-full overflow-hidden border-2 border-primary-foreground/20">
