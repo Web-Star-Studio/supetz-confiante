@@ -279,7 +279,8 @@ export default function AIPetAssistantTab() {
             {messages.length === 0 && (
               <div className="text-center py-8 space-y-3">
                 <Sparkles className="h-10 w-10 mx-auto text-primary/40" />
-                <p className="text-sm text-muted-foreground">Olá! Sou o SuperPet AI 🐾<br />Pergunte sobre saúde, alimentação ou cuidados do {pet.name}!</p>
+                <p className="text-sm text-muted-foreground">Olá! Sou a Super Pet AI 🐾<br />Posso dar orientações gerais sobre cuidados com {pet.name}!</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-1">⚠️ Não substituo consultas veterinárias.</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {[`${pet.name} pode comer banana?`, `Dicas de exercício para ${pet.breed || "meu cachorro"}`, "Sinais de que meu pet está doente"].map((q) => (
                     <button key={q} onClick={() => { setInput(q); }} className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors">
