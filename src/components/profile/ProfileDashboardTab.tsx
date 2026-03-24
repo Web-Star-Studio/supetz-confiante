@@ -42,14 +42,14 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     activeCoupons: number;
     pendingReminders: number;
     nextReminder: any;
-    pet: any;
+    pets: any[];
     lastDiary: any;
     notifications: any[];
     treatmentChart: { month: string; registros: number }[];
     pointsChart: { month: string; pontos: number }[];
   }>({
     ordersCount: 0, lastOrder: null, totalPoints: 0, activeCoupons: 0,
-    pendingReminders: 0, nextReminder: null, pet: null, lastDiary: null, notifications: [],
+    pendingReminders: 0, nextReminder: null, pets: [], lastDiary: null, notifications: [],
     treatmentChart: [], pointsChart: [],
   });
 
@@ -69,7 +69,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       supabase.from("loyalty_points").select("points").eq("user_id", user.id),
       supabase.from("user_coupons").select("id").eq("user_id", user.id).eq("used", false).gte("expires_at", new Date().toISOString()),
       supabase.from("restock_reminders").select("id, product_title, estimated_end_date").eq("user_id", user.id).eq("reminded", false).order("estimated_end_date", { ascending: true }),
-      supabase.from("pets").select("name, breed, weight_kg, photo_url").eq("user_id", user.id).limit(1).maybeSingle(),
+      supabase.from("pets").select("name, breed, weight_kg, photo_url").eq("user_id", user.id),
       supabase.from("treatment_logs").select("log_date, notes").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("user_notifications").select("id, title, message, type, created_at, read").eq("user_id", user.id).eq("read", false).order("created_at", { ascending: false }).limit(3),
       supabase.from("treatment_logs").select("log_date").eq("user_id", user.id).gte("log_date", sixMonthsAgo.split("T")[0]),
@@ -109,7 +109,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       activeCoupons: (couponsRes.data || []).length,
       pendingReminders: reminders.length,
       nextReminder: reminders[0] || null,
-      pet: petRes.data,
+      pets: petRes.data || [],
       lastDiary: diaryRes.data,
       notifications: notifRes.data || [],
       treatmentChart,
@@ -232,23 +232,27 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
         <button onClick={() => setActiveTab("pet")} className={`${cardClass} text-left hover:ring-2 hover:ring-primary/20 transition-all`}>
           <div className="flex items-center gap-2 mb-3">
             <PawPrint className="w-4 h-4 text-primary" />
-            <h3 className="text-sm font-bold text-foreground">Meu Pet</h3>
+            <h3 className="text-sm font-bold text-foreground">Meus Pets</h3>
           </div>
-          {data.pet ? (
-            <div className="flex items-center gap-3">
-              {data.pet.photo_url ? (
-                <img src={data.pet.photo_url} alt={data.pet.name} className="w-12 h-12 rounded-xl object-cover" />
-              ) : (
-                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <PawPrint className="w-5 h-5 text-primary" />
+          {data.pets.length > 0 ? (
+            <div className="flex flex-wrap gap-3">
+              {data.pets.map((pet, i) => (
+                <div key={i} className="flex items-center gap-2.5 rounded-2xl bg-supet-bg px-3 py-2.5 min-w-0">
+                  {pet.photo_url ? (
+                    <img src={pet.photo_url} alt={pet.name} className="w-10 h-10 rounded-xl object-cover shrink-0" />
+                  ) : (
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <PawPrint className="w-4 h-4 text-primary" />
+                    </div>
+                  )}
+                  <div className="min-w-0">
+                    <p className="font-semibold text-foreground text-sm truncate">{pet.name}</p>
+                    <p className="text-[11px] text-muted-foreground truncate">
+                      {[pet.breed, pet.weight_kg && `${pet.weight_kg}kg`].filter(Boolean).join(" · ") || "—"}
+                    </p>
+                  </div>
                 </div>
-              )}
-              <div>
-                <p className="font-semibold text-foreground">{data.pet.name}</p>
-                <p className="text-xs text-muted-foreground">
-                  {[data.pet.breed, data.pet.weight_kg && `${data.pet.weight_kg}kg`].filter(Boolean).join(" · ") || "Sem detalhes"}
-                </p>
-              </div>
+              ))}
             </div>
           ) : (
             <p className="text-sm text-muted-foreground">Nenhum pet cadastrado. Toque para adicionar!</p>
