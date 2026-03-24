@@ -89,13 +89,40 @@ export default function BlogAdmin() {
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingBlockImg, setUploadingBlockImg] = useState<number | null>(null);
 
+  const compressImage = (file: File, maxWidth = 1200, quality = 0.82): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const img = new window.Image();
+      img.onload = () => {
+        const scale = Math.min(1, maxWidth / img.width);
+        const w = Math.round(img.width * scale);
+        const h = Math.round(img.height * scale);
+        const canvas = document.createElement("canvas");
+        canvas.width = w; canvas.height = h;
+        const ctx = canvas.getContext("2d")!;
+        ctx.drawImage(img, 0, 0, w, h);
+        canvas.toBlob(
+          (blob) => blob ? resolve(blob) : reject(new Error("Compression failed")),
+          "image/webp", quality
+        );
+      };
+      img.onerror = reject;
+      img.src = URL.createObjectURL(file);
+    });
+  };
+
   const uploadImage = async (file: File): Promise<string | null> => {
-    const ext = file.name.split(".").pop();
-    const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const { error } = await supabase.storage.from("blog-images").upload(fileName, file);
-    if (error) { toast.error("Erro ao enviar imagem"); return null; }
-    const { data: urlData } = supabase.storage.from("blog-images").getPublicUrl(fileName);
-    return urlData.publicUrl;
+    try {
+      const compressed = await compressImage(file);
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
+      const { error } = await supabase.storage.from("blog-images").upload(fileName, compressed, { contentType: "image/webp" });
+      if (error) { toast.error("Erro ao enviar imagem"); return null; }
+      const { data: urlData } = supabase.storage.from("blog-images").getPublicUrl(fileName);
+      toast.success(`Imagem otimizada: ${(file.size / 1024).toFixed(0)}KB → ${(compressed.size / 1024).toFixed(0)}KB`);
+      return urlData.publicUrl;
+    } catch {
+      toast.error("Erro ao processar imagem");
+      return null;
+    }
   };
 
   useEffect(() => { loadPosts(); }, []);
