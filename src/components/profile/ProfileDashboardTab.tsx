@@ -219,7 +219,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       )}
 
       {/* Metric Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+      <div className="grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-4">
         {metrics.map((m) => (
           <button
             key={m.label}
