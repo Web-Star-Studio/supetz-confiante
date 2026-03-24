@@ -312,8 +312,9 @@ export default function AIPetAssistantTab() {
             )}
           </div>
 
-          {/* Input */}
-          <div className="p-3 border-t border-border">
+          {/* Disclaimer + Input */}
+          <div className="p-3 border-t border-border space-y-2">
+            <p className="text-[10px] text-muted-foreground/70 text-center">⚠️ Informações geradas por IA. Consulte sempre um veterinário profissional.</p>
             <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-2">
               <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={`Pergunte algo sobre ${pet.name}...`}
                 className="flex-1 rounded-full bg-supet-bg px-4 py-2.5 text-sm outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" />
