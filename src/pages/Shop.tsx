@@ -87,12 +87,12 @@ export default function Shop() {
           ]),
         ]}
       />
-      <section className="bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative">
-        <div className="mx-auto max-w-[1400px] px-6 lg:px-12">
-          {/* Breadcrumb / Top label */}
-          <div className="mb-8">
-            <span className="text-xs font-black uppercase tracking-[0.2em] text-supet-text/40">
-              Home / <span className="text-supet-orange">Loja</span>
+      <section className="bg-supet-bg pt-6 md:pt-32 pb-24 border-b border-border/30 relative">
+        <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-12">
+          {/* Breadcrumb */}
+          <div className="mb-4 md:mb-8">
+            <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+              Home / <span className="text-primary">Loja</span>
             </span>
           </div>
 
