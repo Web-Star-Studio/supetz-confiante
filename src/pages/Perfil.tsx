@@ -24,6 +24,8 @@ import Footer from "@/components/layout/Footer";
 const navItems = [
   { key: "dados", label: "Meus Dados", icon: User },
   { key: "pet", label: "Meu Pet", icon: PawPrint },
+  { key: "ia", label: "SuperPet AI", icon: Sparkles },
+  { key: "conquistas", label: "Conquistas", icon: Trophy },
   { key: "enderecos", label: "Endereços", icon: MapPin },
   { key: "compras", label: "Compras", icon: Package },
   { key: "lembretes", label: "Reposição", icon: Bell },
