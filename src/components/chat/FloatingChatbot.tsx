@@ -315,8 +315,9 @@ export default function FloatingChatbot() {
               )}
             </div>
 
-            {/* Input */}
-            <div className="p-3 border-t border-border shrink-0">
+            {/* Disclaimer + Input */}
+            <div className="p-3 border-t border-border shrink-0 space-y-2">
+              <p className="text-[9px] text-muted-foreground/60 text-center leading-tight">⚠️ Respostas geradas por IA e podem conter imprecisões. Consulte um veterinário.</p>
               <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-2">
                 <input
                   ref={inputRef}

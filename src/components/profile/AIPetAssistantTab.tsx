@@ -269,7 +269,7 @@ export default function AIPetAssistantTab() {
               <Sparkles className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-primary-foreground">SuperPet AI</h3>
+              <h3 className="text-sm font-bold text-primary-foreground">Super Pet AI</h3>
               <p className="text-xs text-primary-foreground/70">Assistente virtual para {pet.name}</p>
             </div>
           </div>
@@ -279,7 +279,8 @@ export default function AIPetAssistantTab() {
             {messages.length === 0 && (
               <div className="text-center py-8 space-y-3">
                 <Sparkles className="h-10 w-10 mx-auto text-primary/40" />
-                <p className="text-sm text-muted-foreground">Olá! Sou o SuperPet AI 🐾<br />Pergunte sobre saúde, alimentação ou cuidados do {pet.name}!</p>
+                <p className="text-sm text-muted-foreground">Olá! Sou a Super Pet AI 🐾<br />Posso dar orientações gerais sobre cuidados com {pet.name}!</p>
+                <p className="text-[10px] text-muted-foreground/70 mt-1">⚠️ Não substituo consultas veterinárias.</p>
                 <div className="flex flex-wrap justify-center gap-2">
                   {[`${pet.name} pode comer banana?`, `Dicas de exercício para ${pet.breed || "meu cachorro"}`, "Sinais de que meu pet está doente"].map((q) => (
                     <button key={q} onClick={() => { setInput(q); }} className="text-xs bg-primary/10 text-primary px-3 py-1.5 rounded-full hover:bg-primary/20 transition-colors">
@@ -311,8 +312,9 @@ export default function AIPetAssistantTab() {
             )}
           </div>
 
-          {/* Input */}
-          <div className="p-3 border-t border-border">
+          {/* Disclaimer + Input */}
+          <div className="p-3 border-t border-border space-y-2">
+            <p className="text-[10px] text-muted-foreground/70 text-center">⚠️ Informações geradas por IA. Consulte sempre um veterinário profissional.</p>
             <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-2">
               <input value={input} onChange={(e) => setInput(e.target.value)} placeholder={`Pergunte algo sobre ${pet.name}...`}
                 className="flex-1 rounded-full bg-supet-bg px-4 py-2.5 text-sm outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all" />
@@ -455,6 +457,12 @@ export default function AIPetAssistantTab() {
           )}
         </div>
       )}
+      {/* Global disclaimer */}
+      <div className="rounded-2xl bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/30 px-4 py-3 text-center">
+        <p className="text-[11px] text-amber-700 dark:text-amber-400">
+          ⚠️ As informações fornecidas pela Super Pet AI são orientações gerais geradas por inteligência artificial e <strong>não substituem</strong> a consulta com um veterinário profissional. Nunca tome decisões sobre a saúde do seu pet com base exclusivamente nestas orientações.
+        </p>
+      </div>
     </motion.div>
   );
 }

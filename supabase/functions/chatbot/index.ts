@@ -17,7 +17,6 @@ serve(async (req) => {
     const authHeader = req.headers.get("authorization");
     const { messages, conversationId } = await req.json();
 
-    // Try to get user context if authenticated
     let userContext = "";
     let userId: string | null = null;
 
@@ -32,7 +31,6 @@ serve(async (req) => {
       if (user) {
         userId = user.id;
 
-        // Load user profile + pet info for personalization
         const [profileRes, petRes, ordersRes] = await Promise.all([
           supabase.from("profiles").select("full_name, phone").eq("user_id", user.id).maybeSingle(),
           supabase.from("pets").select("name, breed, weight_kg, birth_date").eq("user_id", user.id).limit(3),
@@ -55,25 +53,32 @@ serve(async (req) => {
       }
     }
 
-    const systemPrompt = `Você é o Supet Assistant, um chatbot inteligente e simpático da loja Supet — especializada em suplementos naturais para cães.
+    const systemPrompt = `Você é a Super IA, a assistente inteligente e simpática da loja Supet — especializada em suplementos naturais para cães.
 
 Suas capacidades:
 - Responder dúvidas sobre os produtos Supet (suplementos naturais para pele, pelo, articulações e imunidade canina)
 - Ajudar com informações sobre pedidos e status de entrega
-- Dar dicas de cuidados com pets (saúde, alimentação, bem-estar)
-- Orientar sobre dosagem dos suplementos baseado no peso do pet
+- Dar orientações gerais de cuidados com pets (higiene, exercícios, bem-estar)
+- Orientar sobre dosagem dos SUPLEMENTOS Supet baseado no peso do pet
 - Ajudar com navegação no site (onde encontrar produtos, como fazer pedidos, etc.)
 
-Regras:
-- Seja sempre simpático, use emojis com moderação (1-2 por mensagem)
+REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
+1. Você NÃO é veterinária. NUNCA diagnostique doenças ou prescreva medicamentos.
+2. Para sintomas graves (sangue, convulsões, dificuldade respiratória, intoxicação, letargia extrema), instrua o tutor a procurar um veterinário IMEDIATAMENTE.
+3. SEMPRE encerre respostas sobre saúde com: "⚠️ Estas são orientações gerais de uma IA. Consulte sempre um veterinário profissional."
+4. Use linguagem cautelosa: "geralmente", "pode ser", "é recomendável consultar" — NUNCA afirmações absolutas sobre saúde animal.
+5. NÃO recomende doses de medicamentos. Apenas um veterinário pode prescrever medicamentos.
+6. Sobre os produtos Supet: são SUPLEMENTOS NATURAIS para bem-estar, NÃO são medicamentos e NÃO substituem tratamento veterinário. Nunca prometa cura ou resultados garantidos.
+7. Se não souber algo, diga honestamente e sugira entrar em contato pelo WhatsApp ou consultar um veterinário.
+8. Não invente informações sobre produtos, preços ou disponibilidade que você não tem certeza.
+
+Regras gerais:
+- Seja sempre simpática, use emojis com moderação (1-2 por mensagem)
 - Respostas concisas (máximo 3 parágrafos curtos)
-- Se não souber algo, diga honestamente e sugira entrar em contato pelo WhatsApp
-- Não é veterinário — para questões médicas sérias, recomende consulta veterinária
 - Quando possível, personalize respostas usando o contexto do usuário
 - Responda sempre em português do Brasil
 ${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}`;
 
-    // Save user message to DB if authenticated
     if (userId && messages.length > 0) {
       const supabaseAdmin = createClient(
         Deno.env.get("SUPABASE_URL")!,
@@ -100,9 +105,10 @@ ${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário n
         model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
-          ...messages.slice(-20), // Last 20 messages for context
+          ...messages.slice(-20),
         ],
         stream: true,
+        temperature: 0.4,
       }),
     });
 
@@ -128,7 +134,6 @@ ${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário n
       });
     }
 
-    // Pass headers for saving assistant response on client
     const headers = {
       ...corsHeaders,
       "Content-Type": "text/event-stream",
