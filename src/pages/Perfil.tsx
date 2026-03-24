@@ -125,6 +125,7 @@ export default function Perfil() {
   const [passwordResetSent, setPasswordResetSent] = useState(false);
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
