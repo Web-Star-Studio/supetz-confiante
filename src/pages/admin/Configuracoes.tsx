@@ -48,6 +48,7 @@ export default function AdminConfiguracoes() {
     }
     setSavingStore(false);
     setStoreSuccess(true);
+    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress } });
     setTimeout(() => setStoreSuccess(false), 3000);
   };
 

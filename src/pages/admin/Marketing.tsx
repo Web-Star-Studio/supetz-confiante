@@ -173,6 +173,7 @@ export default function AdminMarketing() {
     }).select().single();
 
     if (!campData) { setSending(false); return; }
+    log({ action: "create", entity_type: "campaign", entity_id: campData.id, details: { name: form.name, type: form.type, recipients: userIds.length } });
 
     // Send notifications and/or coupons to each user
     for (const uid of userIds) {

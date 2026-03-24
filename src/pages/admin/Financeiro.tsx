@@ -167,6 +167,7 @@ export default function AdminFinanceiro() {
 
   async function handleDeleteExpense(id: string) {
     await supabase.from("expenses").delete().eq("id", id);
+    log({ action: "delete", entity_type: "expense", entity_id: id });
     fetchData();
   }
 

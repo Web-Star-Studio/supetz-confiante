@@ -147,7 +147,7 @@ export default function Fidelizacao() {
   const handleDeleteCoupon = async (id: string) => {
     const { error } = await supabase.from("user_coupons").delete().eq("id", id);
     if (error) toast.error("Erro ao remover cupom");
-    else { toast.success("Cupom removido"); loadData(); }
+    else { toast.success("Cupom removido"); log({ action: "delete", entity_type: "coupon", entity_id: id }); loadData(); }
   };
 
   const filteredCoupons = coupons.filter((c) =>

@@ -103,6 +103,7 @@ export default function AdminEstoque() {
     });
 
     await supabase.from("products").update({ quantity: newStock }).eq("id", adjustProduct);
+    log({ action: "update", entity_type: "stock", entity_id: adjustProduct, details: { type: adjustType, qty: adjustQty, reason: adjustReason, newStock } });
 
     setAdjustProduct(null);
     setAdjustQty(1);
