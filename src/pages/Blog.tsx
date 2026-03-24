@@ -217,6 +217,38 @@ export default function Blog() {
                 </motion.article>
               ))}
             </div>
+
+            {totalPages > 1 && (
+              <div className="mt-12 flex items-center justify-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                  disabled={currentPage === 1}
+                  className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-bold transition-all disabled:opacity-30 text-supet-text/60 hover:text-supet-orange"
+                >
+                  <ChevronLeft className="h-4 w-4" /> Anterior
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => setCurrentPage(page)}
+                    className={`h-9 w-9 rounded-full text-sm font-bold transition-all ${
+                      currentPage === page
+                        ? "bg-supet-orange text-white shadow-lg shadow-supet-orange/25"
+                        : "text-supet-text/50 hover:bg-supet-orange/10 hover:text-supet-orange"
+                    }`}
+                  >
+                    {page}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={currentPage === totalPages}
+                  className="flex items-center gap-1 rounded-full px-4 py-2 text-sm font-bold transition-all disabled:opacity-30 text-supet-text/60 hover:text-supet-orange"
+                >
+                  Próximo <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            )}
           </div>
         </section>
       )}
