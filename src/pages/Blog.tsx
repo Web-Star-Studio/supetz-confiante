@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Clock, ArrowRight, Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
+import BlurImage from "@/components/blog/BlurImage";
 import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import { supabase } from "@/integrations/supabase/client";
 import { motionTokens } from "@/lib/motion";
