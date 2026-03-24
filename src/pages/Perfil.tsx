@@ -220,7 +220,7 @@ export default function Perfil() {
                   : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
               }`}
             >
-              <item.icon className="w-5 h-5 shrink-0" />
+              <item.icon className="w-4 h-4 lg:w-5 lg:h-5 shrink-0" />
               {!sidebarCollapsed && item.label}
               {!sidebarCollapsed && isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
             </button>
