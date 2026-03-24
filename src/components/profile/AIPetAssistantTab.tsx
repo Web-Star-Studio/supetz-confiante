@@ -391,9 +391,9 @@ export default function AIPetAssistantTab() {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-4">
       {/* Pet Selector */}
       {pets.length > 1 && (
-        <div className="rounded-3xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4">
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 px-1">Selecione o pet</p>
-          <div className="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+        <div className="rounded-3xl bg-gradient-to-r from-primary/10 via-primary/5 to-transparent p-4 pt-5">
+          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-1">Selecione o pet</p>
+          <div className="flex gap-3 overflow-x-auto pt-1 pb-2 scrollbar-hide">
             {pets.map((p) => {
               const isActive = pet?.id === p.id;
               return (
