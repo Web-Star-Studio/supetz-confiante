@@ -228,12 +228,12 @@ export default function Perfil() {
         })}
       </nav>
 
-      <div className="p-2">
+      <div className="p-1.5 lg:p-2 xl:p-3">
         <button
           onClick={handleSignOut}
           title={sidebarCollapsed ? "Sair" : undefined}
-          className={`flex items-center gap-2 w-full rounded-2xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors ${
-            sidebarCollapsed ? "justify-center px-2 py-2.5" : "px-4 py-2.5"
+          className={`flex items-center gap-2 w-full rounded-2xl text-xs lg:text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors ${
+            sidebarCollapsed ? "justify-center px-2 py-2 lg:py-2.5" : "px-3 lg:px-4 py-2 lg:py-2.5"
           }`}
         >
           <LogOut className="w-4 h-4" />
