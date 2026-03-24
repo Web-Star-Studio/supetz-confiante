@@ -1,35 +1,12 @@
 
 
-## Plano: Remover formatacao markdown das sugestoes do chatbot
+## Move the mobile lid closer to the jar top
 
-### Problema
+The lid on mobile is currently positioned at `top: -7%` in the CSS class `.hero-lid-mobile`. Based on the screenshot, it needs to move down to sit between the "SEU" and "PET" text lines, closer to the jar opening.
 
-As sugestoes de follow-up extraidas da resposta da IA contem markdown (`**texto**`) mas sao renderizadas como texto puro nos chips de sugestao, mostrando os asteriscos literais.
+### Change
 
-### Solucao
+**File: `src/index.css`** (line 149)
 
-Duas correcoes complementares:
-
-**1. `src/components/chat/FloatingChatbot.tsx`** — Sanitizar sugestoes no `extractSuggestions`
-- Remover `**`, `*`, `__`, `_` e outros caracteres markdown das strings de sugestao antes de exibi-las
-
-**2. `supabase/functions/chatbot/index.ts`** — Ajustar o system prompt
-- Na instrucao sobre sugestoes de follow-up, explicitar que as perguntas sugeridas devem ser texto puro, sem markdown, sem negrito, sem formatacao
-
-**3. `supabase/functions/pet-ai/index.ts`** — Mesmo ajuste no prompt (se aplicavel)
-
-### Detalhes tecnicos
-
-No `extractSuggestions`, adicionar uma funcao de limpeza:
-```typescript
-function stripMarkdown(text: string): string {
-  return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/__/g, '').replace(/_/g, '').trim();
-}
-```
-
-No system prompt, alterar a linha de sugestoes para:
-```
-"💡 Você pode perguntar: [pergunta1] | [pergunta2] | [pergunta3]"
-As perguntas de follow-up devem ser texto puro, SEM markdown, SEM negrito, SEM asteriscos.
-```
+Update the `.hero-lid-mobile` class to change `top-[-7%]` to approximately `top-[12%]` (or similar value around 10-15%) so the lid sits lower, visually between the "SEU PET" text and the top of the jar. This single CSS change repositions the lid without affecting desktop layout.
 
