@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Clock, ArrowRight, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import { Clock, ArrowRight, Loader2, ChevronLeft, ChevronRight, Search, X } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Layout from "@/components/layout/Layout";
 import BlurImage from "@/components/blog/BlurImage";
