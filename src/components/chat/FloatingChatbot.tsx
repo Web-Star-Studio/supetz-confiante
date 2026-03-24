@@ -241,7 +241,7 @@ export default function FloatingChatbot() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setOpen(true)}
-            className="fixed bottom-20 md:bottom-6 right-6 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-colors"
+            className="fixed bottom-[88px] md:bottom-6 right-4 md:right-6 z-50 h-14 w-14 rounded-full bg-primary text-primary-foreground shadow-lg shadow-primary/30 flex items-center justify-center hover:bg-primary/90 transition-colors"
           >
             <MessageCircle className="h-6 w-6" />
             {unread > 0 && (
@@ -261,7 +261,7 @@ export default function FloatingChatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
-            className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-50 w-[380px] max-w-[calc(100vw-2rem)] h-[480px] md:h-[560px] max-h-[calc(100vh-6rem)] rounded-3xl bg-background border border-border shadow-2xl flex flex-col overflow-hidden"
+            className="fixed bottom-0 md:bottom-6 right-0 md:right-6 z-50 w-full md:w-[380px] md:max-w-[calc(100vw-2rem)] h-[calc(100vh-72px)] md:h-[560px] md:max-h-[calc(100vh-6rem)] md:rounded-3xl bg-background border-t md:border border-border shadow-2xl flex flex-col overflow-hidden"
           >
             {/* Header */}
             <div className="bg-primary px-5 py-4 flex items-center gap-3 shrink-0">

@@ -21,7 +21,6 @@ import AchievementsTab from "@/components/profile/AchievementsTab";
 import ProfileDashboardTab from "@/components/profile/ProfileDashboardTab";
 import UserNotificationCenter from "@/components/profile/UserNotificationCenter";
 import Header from "@/components/layout/Header";
-import Footer from "@/components/layout/Footer";
 
 const navItems = [
   { key: "dashboard", label: "Resumo", icon: LayoutDashboard },
@@ -311,29 +310,42 @@ export default function Perfil() {
 
           {/* Mobile: avatar + tabs */}
           <div className="lg:hidden">
-            <div className="pt-6 pb-2 px-4 flex items-start justify-between">
-              <div className="flex-1 text-center">
-                {avatarBlock}
-                <h1 className="text-xl font-bold text-foreground font-display">{fullName || "Meu Perfil"}</h1>
-                <p className="text-sm text-muted-foreground">{user.email}</p>
+            <div className="pt-3 pb-1 px-4 flex items-center gap-3">
+              <div className="relative h-12 w-12 shrink-0">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Avatar" className="h-12 w-12 rounded-full object-cover border-2 border-primary/30" />
+                ) : (
+                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-supet-bg-alt border-2 border-primary/30 text-sm font-bold text-primary">
+                    {initials}
+                  </div>
+                )}
+                <button
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploading}
+                  className="absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-sm"
+                >
+                  {uploading ? <Loader2 className="h-2.5 w-2.5 animate-spin" /> : <Camera className="h-2.5 w-2.5" />}
+                </button>
               </div>
-              <div className="absolute right-4 top-20">
-                <UserNotificationCenter />
+              <div className="flex-1 min-w-0">
+                <h1 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h1>
+                <p className="text-xs text-muted-foreground truncate">{user.email}</p>
               </div>
+              <UserNotificationCenter />
             </div>
-            <div className="overflow-x-auto px-4 pb-4 scrollbar-hide">
-              <div className="w-max min-w-full rounded-full bg-supet-bg-alt p-1 flex gap-1">
+            <div className="overflow-x-auto px-3 pb-3 pt-2 scrollbar-hide scroll-snap-x">
+              <div className="w-max min-w-full rounded-full bg-supet-bg-alt p-1 flex gap-0.5">
                 {navItems.map((item) => (
                   <button
                     key={item.key}
                     onClick={() => setActiveTab(item.key)}
-                    className={`rounded-full px-3 py-2 text-xs font-semibold whitespace-nowrap flex items-center gap-1 transition-colors ${
+                    className={`rounded-full px-3 py-2 text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 transition-colors ${
                       activeTab === item.key
                         ? "bg-primary text-primary-foreground"
                         : "text-muted-foreground hover:text-foreground"
                     }`}
                   >
-                    <item.icon className="h-3.5 w-3.5" />
+                    <item.icon className="h-3 w-3" />
                     {item.label}
                   </button>
                 ))}
@@ -341,7 +353,7 @@ export default function Perfil() {
             </div>
           </div>
 
-          <main className="flex-1 p-4 md:p-6 lg:p-10">
+          <main className="flex-1 p-3 md:p-6 lg:p-10">
             <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
               {renderContent()}
             </motion.div>
@@ -349,9 +361,7 @@ export default function Perfil() {
         </div>
       </div>
 
-      <div className="lg:hidden">
-        <Footer />
-      </div>
+      {/* Footer hidden on mobile — bottom nav handles it */}
     </>
   );
 }
