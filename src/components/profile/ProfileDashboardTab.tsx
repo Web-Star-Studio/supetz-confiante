@@ -109,7 +109,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       activeCoupons: (couponsRes.data || []).length,
       pendingReminders: reminders.length,
       nextReminder: reminders[0] || null,
-      pet: petRes.data,
+      pets: petRes.data || [],
       lastDiary: diaryRes.data,
       notifications: notifRes.data || [],
       treatmentChart,
