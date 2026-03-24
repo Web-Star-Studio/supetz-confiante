@@ -200,7 +200,7 @@ export default function BlogPost() {
               </div>
 
               <h1 className="font-display text-[clamp(2rem,5.5vw,3.8rem)] font-extrabold leading-[1.06] tracking-tight text-supet-text text-balance">{post.title}</h1>
-              <p className="mt-5 max-w-xl font-serif text-[1.05rem] md:text-[1.15rem] italic text-supet-text/45 leading-relaxed">{post.excerpt}</p>
+              <p data-speakable="true" className="mt-5 max-w-xl font-serif text-[1.05rem] md:text-[1.15rem] italic text-supet-text/45 leading-relaxed">{post.excerpt}</p>
 
               <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-supet-text/8 pt-6">
                 <div className="flex items-center gap-3">
