@@ -219,6 +219,8 @@ export default function Perfil() {
 
   const renderContent = () => {
     switch (activeTab) {
+      case "dashboard":
+        return <ProfileDashboardTab setActiveTab={setActiveTab} />;
       case "dados":
         return (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="rounded-3xl bg-supet-bg-alt p-6 sm:p-8 space-y-5">
