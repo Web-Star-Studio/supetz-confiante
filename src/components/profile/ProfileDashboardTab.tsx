@@ -269,7 +269,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
             <h3 className="text-sm font-bold text-foreground">Histórico de Pontos</h3>
           </div>
           {data.pointsChart.some((d) => d.pontos > 0) ? (
-            <ChartContainer config={{ pontos: { label: "Pontos", color: "hsl(var(--chart-2))" } }} className="h-[180px] w-full">
+            <ChartContainer config={{ pontos: { label: "Pontos", color: "hsl(var(--chart-2))" } }} className="h-[150px] sm:h-[180px] w-full">
               <BarChart data={data.pointsChart}>
                 <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
                 <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
