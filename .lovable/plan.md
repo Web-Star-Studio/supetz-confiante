@@ -1,58 +1,57 @@
 
 
-## Plano: Layout Sidebar para o Perfil do Usuário (Desktop)
+## Plano: Dashboard de Resumo no Perfil do Usuario
 
-### Objetivo
-Transformar a página `/perfil` para usar um layout com sidebar fixa no desktop (similar ao admin), mantendo a navegação por tabs horizontal no mobile.
+### O que sera criado
 
-### Arquitetura
+Um novo componente `ProfileDashboardTab.tsx` que sera a aba inicial do perfil, mostrando um resumo visual completo de todos os recursos do usuario em cards organizados.
 
-```text
-Desktop (lg+):
-┌──────────┬──────────────────────────┐
-│ Sidebar  │  Conteúdo ativo          │
-│          │                          │
-│ Avatar   │  (Dados / Pet / etc.)    │
-│ Nome     │                          │
-│ Email    │                          │
-│          │                          │
-│ ● Dados  │                          │
-│ ○ Pet    │                          │
-│ ○ Endereç│                          │
-│ ○ Compras│                          │
-│ ...      │                          │
-│          │                          │
-│ [Sair]   │                          │
-└──────────┴──────────────────────────┘
+### Conteudo do Dashboard
 
-Mobile:
-┌────────────────────────────────┐
-│ Avatar + Nome                  │
-│ [Dados][Pet][Endereços]... ←→  │
-│ ┌────────────────────────────┐ │
-│ │ Conteúdo ativo             │ │
-│ └────────────────────────────┘ │
-└────────────────────────────────┘
-```
+**Cards de metricas rapidas (grid 2x2 no mobile, 4 colunas no desktop):**
+- Total de pedidos + ultimo status
+- Saldo de pontos de fidelidade
+- Cupons ativos disponiveis
+- Lembretes de reposicao pendentes
 
-### Alterações
+**Secao "Meu Pet" (resumo):**
+- Nome, raca, peso e foto do pet (se cadastrado)
+- Link rapido para editar
 
-**1. Refatorar `src/pages/Perfil.tsx`**
-- Substituir `Tabs` do Radix por estado local `activeTab` controlado manualmente
-- No desktop (lg+): renderizar sidebar fixa à esquerda com os nav items (avatar, nome, email no topo + lista de seções + botão sair), e conteúdo à direita
-- No mobile: manter layout atual com tabs horizontais scrolláveis e avatar centralizado no topo
-- A sidebar seguirá o mesmo padrão visual do `AdminLayout`: `w-72`, `bg-supet-bg-alt`, itens com `rounded-2xl`, item ativo com `bg-primary text-primary-foreground shadow-md`, gradiente laranja no topo
-- Incluir overlay + botão hamburger no mobile para abrir sidebar opcionalmente (ou manter tabs -- mais natural para o usuário)
-- Remover dependência de `Tabs`/`TabsList`/`TabsTrigger`/`TabsContent` do Radix; usar renderização condicional baseada em `activeTab`
-- Ocultar o Header principal do site (via Layout `hideHeader`) nesta página no desktop, similar ao admin que não usa o Header do site
+**Secao "Ultimo Pedido":**
+- Status atual com timeline simplificada
+- Valor e data
 
-**2. Não criar novos arquivos de rota** -- a página continua sendo `/perfil` com navegação interna via estado
+**Secao "Proxima Reposicao":**
+- Produto e data estimada do proximo lembrete
 
-### Detalhes Técnicos
-- Nav items: `{ key, label, icon }` array mapeado tanto para sidebar (desktop) quanto tabs (mobile)
-- `useState("dados")` para controlar seção ativa
-- CSS: `hidden lg:flex` para sidebar, `lg:hidden` para tabs mobile
-- Sidebar sticky com `h-screen` no desktop, overlay no mobile
-- Botão "Voltar à loja" (link para `/`) no topo da sidebar
-- Botão "Sair" no rodapé da sidebar com `signOut()`
+**Secao "Diario de Tratamento":**
+- Ultimo registro com data e notas
+
+**Secao "Notificacoes recentes":**
+- 3 ultimas notificacoes nao lidas
+
+**Acoes rapidas (grid de botoes):**
+- Ir para loja, Falar com Super IA, Ver conquistas, etc.
+
+### Alteracoes nos arquivos
+
+1. **Criar `src/components/profile/ProfileDashboardTab.tsx`**
+   - Componente que busca dados resumidos de todas as tabelas (orders, pets, loyalty_points, user_coupons, restock_reminders, treatment_logs, user_notifications)
+   - Queries paralelas com Promise.all
+   - Cards com icones e cores consistentes com o design system
+   - Botoes de acao rapida que chamam `setActiveTab` via prop
+
+2. **Editar `src/pages/Perfil.tsx`**
+   - Adicionar "dashboard" como primeiro item no `navItems` com icone `LayoutDashboard`
+   - Definir `activeTab` inicial como `"dashboard"`
+   - Importar e renderizar `ProfileDashboardTab` no switch
+   - Passar `setActiveTab` como prop para navegacao interna
+
+### Detalhes tecnicos
+
+- Todas as queries usam o Supabase client existente com RLS (sem alteracoes no banco)
+- Layout responsivo: grid de 1 coluna no mobile, 2-4 colunas no desktop
+- Skeleton loading durante carregamento
+- Animacoes com framer-motion consistentes com o resto do perfil
 
