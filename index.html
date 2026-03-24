@@ -14,8 +14,17 @@
     <meta name="description" content="Supet: gomas 100% naturais com ômega 3, biotina e colágeno que acabam com coceiras, alergias e queda de pelo do seu cão em até 30 dias. Aprovado por veterinários. Frete grátis." />
     <meta name="keywords" content="gomas naturais para cães, coceira cachorro, alergia cachorro, queda de pelo, suplemento pet, ômega 3 cachorro, biotina pet, saúde animal, Supet" />
     <meta name="author" content="Supet" />
-    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
     <link rel="canonical" href="https://supetz-playful-trust.lovable.app/" />
+
+    <!-- AEO / GEO signals -->
+    <meta name="content-type" content="informational, transactional" />
+    <meta name="language" content="pt-BR" />
+    <meta name="geo.region" content="BR" />
+    <meta name="geo.placename" content="Brasil" />
+    <meta name="rating" content="general" />
+    <meta name="revisit-after" content="3 days" />
+    <meta name="format-detection" content="telephone=no" />
 
     <!-- PWA -->
     <meta name="theme-color" content="#ff7603" />
@@ -47,7 +56,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet" />
 
-    <!-- JSON-LD Structured Data -->
+    <!-- JSON-LD: Organization -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -64,6 +73,8 @@
       "sameAs": []
     }
     </script>
+
+    <!-- JSON-LD: Product -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -75,7 +86,50 @@
       "offers": {
         "@type": "Offer",
         "priceCurrency": "BRL",
-        "availability": "https://schema.org/InStock"
+        "price": "149.90",
+        "availability": "https://schema.org/InStock",
+        "url": "https://supetz-playful-trust.lovable.app/shop"
+      },
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.9",
+        "reviewCount": "1247",
+        "bestRating": "5"
+      }
+    }
+    </script>
+
+    <!-- JSON-LD: WebSite with SearchAction (AEO) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Supet",
+      "url": "https://supetz-playful-trust.lovable.app",
+      "inLanguage": "pt-BR",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://supetz-playful-trust.lovable.app/blog?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+
+    <!-- JSON-LD: Speakable WebPage (voice assistants) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "Supet — Gomas Naturais para a Saúde do Seu Pet",
+      "url": "https://supetz-playful-trust.lovable.app",
+      "speakable": {
+        "@type": "SpeakableSpecification",
+        "cssSelector": ["h1", "[data-speakable='true']"]
+      },
+      "about": {
+        "@type": "Thing",
+        "name": "Suplemento natural para cães",
+        "description": "Gomas naturais para tratar coceira, alergia e queda de pelo em cães"
       }
     }
     </script>

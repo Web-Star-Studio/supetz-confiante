@@ -9,6 +9,7 @@ import { motionTokens } from "@/lib/motion";
 import { BlogPostContent as BlogPostContentType } from "@/types";
 import BlurImage from "@/components/blog/BlurImage";
 import SocialShare from "@/components/blog/SocialShare";
+import SEOHead, { buildArticleSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
 
 function formatDate(date: string) {
   return new Date(`${date}T00:00:00`).toLocaleDateString("pt-BR", {
@@ -149,6 +150,38 @@ export default function BlogPost() {
 
   return (
     <Layout>
+      <SEOHead
+        title={post.title}
+        description={post.excerpt}
+        path={`/blog/${post.slug}`}
+        image={post.cover_image || undefined}
+        type="article"
+        publishedTime={post.published_at ? `${post.published_at}T00:00:00-03:00` : undefined}
+        modifiedTime={post.updated_at}
+        author={post.author_name}
+        section={post.category}
+        tags={post.tags}
+        jsonLd={[
+          buildArticleSchema({
+            title: post.title,
+            description: post.excerpt,
+            url: `https://supetz-playful-trust.lovable.app/blog/${post.slug}`,
+            image: post.cover_image || undefined,
+            publishedAt: post.published_at ? `${post.published_at}T00:00:00-03:00` : undefined,
+            modifiedAt: post.updated_at,
+            authorName: post.author_name,
+            authorRole: post.author_role,
+            category: post.category,
+            tags: post.tags,
+            readTime: post.read_time,
+          }),
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+            { name: "Blog", url: "https://supetz-playful-trust.lovable.app/blog" },
+            { name: post.title, url: `https://supetz-playful-trust.lovable.app/blog/${post.slug}` },
+          ]),
+        ]}
+      />
       <motion.div style={{ scaleX }} className="fixed top-0 left-0 right-0 z-50 h-[3px] origin-left bg-supet-orange" />
 
       <article ref={articleRef}>
@@ -167,7 +200,7 @@ export default function BlogPost() {
               </div>
 
               <h1 className="font-display text-[clamp(2rem,5.5vw,3.8rem)] font-extrabold leading-[1.06] tracking-tight text-supet-text text-balance">{post.title}</h1>
-              <p className="mt-5 max-w-xl font-serif text-[1.05rem] md:text-[1.15rem] italic text-supet-text/45 leading-relaxed">{post.excerpt}</p>
+              <p data-speakable="true" className="mt-5 max-w-xl font-serif text-[1.05rem] md:text-[1.15rem] italic text-supet-text/45 leading-relaxed">{post.excerpt}</p>
 
               <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-3 border-t border-supet-text/8 pt-6">
                 <div className="flex items-center gap-3">
