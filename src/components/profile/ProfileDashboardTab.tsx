@@ -232,7 +232,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
                 <m.icon className="w-4 h-4" />
               </div>
             </div>
-            <p className="text-2xl font-bold text-foreground">{m.value}</p>
+            <p className="text-xl sm:text-2xl font-bold text-foreground">{m.value}</p>
             <ChevronRight className="w-3.5 h-3.5 text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         ))}
