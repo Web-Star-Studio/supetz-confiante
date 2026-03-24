@@ -47,6 +47,11 @@ function detectEmergency(text: string): boolean {
   return EMERGENCY_KEYWORDS.some((kw) => normalized.includes(normalizeText(kw)));
 }
 
+function findMatchedKeyword(text: string): string | null {
+  const normalized = normalizeText(text);
+  return EMERGENCY_KEYWORDS.find((kw) => normalized.includes(normalizeText(kw))) || null;
+}
+
 const SAFETY_RULES = `
 REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
 1. Você NÃO é veterinário. NUNCA diagnostique doenças, prescreva medicamentos ou recomende doses de remédios.
