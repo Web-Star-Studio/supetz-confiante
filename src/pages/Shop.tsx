@@ -145,7 +145,7 @@ export default function Shop() {
                 </div>
 
                 {/* Quantity & Add to Cart */}
-                <div className="flex flex-col sm:flex-row gap-4 mb-12">
+                <div className="flex flex-col sm:flex-row gap-3 mb-8 md:mb-12">
                   <div className="flex items-center justify-between border-2 border-supet-text/10 rounded-full px-6 py-4 sm:w-1/3 bg-white">
                     <button
                       onClick={() => setQuantity(Math.max(1, quantity - 1))}
