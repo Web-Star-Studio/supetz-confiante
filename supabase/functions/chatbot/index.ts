@@ -111,6 +111,25 @@ serve(async (req) => {
     // Emergency filter — check last user message before calling AI
     const lastUserMsg = [...messages].reverse().find((m: any) => m.role === "user");
     if (lastUserMsg && detectEmergency(lastUserMsg.content)) {
+      // Log emergency asynchronously
+      const supabaseAdmin = createClient(
+        Deno.env.get("SUPABASE_URL")!,
+        Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!
+      );
+      let userId: string | null = null;
+      if (authHeader) {
+        const userClient = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_ANON_KEY")!, {
+          global: { headers: { Authorization: authHeader } },
+        });
+        const { data: { user } } = await userClient.auth.getUser();
+        userId = user?.id || null;
+      }
+      await supabaseAdmin.from("emergency_logs").insert({
+        user_id: userId,
+        message_content: lastUserMsg.content.slice(0, 500),
+        matched_keyword: findMatchedKeyword(lastUserMsg.content),
+        source: "chatbot",
+      });
       return new Response(JSON.stringify({ isEmergency: true, content: EMERGENCY_RESPONSE }), {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
