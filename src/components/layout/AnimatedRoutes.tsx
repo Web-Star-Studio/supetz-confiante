@@ -30,6 +30,7 @@ import AdminFinanceiro from "../../pages/admin/Financeiro";
 import AdminAuditoria from "../../pages/admin/Auditoria";
 import AdminBaseConhecimento from "../../pages/admin/BaseConhecimento";
 import AdminGerenciarIA from "../../pages/admin/GerenciarIA";
+import AdminBlog from "../../pages/admin/BlogAdmin";
 
 import PageTransition from "./PageTransition";
 
