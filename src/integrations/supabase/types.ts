@@ -52,6 +52,41 @@ export type Database = {
           },
         ]
       }
+      ai_access_credits: {
+        Row: {
+          days_granted: number
+          expires_at: string
+          granted_at: string
+          id: string
+          order_id: string | null
+          user_id: string
+        }
+        Insert: {
+          days_granted?: number
+          expires_at: string
+          granted_at?: string
+          id?: string
+          order_id?: string | null
+          user_id: string
+        }
+        Update: {
+          days_granted?: number
+          expires_at?: string
+          granted_at?: string
+          id?: string
+          order_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_access_credits_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       chat_messages: {
         Row: {
           content: string
