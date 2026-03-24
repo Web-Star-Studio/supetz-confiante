@@ -21,7 +21,6 @@ import AchievementsTab from "@/components/profile/AchievementsTab";
 import ProfileDashboardTab from "@/components/profile/ProfileDashboardTab";
 import UserNotificationCenter from "@/components/profile/UserNotificationCenter";
 import Header from "@/components/layout/Header";
-import Header from "@/components/layout/Header";
 
 const navItems = [
   { key: "dashboard", label: "Resumo", icon: LayoutDashboard },
