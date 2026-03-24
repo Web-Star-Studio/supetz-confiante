@@ -522,6 +522,7 @@ export type Database = {
           highlighted: boolean | null
           id: string
           image_url: string | null
+          low_stock_threshold: number
           original_price: number | null
           price: number
           price_per_unit: string | null
@@ -538,6 +539,7 @@ export type Database = {
           highlighted?: boolean | null
           id?: string
           image_url?: string | null
+          low_stock_threshold?: number
           original_price?: number | null
           price: number
           price_per_unit?: string | null
@@ -554,6 +556,7 @@ export type Database = {
           highlighted?: boolean | null
           id?: string
           image_url?: string | null
+          low_stock_threshold?: number
           original_price?: number | null
           price?: number
           price_per_unit?: string | null
@@ -668,6 +671,60 @@ export type Database = {
             columns: ["pet_id"]
             isOneToOne: false
             referencedRelation: "pets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      stock_movements: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          new_stock: number
+          order_id: string | null
+          previous_stock: number
+          product_id: string
+          quantity: number
+          reason: string | null
+          type: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_stock?: number
+          order_id?: string | null
+          previous_stock?: number
+          product_id: string
+          quantity: number
+          reason?: string | null
+          type: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          new_stock?: number
+          order_id?: string | null
+          previous_stock?: number
+          product_id?: string
+          quantity?: number
+          reason?: string | null
+          type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "stock_movements_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "stock_movements_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
             referencedColumns: ["id"]
           },
         ]

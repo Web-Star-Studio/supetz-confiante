@@ -26,6 +26,7 @@ import AdminConfiguracoes from "../../pages/admin/Configuracoes";
 import AdminFidelizacao from "../../pages/admin/Fidelizacao";
 import AdminCRM from "../../pages/admin/CRM";
 import AdminMarketing from "../../pages/admin/Marketing";
+import AdminEstoque from "../../pages/admin/Estoque";
 
 import PageTransition from "./PageTransition";
 
@@ -63,6 +64,7 @@ export default function AnimatedRoutes() {
         <Route path="/admin/fidelizacao" element={<AdminRoute><AdminFidelizacao /></AdminRoute>} />
         <Route path="/admin/crm" element={<AdminRoute><AdminCRM /></AdminRoute>} />
         <Route path="/admin/marketing" element={<AdminRoute><AdminMarketing /></AdminRoute>} />
+        <Route path="/admin/estoque" element={<AdminRoute><AdminEstoque /></AdminRoute>} />
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
       </Routes>
