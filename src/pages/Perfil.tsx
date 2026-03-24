@@ -362,9 +362,7 @@ export default function Perfil() {
         </div>
       </div>
 
-      <div className="lg:hidden">
-        <Footer />
-      </div>
+      {/* Footer hidden on mobile — bottom nav handles it */}
     </>
   );
 }
