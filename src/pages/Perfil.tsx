@@ -171,7 +171,7 @@ export default function Perfil() {
 
   const sidebarContent = (
     <>
-      <div className="relative p-4 overflow-hidden flex items-center justify-center">
+      <div className="relative p-3 lg:p-4 xl:p-5 overflow-hidden flex items-center justify-center">
         <div className="absolute inset-0 bg-gradient-to-b from-primary/10 to-transparent pointer-events-none" />
         <Link to="/" className="relative z-10">
           <img
@@ -183,7 +183,7 @@ export default function Perfil() {
       </div>
 
       {!sidebarCollapsed && (
-        <div className="px-6 pb-4 text-center">
+        <div className="px-4 lg:px-6 pb-3 lg:pb-4 text-center">
           {avatarBlock}
           <h2 className="text-base font-bold text-foreground font-display truncate">{fullName || "Meu Perfil"}</h2>
           <p className="text-xs text-muted-foreground truncate">{user.email}</p>
@@ -204,7 +204,7 @@ export default function Perfil() {
         </div>
       )}
 
-      <nav className="flex-1 p-2 space-y-0.5 overflow-y-auto">
+      <nav className="flex-1 p-1.5 lg:p-2 xl:p-3 space-y-0.5 overflow-y-auto">
         {navItems.map((item) => {
           const isActive = activeTab === item.key;
           return (
@@ -212,15 +212,15 @@ export default function Perfil() {
               key={item.key}
               onClick={() => { setActiveTab(item.key); setMobileSidebarOpen(false); }}
               title={sidebarCollapsed ? item.label : undefined}
-              className={`flex w-full items-center gap-3 rounded-2xl text-sm font-semibold transition-all ${
-                sidebarCollapsed ? "justify-center px-2 py-3" : "px-4 py-3"
+              className={`flex w-full items-center gap-2 lg:gap-3 rounded-2xl text-xs lg:text-sm font-semibold transition-all ${
+                sidebarCollapsed ? "justify-center px-2 py-2.5 lg:py-3" : "px-3 lg:px-4 py-2.5 lg:py-3"
               } ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                   : "text-muted-foreground hover:bg-primary/10 hover:text-primary"
               }`}
             >
-              <item.icon className="w-5 h-5 shrink-0" />
+              <item.icon className="w-4 h-4 lg:w-5 lg:h-5 shrink-0" />
               {!sidebarCollapsed && item.label}
               {!sidebarCollapsed && isActive && <ChevronRight className="w-4 h-4 ml-auto" />}
             </button>
@@ -228,12 +228,12 @@ export default function Perfil() {
         })}
       </nav>
 
-      <div className="p-2">
+      <div className="p-1.5 lg:p-2 xl:p-3">
         <button
           onClick={handleSignOut}
           title={sidebarCollapsed ? "Sair" : undefined}
-          className={`flex items-center gap-2 w-full rounded-2xl text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors ${
-            sidebarCollapsed ? "justify-center px-2 py-2.5" : "px-4 py-2.5"
+          className={`flex items-center gap-2 w-full rounded-2xl text-xs lg:text-sm font-semibold text-destructive hover:bg-destructive/10 transition-colors ${
+            sidebarCollapsed ? "justify-center px-2 py-2 lg:py-2.5" : "px-3 lg:px-4 py-2 lg:py-2.5"
           }`}
         >
           <LogOut className="w-4 h-4" />
