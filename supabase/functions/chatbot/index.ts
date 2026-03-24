@@ -93,6 +93,11 @@ function detectEmergency(text: string): boolean {
   return EMERGENCY_KEYWORDS.some((kw) => normalized.includes(normalizeText(kw)));
 }
 
+function findMatchedKeyword(text: string): string | null {
+  const normalized = normalizeText(text);
+  return EMERGENCY_KEYWORDS.find((kw) => normalized.includes(normalizeText(kw))) || null;
+}
+
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
