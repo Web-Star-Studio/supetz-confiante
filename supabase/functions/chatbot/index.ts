@@ -7,6 +7,25 @@ const corsHeaders = {
     "authorization, x-client-info, apikey, content-type, x-supabase-client-platform, x-supabase-client-platform-version, x-supabase-client-runtime, x-supabase-client-runtime-version",
 };
 
+const DOG_KNOWLEDGE_SUMMARY = `
+CONHECIMENTO SOBRE CUIDADOS CANINOS (use para fundamentar respostas):
+
+ALIMENTOS TÓXICOS: chocolate (teobromina), uva/passa (insuficiência renal), cebola/alho (anemia hemolítica), xilitol (hipoglicemia), macadâmia, abacate, cafeína, álcool, ossos cozidos.
+ALIMENTOS SEGUROS: banana, maçã (sem sementes), cenoura, batata-doce cozida, abóbora, frango cozido sem tempero, ovos cozidos, arroz.
+
+EXERCÍCIO POR PORTE: pequeno 20-40min/dia, médio 40-60min/dia, grande 60-90min/dia, gigante 30-60min moderado, braquicefálicos exercício leve sem calor.
+
+HIGIENE: banho a cada 15-30 dias com shampoo canino, escovação dental 2-3x/semana com pasta canina, unhas a cada 2-4 semanas, orelhas semanalmente.
+
+ALIMENTAÇÃO: filhotes 2-6m 3-4 refeições/dia, 6-12m 2-3/dia, adultos 2/dia, idosos 2-3 menores/dia. Transição alimentar gradual 7-10 dias.
+
+RAÇAS BRAQUICEFÁLICAS (Pug, Bulldog, Shih Tzu): sensíveis ao calor, problemas respiratórios, exercício leve, limpar dobras faciais.
+
+SINAIS DE ESTRESSE: lamber lábios, bocejar fora de contexto, orelhas para trás, destruir objetos, esconder-se.
+
+ENRIQUECIMENTO: brinquedos interativos, passeios com tempo para farejar, treinamento positivo, rodízio de brinquedos.
+`;
+
 const EMERGENCY_KEYWORDS = [
   "convulsao", "convulsão", "convulsoes", "convulsões",
   "sangue nas fezes", "sangue no vomito", "sangue no vômito", "vomitando sangue", "fezes com sangue",
@@ -149,7 +168,9 @@ Regras gerais:
 - Se o usuário tem lembretes de reposição próximos, avise proativamente quando oportuno
 - Responda sempre em português do Brasil
 - Ao final de cada resposta, sugira 2-3 perguntas de follow-up curtas que o usuário pode fazer, no formato: "💡 Você pode perguntar: [pergunta1] | [pergunta2] | [pergunta3]"
-${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}`;
+${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}
+
+${DOG_KNOWLEDGE_SUMMARY}`;
 
     if (userId && messages.length > 0) {
       const supabaseAdmin = createClient(
