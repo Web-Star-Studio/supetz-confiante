@@ -2,12 +2,14 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   Package, Star, Ticket, Bell, PawPrint, BookOpen, ShoppingBag,
-  Sparkles, Trophy, ChevronRight, Calendar, TrendingUp, Store,
+  Sparkles, Trophy, ChevronRight, Calendar, TrendingUp, Store, BarChart3,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
-import { format } from "date-fns";
+import { format, subMonths } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from "recharts";
 import { Link } from "react-router-dom";
 
 interface ProfileDashboardTabProps {
@@ -43,9 +45,12 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     pet: any;
     lastDiary: any;
     notifications: any[];
+    treatmentChart: { month: string; registros: number }[];
+    pointsChart: { month: string; pontos: number }[];
   }>({
     ordersCount: 0, lastOrder: null, totalPoints: 0, activeCoupons: 0,
     pendingReminders: 0, nextReminder: null, pet: null, lastDiary: null, notifications: [],
+    treatmentChart: [], pointsChart: [],
   });
 
   useEffect(() => {
@@ -57,7 +62,9 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
     if (!user) return;
     setLoading(true);
 
-    const [ordersRes, pointsRes, couponsRes, remindersRes, petRes, diaryRes, notifRes] = await Promise.all([
+    const sixMonthsAgo = subMonths(new Date(), 6).toISOString();
+
+    const [ordersRes, pointsRes, couponsRes, remindersRes, petRes, diaryRes, notifRes, treatmentLogsRes, pointsHistRes] = await Promise.all([
       supabase.from("orders").select("id, status, total, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(5),
       supabase.from("loyalty_points").select("points").eq("user_id", user.id),
       supabase.from("user_coupons").select("id").eq("user_id", user.id).eq("used", false).gte("expires_at", new Date().toISOString()),
@@ -65,11 +72,35 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       supabase.from("pets").select("name, breed, weight_kg, photo_url").eq("user_id", user.id).limit(1).maybeSingle(),
       supabase.from("treatment_logs").select("log_date, notes").eq("user_id", user.id).order("log_date", { ascending: false }).limit(1).maybeSingle(),
       supabase.from("user_notifications").select("id, title, message, type, created_at, read").eq("user_id", user.id).eq("read", false).order("created_at", { ascending: false }).limit(3),
+      supabase.from("treatment_logs").select("log_date").eq("user_id", user.id).gte("log_date", sixMonthsAgo.split("T")[0]),
+      supabase.from("loyalty_points").select("points, created_at").eq("user_id", user.id).gte("created_at", sixMonthsAgo),
     ]);
 
     const orders = ordersRes.data || [];
     const totalPoints = (pointsRes.data || []).reduce((sum, p) => sum + p.points, 0);
     const reminders = remindersRes.data || [];
+
+    // Group treatment logs by month
+    const treatmentByMonth: Record<string, number> = {};
+    (treatmentLogsRes.data || []).forEach((log) => {
+      const key = format(new Date(log.log_date), "MMM/yy", { locale: ptBR });
+      treatmentByMonth[key] = (treatmentByMonth[key] || 0) + 1;
+    });
+
+    // Group points by month
+    const pointsByMonth: Record<string, number> = {};
+    (pointsHistRes.data || []).forEach((p) => {
+      const key = format(new Date(p.created_at), "MMM/yy", { locale: ptBR });
+      pointsByMonth[key] = (pointsByMonth[key] || 0) + p.points;
+    });
+
+    // Build ordered arrays for last 6 months
+    const months: string[] = [];
+    for (let i = 5; i >= 0; i--) {
+      months.push(format(subMonths(new Date(), i), "MMM/yy", { locale: ptBR }));
+    }
+    const treatmentChart = months.map((m) => ({ month: m, registros: treatmentByMonth[m] || 0 }));
+    const pointsChart = months.map((m) => ({ month: m, pontos: pointsByMonth[m] || 0 }));
 
     setData({
       ordersCount: orders.length,
@@ -81,6 +112,8 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
       pet: petRes.data,
       lastDiary: diaryRes.data,
       notifications: notifRes.data || [],
+      treatmentChart,
+      pointsChart,
     });
     setLoading(false);
   };
@@ -143,6 +176,55 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
             <ChevronRight className="w-3.5 h-3.5 text-muted-foreground mt-1 opacity-0 group-hover:opacity-100 transition-opacity" />
           </button>
         ))}
+      </div>
+
+      {/* Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div className={cardClass}>
+          <div className="flex items-center gap-2 mb-4">
+            <BookOpen className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Evolução do Tratamento</h3>
+          </div>
+          {data.treatmentChart.some((d) => d.registros > 0) ? (
+            <ChartContainer config={{ registros: { label: "Registros", color: "hsl(var(--primary))" } }} className="h-[180px] w-full">
+              <AreaChart data={data.treatmentChart}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Area type="monotone" dataKey="registros" fill="hsl(var(--primary) / 0.2)" stroke="hsl(var(--primary))" strokeWidth={2} />
+              </AreaChart>
+            </ChartContainer>
+          ) : (
+            <div className="h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+              <BookOpen className="w-8 h-8 opacity-40" />
+              <p className="text-sm">Sem registros ainda</p>
+            </div>
+          )}
+        </div>
+
+        <div className={cardClass}>
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart3 className="w-4 h-4 text-primary" />
+            <h3 className="text-sm font-bold text-foreground">Histórico de Pontos</h3>
+          </div>
+          {data.pointsChart.some((d) => d.pontos > 0) ? (
+            <ChartContainer config={{ pontos: { label: "Pontos", color: "hsl(var(--chart-2))" } }} className="h-[180px] w-full">
+              <BarChart data={data.pointsChart}>
+                <CartesianGrid strokeDasharray="3 3" className="stroke-border/30" />
+                <XAxis dataKey="month" tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <YAxis allowDecimals={false} tick={{ fontSize: 11 }} className="fill-muted-foreground" />
+                <ChartTooltip content={<ChartTooltipContent />} />
+                <Bar dataKey="pontos" fill="hsl(var(--chart-2))" radius={[6, 6, 0, 0]} />
+              </BarChart>
+            </ChartContainer>
+          ) : (
+            <div className="h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+              <BarChart3 className="w-8 h-8 opacity-40" />
+              <p className="text-sm">Sem pontos ainda</p>
+            </div>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
