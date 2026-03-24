@@ -212,8 +212,8 @@ export default function Perfil() {
               key={item.key}
               onClick={() => { setActiveTab(item.key); setMobileSidebarOpen(false); }}
               title={sidebarCollapsed ? item.label : undefined}
-              className={`flex w-full items-center gap-3 rounded-2xl text-sm font-semibold transition-all ${
-                sidebarCollapsed ? "justify-center px-2 py-3" : "px-4 py-3"
+              className={`flex w-full items-center gap-2 lg:gap-3 rounded-2xl text-xs lg:text-sm font-semibold transition-all ${
+                sidebarCollapsed ? "justify-center px-2 py-2.5 lg:py-3" : "px-3 lg:px-4 py-2.5 lg:py-3"
               } ${
                 isActive
                   ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
