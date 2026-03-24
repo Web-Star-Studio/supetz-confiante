@@ -251,7 +251,7 @@ export default function Perfil() {
           <img
             src="/supetNewLogo.svg"
             alt="Supet"
-            className={`transition-all duration-300 ${sidebarCollapsed ? "h-5 sm:h-6 w-auto" : "h-12 sm:h-14 lg:h-16 xl:h-20 w-auto"}`}
+            className={`transition-all duration-300 ${sidebarCollapsed ? "h-5 sm:h-6 w-auto" : "h-20 sm:h-24 lg:h-28 xl:h-32 w-auto"}`}
           />
         </Link>
       </div>
