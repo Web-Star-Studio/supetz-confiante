@@ -113,9 +113,28 @@ export default function Blog() {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.4, delay: 0.15 }}
-            className="mt-10 flex gap-2 overflow-x-auto pb-2 scrollbar-none"
+            transition={{ duration: 0.4, delay: 0.12 }}
+            className="mt-10 flex flex-col sm:flex-row sm:items-center gap-4"
           >
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-supet-text/35" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Buscar artigos..."
+                className="w-full rounded-full border border-supet-text/10 bg-white py-2.5 pl-11 pr-10 text-sm text-supet-text outline-none transition-all focus:border-supet-orange/40 focus:ring-4 focus:ring-supet-orange/10"
+              />
+              {searchQuery && (
+                <button
+                  onClick={() => handleSearch("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 text-supet-text/40 hover:text-supet-orange transition-colors"
+                >
+                  <X className="h-3.5 w-3.5" />
+                </button>
+              )}
+            </div>
+            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-none sm:pb-0">
             {categories.map((cat) => (
               <button
                 key={cat}
