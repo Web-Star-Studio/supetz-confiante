@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import {
   Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail,
   PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, Store, Menu, X,
+  Sparkles, Trophy,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -15,12 +16,16 @@ import RestockRemindersTab from "@/components/profile/RestockRemindersTab";
 import TreatmentDiaryTab from "@/components/profile/TreatmentDiaryTab";
 import LoyaltyPointsTab from "@/components/profile/LoyaltyPointsTab";
 import CouponsTab from "@/components/profile/CouponsTab";
+import AIPetAssistantTab from "@/components/profile/AIPetAssistantTab";
+import AchievementsTab from "@/components/profile/AchievementsTab";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 
 const navItems = [
   { key: "dados", label: "Meus Dados", icon: User },
   { key: "pet", label: "Meu Pet", icon: PawPrint },
+  { key: "ia", label: "SuperPet AI", icon: Sparkles },
+  { key: "conquistas", label: "Conquistas", icon: Trophy },
   { key: "enderecos", label: "Endereços", icon: MapPin },
   { key: "compras", label: "Compras", icon: Package },
   { key: "lembretes", label: "Reposição", icon: Bell },
@@ -240,6 +245,8 @@ export default function Perfil() {
           </motion.div>
         );
       case "pet": return <PetProfileTab />;
+      case "ia": return <AIPetAssistantTab />;
+      case "conquistas": return <AchievementsTab />;
       case "enderecos": return <AddressesTab />;
       case "compras": return <OrdersTab />;
       case "lembretes": return <RestockRemindersTab />;
