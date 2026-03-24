@@ -279,7 +279,7 @@ export default function ProfileDashboardTab({ setActiveTab }: ProfileDashboardTa
               </BarChart>
             </ChartContainer>
           ) : (
-            <div className="h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+            <div className="h-[150px] sm:h-[180px] flex flex-col items-center justify-center text-muted-foreground gap-2">
               <BarChart3 className="w-8 h-8 opacity-40" />
               <p className="text-sm">Sem pontos ainda</p>
             </div>
