@@ -187,8 +187,8 @@ export default function BlogPost() {
 
         <section className="bg-supet-bg pb-4">
           <div className="mx-auto max-w-4xl px-6 md:px-8">
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }} className="overflow-hidden rounded-2xl md:rounded-3xl">
-              <img src={post.cover_image || "/images/pet-studio.png"} alt={post.title} className="w-full aspect-[16/9] object-cover" />
+            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6, delay: 0.15 }}>
+              <BlurImage src={post.cover_image || "/images/pet-studio.png"} alt={post.title} wrapperClassName="rounded-2xl md:rounded-3xl" className="w-full aspect-[16/9] object-cover" />
             </motion.div>
           </div>
         </section>
