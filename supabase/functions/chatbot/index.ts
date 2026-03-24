@@ -31,15 +31,21 @@ serve(async (req) => {
       if (user) {
         userId = user.id;
 
-        const [profileRes, petRes, ordersRes] = await Promise.all([
+        const [profileRes, petRes, ordersRes, couponsRes, pointsRes, remindersRes] = await Promise.all([
           supabase.from("profiles").select("full_name, phone").eq("user_id", user.id).maybeSingle(),
           supabase.from("pets").select("name, breed, weight_kg, birth_date").eq("user_id", user.id).limit(3),
           supabase.from("orders").select("id, status, total, created_at").eq("user_id", user.id).order("created_at", { ascending: false }).limit(3),
+          supabase.from("user_coupons").select("code, discount_type, discount_value, expires_at").eq("user_id", user.id).eq("used", false),
+          supabase.from("loyalty_points").select("points").eq("user_id", user.id),
+          supabase.from("restock_reminders").select("product_title, estimated_end_date").eq("user_id", user.id).eq("reminded", false).order("estimated_end_date", { ascending: true }).limit(3),
         ]);
 
         const profile = profileRes.data;
         const pets = petRes.data || [];
         const orders = ordersRes.data || [];
+        const coupons = couponsRes.data || [];
+        const points = pointsRes.data || [];
+        const reminders = remindersRes.data || [];
 
         if (profile?.full_name) {
           userContext += `\nNome do usuário: ${profile.full_name}.`;
@@ -49,6 +55,23 @@ serve(async (req) => {
         }
         if (orders.length > 0) {
           userContext += `\nÚltimos pedidos: ${orders.map(o => `#${o.id.slice(0, 8)} - R$${o.total} (${o.status})`).join(", ")}.`;
+        }
+
+        // Coupons context
+        const activeCoupons = coupons.filter(c => !c.expires_at || new Date(c.expires_at) > new Date());
+        if (activeCoupons.length > 0) {
+          userContext += `\nCupons ativos: ${activeCoupons.map(c => `${c.code} (${c.discount_type === 'percentage' ? c.discount_value + '%' : 'R$' + c.discount_value} de desconto)`).join(", ")}.`;
+        }
+
+        // Loyalty points
+        const totalPoints = points.reduce((sum, p) => sum + p.points, 0);
+        if (totalPoints > 0) {
+          userContext += `\nPontos de fidelidade acumulados: ${totalPoints} pontos (equivalem a R$${(totalPoints * 0.01).toFixed(2)} em desconto).`;
+        }
+
+        // Restock reminders
+        if (reminders.length > 0) {
+          userContext += `\nLembretes de reposição próximos: ${reminders.map(r => `${r.product_title} (até ${r.estimated_end_date})`).join(", ")}.`;
         }
       }
     }
@@ -61,6 +84,7 @@ Suas capacidades:
 - Dar orientações gerais de cuidados com pets (higiene, exercícios, bem-estar)
 - Orientar sobre dosagem dos SUPLEMENTOS Supet baseado no peso do pet
 - Ajudar com navegação no site (onde encontrar produtos, como fazer pedidos, etc.)
+- Informar sobre cupons ativos, pontos de fidelidade e lembretes de reposição do usuário
 
 REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
 1. Você NÃO é veterinária. NUNCA diagnostique doenças ou prescreva medicamentos.
@@ -75,8 +99,11 @@ REGRAS DE SEGURANÇA (OBRIGATÓRIAS — NUNCA IGNORE):
 Regras gerais:
 - Seja sempre simpática, use emojis com moderação (1-2 por mensagem)
 - Respostas concisas (máximo 3 parágrafos curtos)
-- Quando possível, personalize respostas usando o contexto do usuário
+- Quando possível, personalize respostas usando o contexto do usuário (cupons, pontos, lembretes)
+- Se o usuário tem cupons ativos, mencione-os quando relevante (ex: ao falar de compras)
+- Se o usuário tem lembretes de reposição próximos, avise proativamente quando oportuno
 - Responda sempre em português do Brasil
+- Ao final de cada resposta, sugira 2-3 perguntas de follow-up curtas que o usuário pode fazer, no formato: "💡 Você pode perguntar: [pergunta1] | [pergunta2] | [pergunta3]"
 ${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}`;
 
     if (userId && messages.length > 0) {
