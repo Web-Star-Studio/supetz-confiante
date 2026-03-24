@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight, Gift, ContactRound, Megaphone, Boxes, Wallet,
+  LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight, Gift, ContactRound, Megaphone, Boxes, Wallet, ScrollText,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import AdminGlobalSearch from "./AdminGlobalSearch";
