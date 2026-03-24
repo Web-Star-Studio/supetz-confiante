@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
+import { useAuditLog } from "@/hooks/useAuditLog";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, AlertTriangle, ArrowUpCircle, ArrowDownCircle, Search,
