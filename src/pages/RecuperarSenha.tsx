@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { motion } from "framer-motion";
 import { Mail, ArrowLeft, Loader2, CheckCircle } from "lucide-react";
+import supetLogo from "@/assets/supet-logo-header.png";
 
 export default function RecuperarSenha() {
   const { resetPassword } = useAuth();
