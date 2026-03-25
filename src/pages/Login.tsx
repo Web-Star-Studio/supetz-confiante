@@ -45,7 +45,7 @@ export default function Login() {
         className="w-full max-w-md relative z-10"
       >
         <Link to="/" className="flex justify-center mb-8">
-          <img src="/supetNewLogo.svg" alt="Supet" className="h-10" />
+          <img src="/supetNewLogo.svg" alt="Supet" className="h-60" />
         </Link>
 
         <div className="bg-supet-bg-alt rounded-3xl p-8 md:p-10">
