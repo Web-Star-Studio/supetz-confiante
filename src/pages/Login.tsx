@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
 import { motion } from "framer-motion";
 import { Mail, Lock, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import supetLogo from "@/assets/supet-logo-header.png";
 
 export default function Login() {
   const { signIn, isAdmin } = useAuth();
@@ -45,7 +46,7 @@ export default function Login() {
         className="w-full max-w-md relative z-10"
       >
         <Link to="/" className="flex justify-center mb-8">
-          <img src="/supetNewLogo.svg" alt="Supet" className="h-60" />
+          <img src={supetLogo} alt="Supet" className="h-60" />
         </Link>
 
         <div className="bg-supet-bg-alt rounded-3xl p-8 md:p-10">
