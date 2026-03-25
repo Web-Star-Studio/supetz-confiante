@@ -11,6 +11,11 @@
     <priority>0.9</priority>
   </url>
   <url>
+    <loc>https://supetz-playful-trust.lovable.app/blog</loc>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://supetz-playful-trust.lovable.app/sobre</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -19,11 +24,6 @@
     <loc>https://supetz-playful-trust.lovable.app/ciencia</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://supetz-playful-trust.lovable.app/blog</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://supetz-playful-trust.lovable.app/faq</loc>
