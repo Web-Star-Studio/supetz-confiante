@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Lock, Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
+import supetLogo from "@/assets/supet-logo-header.png";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
@@ -64,8 +65,8 @@ export default function ResetPassword() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
       <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ type: "spring" as const, stiffness: 80, damping: 20 }} className="w-full max-w-md">
-        <Link to="/" className="flex justify-center mb-8">
-          <img src="/supetNewLogo.svg" alt="Supet" className="h-10" />
+        <Link to="/" className="flex justify-center mb-6">
+          <img src={supetLogo} alt="Supet" className="h-16 md:h-20 w-auto" />
         </Link>
 
         <div className="bg-card rounded-3xl p-8 md:p-10 border border-border">
