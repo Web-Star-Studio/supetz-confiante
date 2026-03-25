@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
 import { Lock, Eye, EyeOff, Loader2, CheckCircle } from "lucide-react";
+import supetLogo from "@/assets/supet-logo-header.png";
 
 export default function ResetPassword() {
   const navigate = useNavigate();
