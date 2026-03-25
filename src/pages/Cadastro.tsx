@@ -36,9 +36,9 @@ export default function Cadastro() {
       <div className="min-h-screen bg-supet-bg flex items-center justify-center px-4 relative overflow-hidden">
         <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full bg-primary/10 pointer-events-none" />
         <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="w-full max-w-md relative z-10 text-center">
-          <Link to="/" className="flex justify-center mb-8">
-            <img src="/supetNewLogo.svg" alt="Supet" className="h-10" />
-          </Link>
+           <Link to="/" className="flex justify-center mb-6">
+             <img src={supetLogo} alt="Supet" className="h-16 md:h-20 w-auto" />
+           </Link>
           <div className="bg-supet-bg-alt rounded-3xl p-10">
             <div className="w-16 h-16 rounded-full bg-primary/15 flex items-center justify-center mx-auto mb-6">
               <Mail className="w-8 h-8 text-primary" />
