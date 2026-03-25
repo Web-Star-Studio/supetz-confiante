@@ -4,6 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
 import { motion } from "framer-motion";
 import { Mail, Lock, User, Eye, EyeOff, ArrowRight, Loader2 } from "lucide-react";
+import supetLogo from "@/assets/supet-logo-header.png";
 
 export default function Cadastro() {
   const { signUp } = useAuth();
