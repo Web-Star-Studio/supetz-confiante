@@ -43,10 +43,20 @@ interface CampaignWithMetrics extends Campaign {
   couponsTotal: number;
 }
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  category: string;
+  html_content: string;
+  accent_color: string;
+}
+
 const defaultForm = {
   name: "",
   type: "notification" as "notification" | "coupon" | "both",
   message: "",
+  template_id: "" as string,
   coupon_discount_type: "percentage" as "percentage" | "fixed",
   coupon_discount_value: 10,
   coupon_min_order: 50,
