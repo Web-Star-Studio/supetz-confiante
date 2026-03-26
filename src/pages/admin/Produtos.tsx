@@ -229,7 +229,20 @@ export default function AdminProdutos() {
         </div>
       )}
 
-      <AnimatePresence>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-6">
+          <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+            <ChevronLeft className="w-4 h-4" /> Anterior
+          </button>
+          <span className="text-sm text-muted-foreground">{page + 1} de {totalPages}</span>
+          <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+            Próximo <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
         {deleteTarget && <DeleteConfirmation name={deleteTarget.name} onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />}
       </AnimatePresence>
 
