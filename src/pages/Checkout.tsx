@@ -58,6 +58,10 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]);
 
+  // Affiliate referral state
+  const [affiliateInfo, setAffiliateInfo] = useState<{ name: string; coupon_code: string | null; ref_slug: string } | null>(null);
+  const [affiliateCouponApplied, setAffiliateCouponApplied] = useState(false);
+
   // Points state
   const [totalPoints, setTotalPoints] = useState(0);
   const [pointsToUse, setPointsToUse] = useState(0);
