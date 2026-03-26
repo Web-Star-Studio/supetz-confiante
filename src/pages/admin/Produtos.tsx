@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Loader2, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, ImageIcon, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 
 const PAGE_SIZE = 12;
+
+type ProdSortCol = "created_at" | "price" | "quantity" | "title";
+type ProdSortDir = "asc" | "desc";
 
 interface ProductForm {
   title: string;
