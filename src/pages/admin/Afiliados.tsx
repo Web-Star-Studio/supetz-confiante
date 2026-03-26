@@ -470,6 +470,97 @@ export default function Afiliados() {
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Add Affiliate Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Adicionar Afiliado</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-bold text-muted-foreground mb-1 block">Nome *</label>
+              <input
+                value={addForm.name}
+                onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                placeholder="Nome completo"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-bold text-muted-foreground mb-1 block">Email *</label>
+              <input
+                type="email"
+                value={addForm.email}
+                onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                placeholder="email@exemplo.com"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Instagram</label>
+                <input
+                  value={addForm.instagram}
+                  onChange={(e) => setAddForm({ ...addForm, instagram: e.target.value })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                  placeholder="@usuario"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Tipo de Canal</label>
+                <select
+                  value={addForm.channel_type}
+                  onChange={(e) => setAddForm({ ...addForm, channel_type: e.target.value })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                >
+                  <option value="influencer">Influenciador</option>
+                  <option value="partner">Parceiro</option>
+                  <option value="creator">Creator</option>
+                  <option value="vet">Veterinário</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Comissão (%)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={addForm.commission_percent}
+                  onChange={(e) => setAddForm({ ...addForm, commission_percent: Number(e.target.value) })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Chave Pix</label>
+                <input
+                  value={addForm.pix_key}
+                  onChange={(e) => setAddForm({ ...addForm, pix_key: e.target.value })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                  placeholder="CPF, email ou telefone"
+                />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={addForm.autoApprove}
+                onChange={(e) => setAddForm({ ...addForm, autoApprove: e.target.checked })}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+              <span className="text-sm text-foreground">Aprovar automaticamente (gera cupom e link)</span>
+            </label>
+            <button
+              onClick={handleAddAffiliate}
+              className="w-full bg-primary text-primary-foreground py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition"
+            >
+              Adicionar Afiliado
+            </button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </AdminLayout>
   );
 }
