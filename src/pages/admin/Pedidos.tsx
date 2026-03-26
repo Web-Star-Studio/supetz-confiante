@@ -121,23 +121,9 @@ export default function AdminPedidos() {
         <div className="flex gap-3 mb-6 flex-wrap">
           <div className="flex items-center gap-2 rounded-2xl bg-card px-4 py-2.5">
             <ShoppingCart className="w-4 h-4 text-primary" />
-            <span className="text-sm font-bold text-foreground">{orders.length}</span>
+            <span className="text-sm font-bold text-foreground">{totalCount}</span>
             <span className="text-xs text-muted-foreground">total</span>
           </div>
-          {pendingCount > 0 && (
-            <div className="flex items-center gap-2 rounded-2xl bg-amber-500/10 px-4 py-2.5">
-              <Clock className="w-4 h-4 text-amber-600" />
-              <span className="text-sm font-bold text-amber-700">{pendingCount}</span>
-              <span className="text-xs text-amber-600">pendentes</span>
-            </div>
-          )}
-          {shippedCount > 0 && (
-            <div className="flex items-center gap-2 rounded-2xl bg-violet-500/10 px-4 py-2.5">
-              <Truck className="w-4 h-4 text-violet-600" />
-              <span className="text-sm font-bold text-violet-700">{shippedCount}</span>
-              <span className="text-xs text-violet-600">em trânsito</span>
-            </div>
-          )}
         </div>
       )}
 
