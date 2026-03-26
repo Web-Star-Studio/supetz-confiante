@@ -1,32 +1,36 @@
 
 
-## Vincular Afiliados a Contas de Clientes
+## Corrigir vinculação de afiliado existente
 
-### Problema Atual
-Quando o admin cria um afiliado manualmente, usa um `user_id` placeholder (`00000000-...`). Isso impede que o afiliado acesse o painel de parceiro mesmo tendo conta. Não há vinculação automática nem botão para alternar entre painéis.
+### Problema
+O afiliado `design@webstar.studio` foi adicionado pelo admin **antes** da função `find_user_id_by_email` existir, então ficou com o `user_id` placeholder. O login via Google não dispara a trigger `handle_new_user` porque o usuário já existia. Resultado: o botão "Painel de Parceiro" não aparece no perfil.
 
-### Solução em 3 Partes
+### Solução
 
-#### 1. Vincular na criação pelo admin
-No `handleAddAffiliate` em `Afiliados.tsx`, antes de inserir, buscar na tabela `profiles` um usuário com email correspondente (via join ou busca direta). Se encontrar, usar o `user_id` real em vez do placeholder.
+#### 1. Migration SQL — Corrigir registros existentes e adicionar trigger de login
+Criar uma migration que:
+- **Atualiza imediatamente** todos os afiliados com placeholder `user_id` que possuem email correspondente em `auth.users`
+- **Cria uma trigger no evento de login** (`on_auth_sign_in`) que vincula afiliados automaticamente — cobrindo o caso de usuários que já existem mas ainda não foram vinculados
 
-#### 2. Vincular automaticamente no cadastro
-Criar uma trigger no banco (ou adicionar lógica à função `handle_new_user`) que, ao criar um novo usuário, verifica se existe um registro em `affiliates` com o mesmo email e `user_id` placeholder, e atualiza o `user_id` para o do novo usuário.
+```sql
+-- Fix existing unlinked affiliates
+UPDATE public.affiliates a
+SET user_id = u.id
+FROM auth.users u
+WHERE a.email = u.email
+  AND a.user_id = '00000000-0000-0000-0000-000000000000';
+```
 
-**Migration SQL:**
-- Alterar `handle_new_user()` para incluir: `UPDATE affiliates SET user_id = NEW.id WHERE email = (NEW.raw_user_meta_data->>'email' OR NEW.email) AND user_id = '00000000-...'`
+Isso resolverá o caso do `design@webstar.studio` imediatamente e qualquer outro afiliado não vinculado.
 
-#### 3. Botão de alternar painel
-- **Na página Perfil** (`Perfil.tsx`): Verificar se o usuário tem registro ativo em `affiliates`. Se sim, mostrar um botão "Painel de Parceiro" que leva a `/parceiros/painel`.
-- **No Dashboard do Afiliado** (`affiliate/Dashboard.tsx`): Adicionar botão "Minha Conta" que leva a `/perfil`.
+#### 2. Nenhuma alteração de código necessária
+O código no `Perfil.tsx` já verifica `affiliates` pelo `user_id` do usuário logado. Uma vez que o `user_id` seja atualizado no banco, o botão aparecerá automaticamente.
 
-### Arquivos Modificados
-- `src/pages/admin/Afiliados.tsx` — buscar user_id real por email ao adicionar
-- `src/pages/Perfil.tsx` — botão condicional para painel de parceiro
-- `src/pages/affiliate/Dashboard.tsx` — botão para voltar ao perfil
-- **Migration SQL** — atualizar `handle_new_user()` para vincular afiliados automaticamente
+### Arquivos modificados
+- **Nova migration SQL** — atualiza afiliados existentes não vinculados
 
-### Detalhes Técnicos
-- A busca por email no admin usará: query profiles + join com auth (ou busca direta pelo email no profiles, considerando que profiles não tem email — precisará buscar via `supabase.auth.admin` ou pela tabela affiliates mesmo, comparando emails)
-- Na verdade, como profiles não armazena email, a abordagem no admin será: buscar todos profiles e cruzar, ou usar uma edge function. Alternativa mais simples: usar `supabase.rpc` ou buscar via `auth.users` não é possível pelo client. **Solução pragmática**: criar uma DB function `link_affiliate_by_email(email text)` que faz o lookup em `auth.users` (security definer) e retorna o user_id, para usar no admin.
+### Detalhes técnicos
+- O `user_id` do afiliado `design@webstar.studio` no banco é `00000000-0000-0000-0000-000000000000`
+- O `user_id` real no `auth.users` é `1fcf55e8-d128-4584-ac60-57b162abb938`
+- A migration fará o UPDATE cruzando emails entre `affiliates` e `auth.users`
 
