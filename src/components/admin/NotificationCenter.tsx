@@ -166,7 +166,8 @@ export default function NotificationCenter() {
               <span className="w-px h-5 bg-border self-center mx-1" />
               <button className={chipClass(typeFilter === "all")} onClick={() => setTypeFilter("all")}>Todos tipos</button>
               <button className={chipClass(typeFilter === "order")} onClick={() => setTypeFilter("order")}>Pedidos</button>
-              <button className={chipClass(typeFilter === "restock" as any)} onClick={() => setTypeFilter("restock" as any)}>Reposição</button>
+              <button className={chipClass(typeFilter === "restock")} onClick={() => setTypeFilter("restock")}>Reposição</button>
+              <button className={chipClass(typeFilter === "stock")} onClick={() => setTypeFilter("stock")}>Estoque</button>
             </div>
 
             {/* List */}

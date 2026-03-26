@@ -75,7 +75,11 @@ export default function AdminCRM() {
     });
 
     setClients(enriched);
-    setLoading(false);
+    } catch (err) {
+      toast.error("Erro ao carregar dados de clientes");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);

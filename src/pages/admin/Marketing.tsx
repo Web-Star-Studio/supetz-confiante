@@ -154,7 +154,7 @@ export default function AdminMarketing() {
       userIds = userIds.filter((uid) => (spentMap[uid] || 0) >= Number(form.segment_min_spent));
     }
 
-    if (userIds.length === 0) { setSending(false); return; }
+    if (userIds.length === 0) { toast.warning("Nenhum cliente encontrado para este segmento"); setSending(false); return; }
 
     // Create campaign
     const { data: campData } = await supabase.from("campaigns").insert({
