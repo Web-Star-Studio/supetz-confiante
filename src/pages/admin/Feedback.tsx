@@ -58,7 +58,7 @@ export default function AdminFeedback() {
     }
 
     const { data, count } = await query;
-    setFeedbacks((data as FeedbackRow[] | null) || []);
+    setFeedbacks((data as unknown as FeedbackRow[] | null) || []);
     setTotal(count || 0);
     setLoading(false);
   };
