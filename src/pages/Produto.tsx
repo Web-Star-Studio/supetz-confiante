@@ -27,6 +27,9 @@ export default function Produto() {
   const [added, setAdded] = useState(false);
   const [zoomPos, setZoomPos] = useState<{ x: number; y: number } | null>(null);
   const imgRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const isSwiping = useRef(false);
   const { images: bucketImages } = useProductImages(id);
 
   useEffect(() => {
