@@ -56,6 +56,11 @@ export default function Afiliados() {
   const [search, setSearch] = useState("");
   const [selectedAffiliate, setSelectedAffiliate] = useState<Affiliate | null>(null);
   const [editCommission, setEditCommission] = useState<number>(10);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addForm, setAddForm] = useState({
+    name: "", email: "", instagram: "", channel_type: "influencer",
+    commission_percent: 10, pix_key: "", autoApprove: false,
+  });
 
   useEffect(() => {
     loadData();
