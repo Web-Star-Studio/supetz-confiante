@@ -39,8 +39,6 @@ const iconVariants = {
     rotate: 0,
     transition: {
       delay: i * 0.12 + 0.25,
-      duration: motionTokens.durationFast,
-      ease: [...motionTokens.easeOut] as number[],
       type: "spring" as const,
       stiffness: 260,
       damping: 18,
