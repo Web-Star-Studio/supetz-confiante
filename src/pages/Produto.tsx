@@ -355,14 +355,20 @@ export default function Produto() {
                   { icon: ShieldCheck, label: "Compra segura", sub: "Dados protegidos" },
                   { icon: RotateCcw, label: "Troca fácil", sub: "Até 30 dias" },
                   { icon: Leaf, label: "100% natural", sub: "Sem químicos" },
-                ].map(({ icon: Icon, label, sub }) => (
-                  <div key={label} className="flex items-center gap-2.5 p-3 rounded-xl bg-background border border-border">
+                ].map(({ icon: Icon, label, sub }, i) => (
+                  <motion.div
+                    key={label}
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.4, delay: 0.3 + i * 0.1, ease: "easeOut" }}
+                    className="flex items-center gap-2.5 p-3 rounded-xl bg-background border border-border"
+                  >
                     <Icon className="w-5 h-5 text-primary shrink-0" />
                     <div>
                       <p className="text-xs font-semibold text-foreground leading-tight">{label}</p>
                       <p className="text-[10px] text-muted-foreground">{sub}</p>
                     </div>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
