@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import {
   Handshake, Users, DollarSign, TrendingUp, CheckCircle, XCircle,
-  Clock, Eye, Loader2, Search, Wallet,
+  Clock, Eye, Loader2, Search, Wallet, Plus,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -56,6 +56,11 @@ export default function Afiliados() {
   const [search, setSearch] = useState("");
   const [selectedAffiliate, setSelectedAffiliate] = useState<Affiliate | null>(null);
   const [editCommission, setEditCommission] = useState<number>(10);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addForm, setAddForm] = useState({
+    name: "", email: "", instagram: "", channel_type: "influencer",
+    commission_percent: 10, pix_key: "", autoApprove: false,
+  });
 
   useEffect(() => {
     loadData();
@@ -174,6 +179,43 @@ export default function Afiliados() {
     }
   };
 
+  const handleAddAffiliate = async () => {
+    if (!addForm.name || !addForm.email) {
+      toast.error("Nome e email são obrigatórios");
+      return;
+    }
+
+    const refSlug = addForm.name.split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "") + Math.random().toString(36).substring(2, 5);
+    const couponCode = addForm.autoApprove
+      ? `SUPET-${addForm.name.split(" ")[0].toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
+      : null;
+
+    // Use a placeholder user_id for admin-created affiliates (will be linked later if they register)
+    const { error } = await supabase.from("affiliates").insert({
+      name: addForm.name,
+      email: addForm.email,
+      instagram: addForm.instagram || null,
+      channel_type: addForm.channel_type,
+      commission_percent: addForm.commission_percent,
+      pix_key: addForm.pix_key || null,
+      ref_slug: refSlug,
+      coupon_code: couponCode,
+      status: addForm.autoApprove ? "active" : "pending",
+      approved_at: addForm.autoApprove ? new Date().toISOString() : null,
+      user_id: "00000000-0000-0000-0000-000000000000",
+    });
+
+    if (error) {
+      toast.error("Erro ao adicionar afiliado: " + error.message);
+    } else {
+      toast.success(`${addForm.name} adicionado${addForm.autoApprove ? " e aprovado" : ""}!`);
+      log({ action: "create", entity_type: "affiliate", entity_id: "new", details: { name: addForm.name, autoApprove: addForm.autoApprove } });
+      setShowAddDialog(false);
+      setAddForm({ name: "", email: "", instagram: "", channel_type: "influencer", commission_percent: 10, pix_key: "", autoApprove: false });
+      loadData();
+    }
+  };
+
   const filtered = affiliates.filter((a) => {
     if (statusFilter !== "all" && a.status !== statusFilter) return false;
     if (search && !a.name.toLowerCase().includes(search.toLowerCase()) && !a.email.toLowerCase().includes(search.toLowerCase())) return false;
@@ -206,11 +248,19 @@ export default function Afiliados() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-black text-foreground flex items-center gap-2">
-            <Handshake className="w-6 h-6 text-primary" /> Programa de Afiliados
-          </h1>
-          <p className="text-sm text-muted-foreground">Gerencie parceiros, influenciadores e comissões.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-foreground flex items-center gap-2">
+              <Handshake className="w-6 h-6 text-primary" /> Programa de Afiliados
+            </h1>
+            <p className="text-sm text-muted-foreground">Gerencie parceiros, influenciadores e comissões.</p>
+          </div>
+          <button
+            onClick={() => setShowAddDialog(true)}
+            className="bg-primary text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:opacity-90 transition"
+          >
+            <Plus className="w-4 h-4" /> Adicionar Afiliado
+          </button>
         </div>
 
         {/* KPIs */}
@@ -418,6 +468,97 @@ export default function Afiliados() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Add Affiliate Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Adicionar Afiliado</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div>
+              <label className="text-sm font-bold text-muted-foreground mb-1 block">Nome *</label>
+              <input
+                value={addForm.name}
+                onChange={(e) => setAddForm({ ...addForm, name: e.target.value })}
+                className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                placeholder="Nome completo"
+              />
+            </div>
+            <div>
+              <label className="text-sm font-bold text-muted-foreground mb-1 block">Email *</label>
+              <input
+                type="email"
+                value={addForm.email}
+                onChange={(e) => setAddForm({ ...addForm, email: e.target.value })}
+                className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                placeholder="email@exemplo.com"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Instagram</label>
+                <input
+                  value={addForm.instagram}
+                  onChange={(e) => setAddForm({ ...addForm, instagram: e.target.value })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                  placeholder="@usuario"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Tipo de Canal</label>
+                <select
+                  value={addForm.channel_type}
+                  onChange={(e) => setAddForm({ ...addForm, channel_type: e.target.value })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                >
+                  <option value="influencer">Influenciador</option>
+                  <option value="partner">Parceiro</option>
+                  <option value="creator">Creator</option>
+                  <option value="vet">Veterinário</option>
+                </select>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Comissão (%)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={50}
+                  value={addForm.commission_percent}
+                  onChange={(e) => setAddForm({ ...addForm, commission_percent: Number(e.target.value) })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                />
+              </div>
+              <div>
+                <label className="text-sm font-bold text-muted-foreground mb-1 block">Chave Pix</label>
+                <input
+                  value={addForm.pix_key}
+                  onChange={(e) => setAddForm({ ...addForm, pix_key: e.target.value })}
+                  className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                  placeholder="CPF, email ou telefone"
+                />
+              </div>
+            </div>
+            <label className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={addForm.autoApprove}
+                onChange={(e) => setAddForm({ ...addForm, autoApprove: e.target.checked })}
+                className="w-4 h-4 rounded border-border text-primary focus:ring-primary"
+              />
+              <span className="text-sm text-foreground">Aprovar automaticamente (gera cupom e link)</span>
+            </label>
+            <button
+              onClick={handleAddAffiliate}
+              className="w-full bg-primary text-primary-foreground py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition"
+            >
+              Adicionar Afiliado
+            </button>
+          </div>
         </DialogContent>
       </Dialog>
     </AdminLayout>
