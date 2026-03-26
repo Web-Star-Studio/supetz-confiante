@@ -674,7 +674,7 @@ export default function AutomationsTab() {
                     })()}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground mb-1 block">Nome *</label>
                       <input
@@ -692,6 +692,18 @@ export default function AutomationsTab() {
                         placeholder="Descreva o objetivo"
                         className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                       />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" /> Horário de execução
+                      </label>
+                      <input
+                        type="time"
+                        value={createForm.scheduled_time}
+                        onChange={(e) => setCreateForm({ ...createForm, scheduled_time: e.target.value })}
+                        className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      />
+                      <p className="text-[10px] text-muted-foreground mt-1">Horário diário para verificar e disparar</p>
                     </div>
                   </div>
 
