@@ -67,7 +67,7 @@ export default function AdminFeedback() {
   const [allFeedbacks, setAllFeedbacks] = useState<FeedbackRow[]>([]);
   useEffect(() => {
     supabase.from("chat_feedback" as any).select("rating, created_at").then(({ data }) => {
-      setAllFeedbacks((data as FeedbackRow[] | null) || []);
+      setAllFeedbacks((data as unknown as FeedbackRow[] | null) || []);
     });
   }, []);
 
