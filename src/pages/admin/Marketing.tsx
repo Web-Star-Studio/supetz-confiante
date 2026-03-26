@@ -11,6 +11,7 @@ import { useAuditLog } from "@/hooks/useAuditLog";
 import { toast } from "sonner";
 import NewsletterTab from "@/components/admin/NewsletterTab";
 import CampaignTemplatesTab from "@/components/admin/marketing/CampaignTemplatesTab";
+import AutomationsTab from "@/components/admin/marketing/AutomationsTab";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
