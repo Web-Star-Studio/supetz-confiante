@@ -32,6 +32,41 @@ interface SavedAddress {
   is_default: boolean;
 }
 
+// --- Utility functions ---
+function maskCPF(value: string) {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+function maskCEP(value: string) {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 8)
+    .replace(/(\d{5})(\d)/, "$1-$2");
+}
+
+function validateCPF(cpf: string): boolean {
+  const digits = cpf.replace(/\D/g, "");
+  if (digits.length !== 11 || /^(\d)\1{10}$/.test(digits)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
+  let rest = (sum * 10) % 11;
+  if (rest === 10) rest = 0;
+  if (rest !== parseInt(digits[9])) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
+  rest = (sum * 10) % 11;
+  if (rest === 10) rest = 0;
+  return rest === parseInt(digits[10]);
+}
+
+const SHIPPING_FREE_THRESHOLD = 299.80;
+const SHIPPING_COST = 19.90;
+
 export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
@@ -45,12 +80,15 @@ export default function Checkout() {
     address: "",
     number: "",
     complement: "",
+    neighborhood: "",
     city: "",
     state: "",
     paymentMethod: "credit_card"
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [cepLoading, setCepLoading] = useState(false);
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
@@ -71,6 +109,9 @@ export default function Checkout() {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
+  // Shipping
+  const shippingCost = totalPrice >= SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_COST;
+
   // Calculate discounts
   const couponDiscount = appliedCoupon
     ? appliedCoupon.discount_type === "percentage"
@@ -78,7 +119,7 @@ export default function Checkout() {
       : appliedCoupon.discount_value
     : 0;
   const totalDiscount = couponDiscount + pointsValue;
-  const finalPrice = Math.max(0, totalPrice - totalDiscount);
+  const finalPrice = Math.max(0, totalPrice - totalDiscount + shippingCost);
 
   // Load affiliate referral data
   useEffect(() => {
