@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Handshake, TrendingUp, Gift, Link2, Users, Star, CheckCircle, Loader2 } from "lucide-react";
