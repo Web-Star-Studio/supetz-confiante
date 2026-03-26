@@ -702,6 +702,14 @@ export default function AdminMarketing() {
                                 📅 {new Date(camp.scheduled_for).toLocaleDateString("pt-BR")}
                               </span>
                             )}
+                            {(camp as any).template_id && (() => {
+                              const tpl = allTemplates.find((t) => t.id === (camp as any).template_id);
+                              return tpl ? (
+                                <span className="text-[10px] font-medium text-primary flex items-center gap-1">
+                                  <FileText className="w-3 h-3" />{tpl.name}
+                                </span>
+                              ) : null;
+                            })()}
                           </div>
                         </div>
                         <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground flex-shrink-0">
