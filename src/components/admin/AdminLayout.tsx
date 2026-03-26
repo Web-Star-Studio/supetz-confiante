@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   LayoutDashboard, Package, ShoppingCart, Users, Settings, LogOut, Menu, X, ChevronRight,
-  Gift, Megaphone, Boxes, Wallet, ScrollText, PanelLeftClose, PanelLeft, BookOpen, Brain, FileText,
+  Gift, Megaphone, Boxes, Wallet, ScrollText, PanelLeftClose, PanelLeft, BookOpen, Brain, FileText, Handshake,
 } from "lucide-react";
 import NotificationCenter from "./NotificationCenter";
 import AdminGlobalSearch from "./AdminGlobalSearch";
