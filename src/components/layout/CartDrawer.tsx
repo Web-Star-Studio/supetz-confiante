@@ -1,8 +1,9 @@
-import { useRef } from "react";
-import { ShoppingBag, X, Minus, Plus, Trash2, ShieldCheck, ArrowRight } from "lucide-react";
+import { useRef, useState, useEffect } from "react";
+import { ShoppingBag, X, Minus, Plus, Trash2, ShieldCheck, ArrowRight, Sparkles } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useDragControls, PanInfo } from "framer-motion";
+import { getActiveRef } from "@/components/affiliate/RefTracker";
 
 const FREE_SHIPPING_THRESHOLD = 299.80;
 
@@ -11,13 +12,19 @@ export default function CartDrawer() {
   const navigate = useNavigate();
   const dragControls = useDragControls();
   const constraintsRef = useRef(null);
+  const [hasRef, setHasRef] = useState(false);
+
+  useEffect(() => {
+    if (isCartOpen) {
+      setHasRef(!!getActiveRef());
+    }
+  }, [isCartOpen]);
 
   const progress = Math.min((totalPrice / FREE_SHIPPING_THRESHOLD) * 100, 100);
   const remainingForFreeShipping = Math.max(FREE_SHIPPING_THRESHOLD - totalPrice, 0);
   const hasFreeShipping = progress >= 100;
 
   const handleDragEnd = (_: any, info: PanInfo) => {
-    // Swipe right to close (threshold 100px or velocity > 500)
     if (info.offset.x > 100 || info.velocity.x > 500) {
       closeCart();
     }
@@ -65,6 +72,14 @@ export default function CartDrawer() {
             <X className="w-5 h-5" />
           </button>
         </div>
+
+        {/* Referral badge */}
+        {hasRef && (
+          <div className="mx-5 mt-3 flex items-center gap-2 bg-primary/10 text-primary rounded-full px-4 py-2 text-xs font-bold">
+            <Sparkles className="w-3.5 h-3.5" />
+            Indicação ativa — desconto será aplicado no checkout
+          </div>
+        )}
 
         {/* Free Shipping Progress */}
         <div className="bg-muted/50 px-5 py-3 md:px-6 md:py-4 border-b border-border/30">
