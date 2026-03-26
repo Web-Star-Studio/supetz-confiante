@@ -253,8 +253,9 @@ export default function Checkout() {
         });
       }
 
-      // Clear affiliate ref after purchase
+      // Clear affiliate ref and cart after purchase
       localStorage.removeItem("supet_ref");
+      clearCart();
 
       navigate("/success");
     } catch {
