@@ -248,11 +248,19 @@ export default function Afiliados() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-black text-foreground flex items-center gap-2">
-            <Handshake className="w-6 h-6 text-primary" /> Programa de Afiliados
-          </h1>
-          <p className="text-sm text-muted-foreground">Gerencie parceiros, influenciadores e comissões.</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-black text-foreground flex items-center gap-2">
+              <Handshake className="w-6 h-6 text-primary" /> Programa de Afiliados
+            </h1>
+            <p className="text-sm text-muted-foreground">Gerencie parceiros, influenciadores e comissões.</p>
+          </div>
+          <button
+            onClick={() => setShowAddDialog(true)}
+            className="bg-primary text-primary-foreground px-4 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 hover:opacity-90 transition"
+          >
+            <Plus className="w-4 h-4" /> Adicionar Afiliado
+          </button>
         </div>
 
         {/* KPIs */}
