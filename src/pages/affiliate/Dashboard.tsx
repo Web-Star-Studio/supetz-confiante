@@ -171,7 +171,7 @@ export default function AffiliateDashboard() {
   const pendingEarnings = sales.filter((s) => s.status === "pending").reduce((sum, s) => sum + s.commission_amount, 0);
   const totalPaid = payouts.filter((p) => p.status === "paid").reduce((sum, p) => sum + p.amount, 0);
   const siteUrl = window.location.origin;
-  const refLink = `${siteUrl}/?ref=${affiliate.ref_slug}`;
+  const refLink = `https://supet.com.br/?ref=${affiliate.ref_slug}`;
 
   const kpis = [
     { label: "Total Ganho", value: `R$ ${affiliate.total_earned.toFixed(2).replace(".", ",")}`, icon: DollarSign, color: "text-green-500" },
