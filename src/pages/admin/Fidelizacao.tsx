@@ -189,7 +189,7 @@ export default function Fidelizacao() {
         </div>
 
         {/* Tabs */}
-        <div className="flex gap-1 bg-supet-bg-alt rounded-full p-1 w-fit">
+        <div className="flex gap-1 bg-card rounded-full p-1 w-fit">
           {(["overview", "points", "coupons"] as const).map((t) => (
             <button
               key={t}
@@ -212,7 +212,7 @@ export default function Fidelizacao() {
                 { label: "Cupons ativos", value: activeCoupons.length, icon: Ticket, color: "text-blue-600" },
                 { label: "Usuários no programa", value: uniqueUsers, icon: Users, color: "text-purple-600" },
               ].map((m, i) => (
-                <div key={i} className="rounded-2xl bg-supet-bg-alt p-5 border border-border/50">
+                <div key={i} className="rounded-2xl bg-card p-5 border border-border/50">
                   <div className="flex items-center gap-2 mb-2">
                     <m.icon className={`h-5 w-5 ${m.color}`} />
                     <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">{m.label}</span>
@@ -224,7 +224,7 @@ export default function Fidelizacao() {
 
             {/* Charts */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <div className="rounded-2xl bg-supet-bg-alt p-6 border border-border/50">
+              <div className="rounded-2xl bg-card p-6 border border-border/50">
                 <h3 className="text-sm font-bold text-foreground mb-4">Pontos emitidos (últimos 14 dias)</h3>
                 <ResponsiveContainer width="100%" height={220}>
                   <BarChart data={dailyPoints}>
@@ -237,7 +237,7 @@ export default function Fidelizacao() {
                 </ResponsiveContainer>
               </div>
 
-              <div className="rounded-2xl bg-supet-bg-alt p-6 border border-border/50">
+              <div className="rounded-2xl bg-card p-6 border border-border/50">
                 <h3 className="text-sm font-bold text-foreground mb-4">Origem dos pontos</h3>
                 {sourceChartData.length > 0 ? (
                   <ResponsiveContainer width="100%" height={220}>
@@ -257,7 +257,7 @@ export default function Fidelizacao() {
             </div>
 
             {/* Coupon usage */}
-            <div className="rounded-2xl bg-supet-bg-alt p-6 border border-border/50">
+            <div className="rounded-2xl bg-card p-6 border border-border/50">
               <h3 className="text-sm font-bold text-foreground mb-2">Taxa de uso de cupons</h3>
               <div className="flex items-center gap-4">
                 <div className="flex-1 h-3 rounded-full bg-border overflow-hidden">
@@ -280,12 +280,12 @@ export default function Fidelizacao() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Buscar por usuário ou descrição..."
-                  className="w-full rounded-full bg-supet-bg-alt pl-10 pr-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
+                  className="w-full rounded-full bg-card pl-10 pr-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
                 />
               </div>
             </div>
 
-            <div className="rounded-2xl bg-supet-bg-alt border border-border/50 overflow-hidden">
+            <div className="rounded-2xl bg-card border border-border/50 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -329,12 +329,12 @@ export default function Fidelizacao() {
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Buscar por código ou usuário..."
-                  className="w-full rounded-full bg-supet-bg-alt pl-10 pr-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
+                  className="w-full rounded-full bg-card pl-10 pr-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary transition-all"
                 />
               </div>
             </div>
 
-            <div className="rounded-2xl bg-supet-bg-alt border border-border/50 overflow-hidden">
+            <div className="rounded-2xl bg-card border border-border/50 overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
@@ -386,7 +386,7 @@ export default function Fidelizacao() {
         {/* Add Points Modal */}
         {showPointsForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm" onClick={() => setShowPointsForm(false)}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} onClick={(e) => e.stopPropagation()} className="bg-supet-bg rounded-3xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-xl space-y-5">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} onClick={(e) => e.stopPropagation()} className="bg-muted rounded-3xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-xl space-y-5">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Star className="h-5 w-5 text-primary" /> Dar pontos
               </h2>
@@ -395,7 +395,7 @@ export default function Fidelizacao() {
                 <select
                   value={newPoints.userId}
                   onChange={(e) => setNewPoints((p) => ({ ...p, userId: e.target.value }))}
-                  className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary"
                 >
                   <option value="">Selecione...</option>
                   {profiles.map((p) => (
@@ -405,14 +405,14 @@ export default function Fidelizacao() {
               </div>
               <div>
                 <label className="text-sm font-semibold text-foreground mb-1.5 block">Pontos</label>
-                <input type="number" value={newPoints.points} onChange={(e) => setNewPoints((p) => ({ ...p, points: Number(e.target.value) }))} className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
+                <input type="number" value={newPoints.points} onChange={(e) => setNewPoints((p) => ({ ...p, points: Number(e.target.value) }))} className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
               </div>
               <div>
                 <label className="text-sm font-semibold text-foreground mb-1.5 block">Descrição</label>
-                <input value={newPoints.description} onChange={(e) => setNewPoints((p) => ({ ...p, description: e.target.value }))} className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
+                <input value={newPoints.description} onChange={(e) => setNewPoints((p) => ({ ...p, description: e.target.value }))} className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
               </div>
               <div className="flex gap-3">
-                <button onClick={() => setShowPointsForm(false)} className="flex-1 rounded-full bg-supet-bg-alt py-3 text-sm font-bold text-foreground hover:bg-border transition-colors">Cancelar</button>
+                <button onClick={() => setShowPointsForm(false)} className="flex-1 rounded-full bg-card py-3 text-sm font-bold text-foreground hover:bg-border transition-colors">Cancelar</button>
                 <button onClick={handleAddPoints} disabled={savingPoints} className="flex-1 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
                   {savingPoints ? <Loader2 className="h-4 w-4 animate-spin" /> : <Star className="h-4 w-4" />}
                   {savingPoints ? "Salvando..." : "Adicionar"}
@@ -425,7 +425,7 @@ export default function Fidelizacao() {
         {/* Create Coupon Modal */}
         {showCouponForm && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-foreground/20 backdrop-blur-sm" onClick={() => setShowCouponForm(false)}>
-            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} onClick={(e) => e.stopPropagation()} className="bg-supet-bg rounded-3xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto">
+            <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} onClick={(e) => e.stopPropagation()} className="bg-muted rounded-3xl p-6 sm:p-8 max-w-md w-full mx-4 shadow-xl space-y-5 max-h-[90vh] overflow-y-auto">
               <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
                 <Ticket className="h-5 w-5 text-primary" /> Criar cupom
               </h2>
@@ -434,7 +434,7 @@ export default function Fidelizacao() {
                 <select
                   value={newCoupon.userId}
                   onChange={(e) => setNewCoupon((p) => ({ ...p, userId: e.target.value }))}
-                  className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary"
+                  className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary"
                 >
                   <option value="">Selecione...</option>
                   {profiles.map((p) => (
@@ -444,33 +444,33 @@ export default function Fidelizacao() {
               </div>
               <div>
                 <label className="text-sm font-semibold text-foreground mb-1.5 block">Código</label>
-                <input value={newCoupon.code} onChange={(e) => setNewCoupon((p) => ({ ...p, code: e.target.value.toUpperCase() }))} className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm font-mono font-bold text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary uppercase tracking-wider" placeholder="EX: SUPET20" />
+                <input value={newCoupon.code} onChange={(e) => setNewCoupon((p) => ({ ...p, code: e.target.value.toUpperCase() }))} className="w-full rounded-full bg-card px-4 py-2.5 text-sm font-mono font-bold text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary uppercase tracking-wider" placeholder="EX: SUPET20" />
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1.5 block">Tipo</label>
-                  <select value={newCoupon.discountType} onChange={(e) => setNewCoupon((p) => ({ ...p, discountType: e.target.value }))} className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary">
+                  <select value={newCoupon.discountType} onChange={(e) => setNewCoupon((p) => ({ ...p, discountType: e.target.value }))} className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary">
                     <option value="percentage">Percentual (%)</option>
                     <option value="fixed">Fixo (R$)</option>
                   </select>
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1.5 block">Valor</label>
-                  <input type="number" value={newCoupon.discountValue} onChange={(e) => setNewCoupon((p) => ({ ...p, discountValue: Number(e.target.value) }))} className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
+                  <input type="number" value={newCoupon.discountValue} onChange={(e) => setNewCoupon((p) => ({ ...p, discountValue: Number(e.target.value) }))} className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1.5 block">Pedido mínimo (R$)</label>
-                  <input type="number" value={newCoupon.minOrder} onChange={(e) => setNewCoupon((p) => ({ ...p, minOrder: Number(e.target.value) }))} className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
+                  <input type="number" value={newCoupon.minOrder} onChange={(e) => setNewCoupon((p) => ({ ...p, minOrder: Number(e.target.value) }))} className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1.5 block">Validade (dias)</label>
-                  <input type="number" value={newCoupon.expiresInDays} onChange={(e) => setNewCoupon((p) => ({ ...p, expiresInDays: Number(e.target.value) }))} className="w-full rounded-full bg-supet-bg-alt px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
+                  <input type="number" value={newCoupon.expiresInDays} onChange={(e) => setNewCoupon((p) => ({ ...p, expiresInDays: Number(e.target.value) }))} className="w-full rounded-full bg-card px-4 py-2.5 text-sm text-foreground outline-none ring-1 ring-border focus:ring-2 focus:ring-primary" />
                 </div>
               </div>
               <div className="flex gap-3">
-                <button onClick={() => setShowCouponForm(false)} className="flex-1 rounded-full bg-supet-bg-alt py-3 text-sm font-bold text-foreground hover:bg-border transition-colors">Cancelar</button>
+                <button onClick={() => setShowCouponForm(false)} className="flex-1 rounded-full bg-card py-3 text-sm font-bold text-foreground hover:bg-border transition-colors">Cancelar</button>
                 <button onClick={handleCreateCoupon} disabled={savingCoupon} className="flex-1 rounded-full bg-primary py-3 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
                   {savingCoupon ? <Loader2 className="h-4 w-4 animate-spin" /> : <Ticket className="h-4 w-4" />}
                   {savingCoupon ? "Criando..." : "Criar cupom"}

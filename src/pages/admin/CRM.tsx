@@ -5,6 +5,7 @@ import { Search, Plus, Tag, Download } from "lucide-react";
 import CRMFunnelCards from "@/components/admin/crm/CRMFunnelCards";
 import CRMClientList, { type EnrichedClient } from "@/components/admin/crm/CRMClientList";
 import CRMClientDrawer from "@/components/admin/crm/CRMClientDrawer";
+import { toast } from "sonner";
 
 export default function AdminCRM() {
   const [clients, setClients] = useState<EnrichedClient[]>([]);
@@ -20,6 +21,7 @@ export default function AdminCRM() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    try {
     const [profilesRes, ordersRes, pointsRes, statusRes, tagsRes, assignmentsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("user_id, total, created_at"),
@@ -28,6 +30,10 @@ export default function AdminCRM() {
       supabase.from("customer_tags").select("*").order("name"),
       supabase.from("customer_tag_assignments").select("user_id, tag_id"),
     ]);
+
+    if (profilesRes.error || ordersRes.error || pointsRes.error || statusRes.error || tagsRes.error || assignmentsRes.error) {
+      toast.error("Erro ao carregar dados de clientes");
+    }
 
     const profiles = profilesRes.data || [];
     const orders = ordersRes.data || [];
@@ -69,7 +75,11 @@ export default function AdminCRM() {
     });
 
     setClients(enriched);
-    setLoading(false);
+    } catch (err) {
+      toast.error("Erro ao carregar dados de clientes");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
   useEffect(() => { fetchData(); }, [fetchData]);
@@ -194,7 +204,7 @@ export default function AdminCRM() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nome ou telefone..."
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
           />
         </div>
 
@@ -214,7 +224,7 @@ export default function AdminCRM() {
             </button>
           ))}
           {!showNewTag ? (
-            <button onClick={() => setShowNewTag(true)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-supet-bg-alt text-muted-foreground hover:text-primary transition-colors">
+            <button onClick={() => setShowNewTag(true)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-card text-muted-foreground hover:text-primary transition-colors">
               <Plus className="w-3 h-3 inline mr-1" />Nova tag
             </button>
           ) : (
@@ -224,7 +234,7 @@ export default function AdminCRM() {
                 onChange={(e) => setNewTagName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCreateTag()}
                 placeholder="Nome da tag"
-                className="px-3 py-1.5 rounded-full text-xs bg-supet-bg-alt text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 w-28"
+                className="px-3 py-1.5 rounded-full text-xs bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 w-28"
                 autoFocus
               />
               <input type="color" value={newTagColor} onChange={(e) => setNewTagColor(e.target.value)} className="w-6 h-6 rounded-full border-0 cursor-pointer" />

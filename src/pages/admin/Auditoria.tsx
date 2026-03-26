@@ -67,11 +67,10 @@ export default function Auditoria() {
 
     const { data } = await query;
     if (data) {
-      const typedData = data as unknown as AuditLog[];
-      setLogs(typedData);
+      setLogs(data as AuditLog[]);
 
       // Fetch admin emails for display
-      const adminIds = [...new Set(typedData.map((l) => l.admin_id))];
+      const adminIds = [...new Set(data.map((l: any) => l.admin_id))];
       const { data: profiles } = await supabase
         .from("profiles")
         .select("user_id, full_name")

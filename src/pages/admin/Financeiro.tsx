@@ -206,13 +206,13 @@ export default function AdminFinanceiro() {
               key={p}
               onClick={() => setPeriod(p)}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
-                period === p ? "bg-primary text-primary-foreground shadow-md" : "bg-supet-bg-alt text-muted-foreground hover:text-foreground"
+                period === p ? "bg-primary text-primary-foreground shadow-md" : "bg-card text-muted-foreground hover:text-foreground"
               }`}
             >
               {p === "all" ? "Tudo" : p}
             </button>
           ))}
-          <button onClick={exportCSV} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-supet-bg-alt text-muted-foreground hover:text-primary text-xs font-semibold transition-colors">
+          <button onClick={exportCSV} className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-card text-muted-foreground hover:text-primary text-xs font-semibold transition-colors">
             <Download className="w-3.5 h-3.5" /> CSV
           </button>
         </div>
@@ -220,7 +220,7 @@ export default function AdminFinanceiro() {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 flex items-center justify-center">
             <TrendingUp className="w-5 h-5 text-emerald-600" />
           </div>
@@ -229,7 +229,7 @@ export default function AdminFinanceiro() {
             <p className="text-lg font-extrabold text-foreground">{formatCurrency(totalRevenue)}</p>
           </div>
         </div>
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-destructive/15 flex items-center justify-center">
             <TrendingDown className="w-5 h-5 text-destructive" />
           </div>
@@ -238,7 +238,7 @@ export default function AdminFinanceiro() {
             <p className="text-lg font-extrabold text-foreground">{formatCurrency(totalExpenses)}</p>
           </div>
         </div>
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${profit >= 0 ? "bg-emerald-500/15" : "bg-destructive/15"}`}>
             {profit >= 0 ? <ArrowUpRight className="w-5 h-5 text-emerald-600" /> : <ArrowDownRight className="w-5 h-5 text-destructive" />}
           </div>
@@ -247,7 +247,7 @@ export default function AdminFinanceiro() {
             <p className={`text-lg font-extrabold ${profit >= 0 ? "text-emerald-600" : "text-destructive"}`}>{formatCurrency(profit)}</p>
           </div>
         </div>
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center">
             <DollarSign className="w-5 h-5 text-primary" />
           </div>
@@ -259,7 +259,7 @@ export default function AdminFinanceiro() {
       </div>
 
       {/* Margin bar */}
-      <div className="bg-supet-bg-alt rounded-3xl p-5 mb-6">
+      <div className="bg-card rounded-3xl p-5 mb-6">
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm font-bold text-foreground">Margem de lucro</p>
           <p className={`text-sm font-extrabold ${margin >= 0 ? "text-emerald-600" : "text-destructive"}`}>{margin.toFixed(1)}%</p>
@@ -277,7 +277,7 @@ export default function AdminFinanceiro() {
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
         {/* Revenue vs Expenses chart */}
-        <div className="lg:col-span-2 bg-supet-bg-alt rounded-3xl p-5">
+        <div className="lg:col-span-2 bg-card rounded-3xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <BarChart3 className="w-4 h-4 text-primary" />
             <p className="text-sm font-bold text-foreground">Receita vs Despesas</p>
@@ -304,7 +304,7 @@ export default function AdminFinanceiro() {
         </div>
 
         {/* Expenses by category */}
-        <div className="bg-supet-bg-alt rounded-3xl p-5">
+        <div className="bg-card rounded-3xl p-5">
           <div className="flex items-center gap-2 mb-4">
             <PieChart className="w-4 h-4 text-primary" />
             <p className="text-sm font-bold text-foreground">Despesas por categoria</p>
@@ -350,11 +350,11 @@ export default function AdminFinanceiro() {
       <AnimatePresence>
         {showAddExpense && (
           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mb-4">
-            <div className="bg-supet-bg-alt rounded-3xl p-5 space-y-4">
+            <div className="bg-card rounded-3xl p-5 space-y-4">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground mb-1 block">Categoria</label>
-                  <select value={expForm.category} onChange={(e) => setExpForm({ ...expForm, category: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                  <select value={expForm.category} onChange={(e) => setExpForm({ ...expForm, category: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
                     {Object.entries(categoryLabels).map(([k, v]) => (
                       <option key={k} value={k}>{v.label}</option>
                     ))}
@@ -362,11 +362,11 @@ export default function AdminFinanceiro() {
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground mb-1 block">Valor (R$)</label>
-                  <input type="number" min={0} step={0.01} value={expForm.amount} onChange={(e) => setExpForm({ ...expForm, amount: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  <input type="number" min={0} step={0.01} value={expForm.amount} onChange={(e) => setExpForm({ ...expForm, amount: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div>
                   <label className="text-xs font-semibold text-muted-foreground mb-1 block">Data</label>
-                  <input type="date" value={expForm.date} onChange={(e) => setExpForm({ ...expForm, date: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                  <input type="date" value={expForm.date} onChange={(e) => setExpForm({ ...expForm, date: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div className="flex items-end gap-2">
                   <label className="flex items-center gap-2 cursor-pointer">
@@ -376,7 +376,7 @@ export default function AdminFinanceiro() {
                 </div>
               </div>
               <div className="flex gap-3">
-                <input value={expForm.description} onChange={(e) => setExpForm({ ...expForm, description: e.target.value })} placeholder="Descrição da despesa..." className="flex-1 px-4 py-2.5 rounded-2xl bg-supet-bg text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                <input value={expForm.description} onChange={(e) => setExpForm({ ...expForm, description: e.target.value })} placeholder="Descrição da despesa..." className="flex-1 px-4 py-2.5 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 <button onClick={handleAddExpense} disabled={saving || !expForm.description.trim() || expForm.amount <= 0} className="px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm disabled:opacity-50">
                   {saving ? "Salvando..." : "Salvar"}
                 </button>
@@ -389,10 +389,10 @@ export default function AdminFinanceiro() {
       {/* Expenses list */}
       {loading ? (
         <div className="space-y-2">
-          {[1, 2, 3].map((i) => <div key={i} className="bg-supet-bg-alt rounded-3xl p-5 h-16 animate-pulse" />)}
+          {[1, 2, 3].map((i) => <div key={i} className="bg-card rounded-3xl p-5 h-16 animate-pulse" />)}
         </div>
       ) : filteredExpenses.length === 0 ? (
-        <div className="bg-supet-bg-alt rounded-3xl p-10 text-center text-muted-foreground text-sm">
+        <div className="bg-card rounded-3xl p-10 text-center text-muted-foreground text-sm">
           Nenhuma despesa registrada no período.
         </div>
       ) : (
@@ -405,7 +405,7 @@ export default function AdminFinanceiro() {
                 initial={{ opacity: 0, y: 6 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.02 }}
-                className="flex items-center gap-4 p-4 bg-supet-bg-alt rounded-3xl group"
+                className="flex items-center gap-4 p-4 bg-card rounded-3xl group"
               >
                 <div className="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0" style={{ backgroundColor: cat.color + "22" }}>
                   <DollarSign className="w-4 h-4" style={{ color: cat.color }} />

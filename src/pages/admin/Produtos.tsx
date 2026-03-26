@@ -23,7 +23,7 @@ function ProductsSkeleton() {
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
       {[1, 2, 3].map((i) => (
-        <div key={i} className="bg-supet-bg-alt rounded-3xl p-6 animate-pulse">
+        <div key={i} className="bg-card rounded-3xl p-6 animate-pulse">
           <div className="w-full h-36 rounded-2xl bg-border mb-4" />
           <div className="h-4 w-3/4 rounded-full bg-border mb-2" />
           <div className="h-3 w-1/2 rounded-full bg-border mb-4" />
@@ -37,14 +37,14 @@ function ProductsSkeleton() {
 function DeleteConfirmation({ name, onConfirm, onCancel }: { name: string; onConfirm: () => void; onCancel: () => void }) {
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+      className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
       onClick={onCancel}>
       <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-        className="bg-supet-bg rounded-3xl p-6 max-w-sm w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
+        className="bg-muted rounded-3xl p-6 max-w-sm w-full shadow-xl" onClick={(e) => e.stopPropagation()}>
         <p className="text-base font-bold text-foreground mb-1">Excluir "{name}"?</p>
         <p className="text-sm text-muted-foreground mb-5">O produto será removido permanentemente do catálogo.</p>
         <div className="flex gap-3">
-          <button onClick={onCancel} className="flex-1 rounded-full bg-supet-bg-alt py-2.5 text-sm font-bold text-foreground hover:bg-primary/10 transition-colors">Cancelar</button>
+          <button onClick={onCancel} className="flex-1 rounded-full bg-card py-2.5 text-sm font-bold text-foreground hover:bg-primary/10 transition-colors">Cancelar</button>
           <button onClick={onConfirm} className="flex-1 rounded-full bg-destructive py-2.5 text-sm font-bold text-destructive-foreground hover:bg-destructive/90 transition-colors">Excluir</button>
         </div>
       </motion.div>
@@ -143,13 +143,13 @@ export default function AdminProdutos() {
       </div>
 
       {loading ? <ProductsSkeleton /> : products.length === 0 ? (
-        <div className="bg-supet-bg-alt rounded-3xl p-10 text-center text-muted-foreground text-sm">Nenhum produto cadastrado.</div>
+        <div className="bg-card rounded-3xl p-10 text-center text-muted-foreground text-sm">Nenhum produto cadastrado.</div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
           {products.map(p => (
-            <motion.div key={p.id} whileHover={{ y: -2 }} className="bg-supet-bg-alt rounded-3xl p-6 flex flex-col">
+            <motion.div key={p.id} whileHover={{ y: -2 }} className="bg-card rounded-3xl p-6 flex flex-col">
               {p.image_url && (
-                <div className="w-full h-36 rounded-2xl overflow-hidden mb-4 bg-supet-bg">
+                <div className="w-full h-36 rounded-2xl overflow-hidden mb-4 bg-muted">
                   <img src={p.image_url} alt={p.title} className="w-full h-full object-cover" />
                 </div>
               )}
@@ -191,10 +191,10 @@ export default function AdminProdutos() {
       {/* Product Modal */}
       <AnimatePresence>
         {showModal && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setShowModal(false)}>
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-supet-bg rounded-3xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto"
+              className="bg-muted rounded-3xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-extrabold text-foreground font-display">{editing ? "Editar Produto" : "Novo Produto"}</h2>
@@ -204,14 +204,14 @@ export default function AdminProdutos() {
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Imagem</label>
                   {form.image_url ? (
-                    <div className="relative w-full h-36 rounded-2xl overflow-hidden bg-supet-bg-alt mb-2">
+                    <div className="relative w-full h-36 rounded-2xl overflow-hidden bg-card mb-2">
                       <img src={form.image_url} alt="Preview" className="w-full h-full object-cover" />
-                      <button onClick={() => setForm({ ...form, image_url: "" })} className="absolute top-2 right-2 p-1 rounded-full bg-supet-bg/80 text-muted-foreground hover:text-destructive">
+                      <button onClick={() => setForm({ ...form, image_url: "" })} className="absolute top-2 right-2 p-1 rounded-full bg-muted/80 text-muted-foreground hover:text-destructive">
                         <X className="w-4 h-4" />
                       </button>
                     </div>
                   ) : (
-                    <label className="flex flex-col items-center justify-center w-full h-28 rounded-2xl bg-supet-bg-alt cursor-pointer hover:bg-primary/5 transition-colors">
+                    <label className="flex flex-col items-center justify-center w-full h-28 rounded-2xl bg-card cursor-pointer hover:bg-primary/5 transition-colors">
                       {uploading ? <Loader2 className="w-6 h-6 animate-spin text-primary" /> : (
                         <>
                           <ImageIcon className="w-6 h-6 text-muted-foreground mb-1" />
@@ -225,35 +225,35 @@ export default function AdminProdutos() {
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Título *</label>
                   <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
-                    className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Subtítulo</label>
                   <input value={form.subtitle} onChange={e => setForm({ ...form, subtitle: e.target.value })}
-                    className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-semibold text-foreground mb-1 block">Preço *</label>
                     <input type="number" step="0.01" value={form.price} onChange={e => setForm({ ...form, price: e.target.value })}
-                      className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-foreground mb-1 block">Preço Original</label>
                     <input type="number" step="0.01" value={form.original_price} onChange={e => setForm({ ...form, original_price: e.target.value })}
-                      className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-semibold text-foreground mb-1 block">Quantidade</label>
                     <input type="number" value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })}
-                      className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
                     <label className="text-sm font-semibold text-foreground mb-1 block">Categoria</label>
                     <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
-                      className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer">
+                      className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer">
                       <option value="combo">Combo</option>
                       <option value="extra">Extra</option>
                     </select>
@@ -262,7 +262,7 @@ export default function AdminProdutos() {
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Badge</label>
                   <input value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} placeholder="Ex: Mais Vendido"
-                    className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
                 <div className="flex items-center gap-3">
                   <button type="button" onClick={() => setForm({ ...form, active: !form.active })}
@@ -273,7 +273,7 @@ export default function AdminProdutos() {
                 </div>
               </div>
               <div className="flex gap-3 mt-8">
-                <button onClick={() => setShowModal(false)} className="flex-1 py-3 rounded-full bg-supet-bg-alt text-foreground font-semibold text-sm hover:bg-primary/10 transition-colors">Cancelar</button>
+                <button onClick={() => setShowModal(false)} className="flex-1 py-3 rounded-full bg-card text-foreground font-semibold text-sm hover:bg-primary/10 transition-colors">Cancelar</button>
                 <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} onClick={handleSave} disabled={saving || !form.title || !form.price}
                   className="flex-1 py-3 rounded-full bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2 hover:opacity-90 transition-opacity disabled:opacity-50 shadow-md shadow-primary/20">
                   {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : editing ? "Salvar" : "Criar"}
