@@ -957,6 +957,7 @@ export type Database = {
           id: string
           last_run_at: string | null
           name: string
+          scheduled_time: string | null
           trigger_config: Json
           trigger_type: string
           updated_at: string
@@ -970,6 +971,7 @@ export type Database = {
           id?: string
           last_run_at?: string | null
           name: string
+          scheduled_time?: string | null
           trigger_config?: Json
           trigger_type: string
           updated_at?: string
@@ -983,6 +985,7 @@ export type Database = {
           id?: string
           last_run_at?: string | null
           name?: string
+          scheduled_time?: string | null
           trigger_config?: Json
           trigger_type?: string
           updated_at?: string
