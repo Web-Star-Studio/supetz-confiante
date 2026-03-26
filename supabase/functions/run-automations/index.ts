@@ -174,6 +174,26 @@ Deno.serve(async (req) => {
             }
             break;
           }
+
+          case "restock_reminder": {
+            const daysBefore = auto.trigger_config?.days_before_end ?? 5;
+            const targetDate = new Date(now);
+            targetDate.setDate(targetDate.getDate() + daysBefore);
+            const targetStr = targetDate.toISOString().split("T")[0];
+
+            const { data: reminders } = await supabase
+              .from("restock_reminders")
+              .select("user_id, product_title")
+              .eq("reminded", false)
+              .lte("estimated_end_date", targetStr);
+
+            if (reminders) {
+              for (const r of reminders) {
+                targetUserIds.push(r.user_id);
+              }
+            }
+            break;
+          }
         }
 
         // Deduplicate
