@@ -406,6 +406,6 @@ export default function Produto() {
           <ProductReviews productId={id!} />
         </div>
       </div>
-    </>
+    </Layout>
   );
 }
