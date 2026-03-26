@@ -98,6 +98,39 @@ export default function Checkout() {
     }
   }, []);
 
+  // Auto-apply affiliate coupon when affiliateInfo loads
+  useEffect(() => {
+    if (!affiliateInfo?.coupon_code || appliedCoupon || affiliateCouponApplied) return;
+    if (!user) {
+      // Even without login, mark as applied so the coupon code is used at order time
+      setCouponCode(affiliateInfo.coupon_code);
+      setAffiliateCouponApplied(true);
+      return;
+    }
+    // Try to find in user_coupons first
+    (async () => {
+      setCouponLoading(true);
+      const { data } = await supabase
+        .from("user_coupons")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("code", affiliateInfo.coupon_code!.toUpperCase())
+        .eq("used", false)
+        .maybeSingle();
+      const coupon = data as Coupon | null;
+      if (coupon && (!coupon.expires_at || new Date(coupon.expires_at) >= new Date()) && (!coupon.min_order_value || totalPrice >= coupon.min_order_value)) {
+        setAppliedCoupon(coupon);
+        setCouponCode(coupon.code);
+        toast.success("Cupom de indicação aplicado automaticamente!");
+      } else {
+        // Set the code anyway so it's sent as metadata
+        setCouponCode(affiliateInfo.coupon_code!);
+      }
+      setAffiliateCouponApplied(true);
+      setCouponLoading(false);
+    })();
+  }, [affiliateInfo, user]);
+
   useEffect(() => {
     if (user) {
       loadCoupons();
