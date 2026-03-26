@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
+import { useProductRatings } from "@/hooks/useProductRatings";
 import { motionTokens } from "@/lib/motion";
 
 const EXTRA_CATEGORIES = ["extra", "acessorio", "higiene", "brinquedo", "alimentacao"];
