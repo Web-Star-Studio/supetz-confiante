@@ -99,13 +99,16 @@ export default function AdminProdutos() {
     setLoading(true);
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
-    const { data, count } = await supabase.from("products").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
+    let query = supabase.from("products").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
+    if (searchQuery.trim()) query = query.or(`title.ilike.%${searchQuery.trim()}%,subtitle.ilike.%${searchQuery.trim()}%,category.ilike.%${searchQuery.trim()}%`);
+    const { data, count } = await query;
     setProducts(data || []);
     setTotalCount(count || 0);
     setLoading(false);
   };
 
-  useEffect(() => { fetchProducts(); }, [page, sortCol, sortDir]);
+  useEffect(() => { fetchProducts(); }, [page, sortCol, sortDir, searchQuery]);
+  useEffect(() => { setPage(0); }, [searchQuery]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
