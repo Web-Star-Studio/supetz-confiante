@@ -56,12 +56,85 @@ export default function WeeklySummaryPanel() {
     return `${day}/${m}`;
   };
 
+  const formatDateFull = (d: string) => {
+    const [y, m, day] = d.split("-");
+    return `${day}/${m}/${y}`;
+  };
+
+  const exportPDF = async () => {
+    if (summaries.length === 0) return;
+    toast.info("Gerando PDF...");
+
+    // Build HTML for PDF
+    const rows = summaries.map((s) => {
+      const d = s.summary;
+      return `
+        <tr>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;font-size:13px;">${formatDateFull(s.week_start)} — ${formatDateFull(s.week_end)}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;">${d.campaigns_sent}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;">${d.recipients_reached}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;">${d.open_rate}%</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;">${d.emails_sent}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;">${d.emails_failed}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;">${d.automation_executions}</td>
+          <td style="padding:8px 12px;border-bottom:1px solid #e5e7eb;text-align:center;font-size:13px;">+${d.new_subscribers} / -${d.unsubscribes}</td>
+        </tr>`;
+    }).join("");
+
+    const html = `
+      <html><head><title>Resumos Semanais de Marketing</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 40px; color: #1a1a1a; }
+        h1 { font-size: 22px; margin-bottom: 4px; }
+        .subtitle { font-size: 12px; color: #6b7280; margin-bottom: 24px; }
+        table { border-collapse: collapse; width: 100%; }
+        th { background: #f97316; color: white; padding: 10px 12px; text-align: center; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+        th:first-child { text-align: left; border-radius: 8px 0 0 0; }
+        th:last-child { border-radius: 0 8px 0 0; }
+        tr:nth-child(even) td { background: #fef3e2; }
+        .footer { margin-top: 24px; font-size: 10px; color: #9ca3af; text-align: center; }
+      </style></head><body>
+      <h1>📊 Resumos Semanais de Marketing</h1>
+      <p class="subtitle">Gerado em ${new Date().toLocaleDateString("pt-BR")} · ${summaries.length} semana(s)</p>
+      <table>
+        <thead><tr>
+          <th>Período</th><th>Campanhas</th><th>Destinatários</th><th>Abertura</th>
+          <th>E-mails</th><th>Falhas</th><th>Automações</th><th>Newsletter</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
+      <p class="footer">Supet · Relatório automático de marketing</p>
+      </body></html>`;
+
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      toast.error("Pop-up bloqueado. Permita pop-ups e tente novamente.");
+      return;
+    }
+    printWindow.document.write(html);
+    printWindow.document.close();
+    printWindow.onload = () => {
+      printWindow.print();
+    };
+    toast.success("PDF pronto para impressão!");
+  };
+
   return (
     <div className="bg-card rounded-3xl p-5">
       <div className="flex items-center gap-2 mb-4">
         <FileBarChart className="w-4 h-4 text-primary" />
         <p className="text-sm font-bold text-foreground">Resumos Semanais</p>
-        <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ml-auto">
+        {summaries.length > 0 && (
+          <button
+            onClick={exportPDF}
+            className="ml-auto flex items-center gap-1.5 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
+            title="Exportar PDF"
+          >
+            <Download className="w-3.5 h-3.5" />
+            PDF
+          </button>
+        )}
+        <span className={`text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ${summaries.length > 0 ? "" : "ml-auto"}`}>
           {summaries.length} semana{summaries.length !== 1 ? "s" : ""}
         </span>
       </div>
