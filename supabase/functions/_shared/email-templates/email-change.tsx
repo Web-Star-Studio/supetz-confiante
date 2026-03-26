@@ -14,24 +14,24 @@ interface EmailChangeEmailProps {
 export const EmailChangeEmail = ({ siteName, email, newEmail, confirmationUrl }: EmailChangeEmailProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Confirme a alteração do seu e-mail — Supet 🐾</Preview>
+    <Preview>Confirme seu novo e-mail — Supet 🐾</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}><Text style={logoText}>🐾 Supet</Text></Section>
         <Section style={heroSection}>
           <Text style={heroEmoji}>📧</Text>
-          <Heading style={h1}>Alteração de e-mail</Heading>
+          <Heading style={h1}>Confirme seu novo e-mail</Heading>
           <Text style={text}>
-            Você solicitou a alteração do seu e-mail de{' '}
+            Você solicitou a alteração do e-mail da sua conta na Supet de{' '}
             <Link href={`mailto:${email}`} style={link}>{email}</Link> para{' '}
             <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
           </Text>
         </Section>
         <Hr style={divider} />
-        <Section style={ctaSection}><Button style={button} href={confirmationUrl}>Confirmar alteração</Button></Section>
+        <Section style={ctaSection}><Button style={button} href={confirmationUrl}>Confirmar novo e-mail</Button></Section>
         <Hr style={divider} />
         <Section style={footerSection}>
-          <Text style={footer}>Se você não solicitou esta alteração, proteja sua conta imediatamente.</Text>
+          <Text style={footer}>Se você não solicitou essa alteração, proteja sua conta imediatamente.</Text>
           <Text style={footerBrand}>Supet — Cuidado natural para seu pet 🐾</Text>
         </Section>
       </Container>

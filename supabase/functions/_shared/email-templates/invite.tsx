@@ -13,7 +13,7 @@ interface InviteEmailProps {
 export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Você foi convidado para a Supet 🐾</Preview>
+    <Preview>Você foi convidado — Supet 🐾</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}><Text style={logoText}>🐾 Supet</Text></Section>
