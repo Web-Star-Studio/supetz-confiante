@@ -106,6 +106,7 @@ export default function AdminMarketing() {
     const camps = (campRes.data || []) as Campaign[];
     const recipients = recipRes.data || [];
     setAllTags((tagsRes.data || []) as any[]);
+    setAllTemplates((tplRes.data || []) as EmailTemplate[]);
 
     // Get coupon usage data
     const couponIds = recipients.map((r: any) => r.coupon_id).filter(Boolean);
