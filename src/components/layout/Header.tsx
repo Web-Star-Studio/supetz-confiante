@@ -20,7 +20,6 @@ const navLinks = [
   { label: "Sobre", href: "/sobre" },
   { label: "Blog", href: "/blog" },
   { label: "FAQ", href: "/faq" },
-  { label: "Parceiros", href: "/parceiros" },
 ];
 
 const iconByPlatform = {
