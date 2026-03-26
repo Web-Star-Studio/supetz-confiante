@@ -197,21 +197,29 @@ export default function AdminProdutos() {
         </motion.button>
       </div>
 
-      {/* Sort controls */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-xs text-muted-foreground font-medium">Ordenar por:</span>
-        {([
-          { col: "created_at" as ProdSortCol, label: "Data" },
-          { col: "price" as ProdSortCol, label: "Preço" },
-          { col: "quantity" as ProdSortCol, label: "Estoque" },
-          { col: "title" as ProdSortCol, label: "Nome" },
-        ]).map(({ col, label }) => (
-          <button key={col} onClick={() => toggleSort(col)}
-            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${sortCol === col ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:text-foreground"}`}>
-            {label}
-            {sortCol === col ? (sortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
-          </button>
-        ))}
+      {/* Search + Sort controls */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Buscar por nome, subtítulo ou categoria..."
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm" />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-muted-foreground font-medium">Ordenar:</span>
+          {([
+            { col: "created_at" as ProdSortCol, label: "Data" },
+            { col: "price" as ProdSortCol, label: "Preço" },
+            { col: "quantity" as ProdSortCol, label: "Estoque" },
+            { col: "title" as ProdSortCol, label: "Nome" },
+          ]).map(({ col, label }) => (
+            <button key={col} onClick={() => toggleSort(col)}
+              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${sortCol === col ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:text-foreground"}`}>
+              {label}
+              {sortCol === col ? (sortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? <ProductsSkeleton /> : products.length === 0 ? (
