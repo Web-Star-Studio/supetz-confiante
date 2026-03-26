@@ -56,6 +56,7 @@ export default function Afiliados() {
   const [search, setSearch] = useState("");
   const [selectedAffiliate, setSelectedAffiliate] = useState<Affiliate | null>(null);
   const [editCommission, setEditCommission] = useState<number>(10);
+  const [editFields, setEditFields] = useState({ name: "", email: "", instagram: "", pix_key: "", channel_type: "" });
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [addForm, setAddForm] = useState({
     name: "", email: "", instagram: "", channel_type: "influencer",
@@ -158,6 +159,37 @@ export default function Afiliados() {
       setSelectedAffiliate(null);
       loadData();
     }
+  };
+
+  const handleSaveEditFields = async () => {
+    if (!selectedAffiliate) return;
+    const { error } = await supabase.from("affiliates").update({
+      name: editFields.name,
+      email: editFields.email,
+      instagram: editFields.instagram || null,
+      pix_key: editFields.pix_key || null,
+      channel_type: editFields.channel_type,
+    }).eq("id", selectedAffiliate.id);
+    if (error) {
+      toast.error("Erro ao salvar alterações");
+    } else {
+      toast.success("Dados atualizados!");
+      log({ action: "update", entity_type: "affiliate", entity_id: selectedAffiliate.id, details: { edited: editFields } });
+      setSelectedAffiliate(null);
+      loadData();
+    }
+  };
+
+  const openAffiliateDetail = (aff: Affiliate) => {
+    setSelectedAffiliate(aff);
+    setEditCommission(aff.commission_percent);
+    setEditFields({
+      name: aff.name,
+      email: aff.email,
+      instagram: aff.instagram || "",
+      pix_key: aff.pix_key || "",
+      channel_type: aff.channel_type,
+    });
   };
 
   const handleMarkPayoutPaid = async (payout: Payout) => {
@@ -387,7 +419,7 @@ export default function Afiliados() {
                             </button>
                           )}
                           <button
-                            onClick={() => { setSelectedAffiliate(aff); setEditCommission(aff.commission_percent); }}
+                            onClick={() => openAffiliateDetail(aff)}
                             className="text-muted-foreground hover:bg-muted p-1.5 rounded-lg"
                             title="Detalhes"
                           >
@@ -415,36 +447,86 @@ export default function Afiliados() {
       <Dialog open={!!selectedAffiliate} onOpenChange={() => setSelectedAffiliate(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{selectedAffiliate?.name}</DialogTitle>
+            <DialogTitle>Editar Afiliado</DialogTitle>
           </DialogHeader>
           {selectedAffiliate && (
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-3 text-sm">
-                <div><span className="text-muted-foreground">Email:</span> <span className="font-bold text-foreground">{selectedAffiliate.email}</span></div>
-                <div><span className="text-muted-foreground">Instagram:</span> <span className="font-bold text-foreground">{selectedAffiliate.instagram || "—"}</span></div>
-                <div><span className="text-muted-foreground">Canal:</span> <span className="font-bold text-foreground">{channelLabels[selectedAffiliate.channel_type]}</span></div>
-                <div><span className="text-muted-foreground">Cupom:</span> <span className="font-mono font-bold text-foreground">{selectedAffiliate.coupon_code || "—"}</span></div>
-                <div><span className="text-muted-foreground">Ref:</span> <span className="font-mono text-foreground">{selectedAffiliate.ref_slug || "—"}</span></div>
-                <div><span className="text-muted-foreground">Total ganho:</span> <span className="font-bold text-green-600">R$ {selectedAffiliate.total_earned.toFixed(2).replace(".", ",")}</span></div>
-              </div>
-              <div>
-                <label className="text-sm font-bold text-muted-foreground mb-1 block">Comissão (%)</label>
-                <div className="flex gap-2">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-sm font-bold text-muted-foreground mb-1 block">Nome</label>
+                  <input
+                    value={editFields.name}
+                    onChange={(e) => setEditFields({ ...editFields, name: e.target.value })}
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-muted-foreground mb-1 block">Email</label>
+                  <input
+                    type="email"
+                    value={editFields.email}
+                    onChange={(e) => setEditFields({ ...editFields, email: e.target.value })}
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-muted-foreground mb-1 block">Instagram</label>
+                  <input
+                    value={editFields.instagram}
+                    onChange={(e) => setEditFields({ ...editFields, instagram: e.target.value })}
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                    placeholder="@usuario"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-muted-foreground mb-1 block">Canal</label>
+                  <select
+                    value={editFields.channel_type}
+                    onChange={(e) => setEditFields({ ...editFields, channel_type: e.target.value })}
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                  >
+                    <option value="influencer">Influenciador</option>
+                    <option value="partner">Parceiro</option>
+                    <option value="creator">Creator</option>
+                    <option value="vet">Veterinário</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-muted-foreground mb-1 block">Chave Pix</label>
+                  <input
+                    value={editFields.pix_key}
+                    onChange={(e) => setEditFields({ ...editFields, pix_key: e.target.value })}
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                    placeholder="CPF, email ou telefone"
+                  />
+                </div>
+                <div>
+                  <label className="text-sm font-bold text-muted-foreground mb-1 block">Comissão (%)</label>
                   <input
                     type="number"
                     min={1}
                     max={50}
                     value={editCommission}
                     onChange={(e) => setEditCommission(Number(e.target.value))}
-                    className="flex-1 bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
+                    className="w-full bg-muted border border-border rounded-lg px-3 py-2 text-sm text-foreground"
                   />
-                  <button onClick={handleUpdateCommission} className="bg-primary text-primary-foreground px-4 py-2 rounded-lg text-sm font-bold">
-                    Salvar
-                  </button>
                 </div>
               </div>
 
-              {/* Sales for this affiliate */}
+              <div className="grid grid-cols-2 gap-3 text-sm bg-muted/50 rounded-lg p-3">
+                <div><span className="text-muted-foreground">Cupom:</span> <span className="font-mono font-bold text-foreground">{selectedAffiliate.coupon_code || "—"}</span></div>
+                <div><span className="text-muted-foreground">Ref:</span> <span className="font-mono text-foreground">{selectedAffiliate.ref_slug || "—"}</span></div>
+                <div><span className="text-muted-foreground">Total ganho:</span> <span className="font-bold text-green-600">R$ {selectedAffiliate.total_earned.toFixed(2).replace(".", ",")}</span></div>
+                <div><span className="text-muted-foreground">Status:</span> <span className="font-bold text-foreground">{selectedAffiliate.status === "active" ? "Ativo" : selectedAffiliate.status === "pending" ? "Pendente" : "Suspenso"}</span></div>
+              </div>
+
+              <div className="flex gap-2">
+                <button onClick={async () => { await handleSaveEditFields(); await handleUpdateCommission(); }} className="flex-1 bg-primary text-primary-foreground py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition">
+                  Salvar Alterações
+                </button>
+              </div>
+
+              {/* Sales */}
               <div>
                 <h4 className="text-sm font-bold text-muted-foreground mb-2">Vendas recentes</h4>
                 <div className="space-y-1 max-h-40 overflow-y-auto">
