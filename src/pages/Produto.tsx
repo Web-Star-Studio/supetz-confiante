@@ -27,6 +27,9 @@ export default function Produto() {
   const [added, setAdded] = useState(false);
   const [zoomPos, setZoomPos] = useState<{ x: number; y: number } | null>(null);
   const imgRef = useRef<HTMLDivElement>(null);
+  const touchStartX = useRef(0);
+  const touchDeltaX = useRef(0);
+  const isSwiping = useRef(false);
   const { images: bucketImages } = useProductImages(id);
 
   useEffect(() => {
@@ -153,7 +156,7 @@ export default function Produto() {
                 <div className="space-y-4 sticky top-28">
                   <div
                     ref={imgRef}
-                    className="relative aspect-square rounded-3xl overflow-hidden bg-muted cursor-zoom-in"
+                    className="relative aspect-square rounded-3xl overflow-hidden bg-muted cursor-zoom-in touch-pan-y"
                     onMouseMove={(e) => {
                       const rect = imgRef.current?.getBoundingClientRect();
                       if (!rect) return;
@@ -163,6 +166,28 @@ export default function Produto() {
                       });
                     }}
                     onMouseLeave={() => setZoomPos(null)}
+                    onTouchStart={(e) => {
+                      touchStartX.current = e.touches[0].clientX;
+                      touchDeltaX.current = 0;
+                      isSwiping.current = false;
+                    }}
+                    onTouchMove={(e) => {
+                      touchDeltaX.current = e.touches[0].clientX - touchStartX.current;
+                      if (Math.abs(touchDeltaX.current) > 10) {
+                        isSwiping.current = true;
+                      }
+                    }}
+                    onTouchEnd={() => {
+                      if (isSwiping.current && gallery.length > 1) {
+                        const threshold = 50;
+                        if (touchDeltaX.current < -threshold) {
+                          setMainImg((prev) => Math.min(prev + 1, gallery.length - 1));
+                        } else if (touchDeltaX.current > threshold) {
+                          setMainImg((prev) => Math.max(prev - 1, 0));
+                        }
+                      }
+                      isSwiping.current = false;
+                    }}
                   >
                     <AnimatePresence mode="wait">
                       <motion.img
@@ -194,6 +219,21 @@ export default function Produto() {
                       <span className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full">
                         {product.badge}
                       </span>
+                    )}
+                    {/* Swipe dots indicator (mobile) */}
+                    {gallery.length > 1 && (
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 md:hidden">
+                        {gallery.map((_, i) => (
+                          <span
+                            key={i}
+                            className={`w-2 h-2 rounded-full transition-all ${
+                              i === mainImg
+                                ? "bg-primary scale-125"
+                                : "bg-foreground/30"
+                            }`}
+                          />
+                        ))}
+                      </div>
                     )}
                   </div>
                   {gallery.length > 1 && (
