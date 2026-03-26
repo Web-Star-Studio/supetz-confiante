@@ -66,7 +66,7 @@ export default function ParceirosTestimonials() {
           initial={{ opacity: 0, y: 15 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: motionTokens.durationFast, delay: 0.1, ease: motionTokens.easeOut as unknown as number[] }}
+          transition={{ duration: motionTokens.durationFast, delay: 0.1, ease }}
           className="text-center text-muted-foreground text-sm md:text-base mb-12 max-w-lg mx-auto"
         >
           Veja o que nossos parceiros estão dizendo
