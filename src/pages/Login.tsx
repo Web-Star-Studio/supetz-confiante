@@ -27,7 +27,8 @@ export default function Login() {
     } else {
       // Small delay to let auth state update
       setTimeout(() => {
-        navigate("/");
+        const redirect = searchParams.get("redirect") || "/";
+        navigate(redirect);
         setLoading(false);
       }, 300);
     }

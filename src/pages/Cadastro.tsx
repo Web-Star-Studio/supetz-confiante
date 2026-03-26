@@ -46,7 +46,7 @@ export default function Cadastro() {
             </div>
             <h2 className="text-2xl font-extrabold text-foreground mb-3 font-display">Conta criada!</h2>
             <p className="text-muted-foreground text-sm">Sua conta foi criada com sucesso. Você já pode fazer login.</p>
-            <Link to="/login" className="inline-block mt-8 text-primary font-semibold hover:underline text-sm">Ir para login</Link>
+            <Link to={`/login${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`} className="inline-block mt-8 text-primary font-semibold hover:underline text-sm">Ir para login</Link>
           </div>
         </motion.div>
       </div>

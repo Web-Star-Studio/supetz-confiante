@@ -363,6 +363,45 @@ export default function Checkout() {
     );
   }
 
+  if (!user) {
+    return (
+      <Layout>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.5 }}
+          className="min-h-[70vh] bg-supet-bg flex items-center justify-center pt-24 md:pt-32 pb-24 px-6"
+        >
+          <div className="text-center max-w-md">
+            <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6">
+              <Lock className="w-10 h-10 text-primary" />
+            </div>
+            <h1 className="text-3xl font-black text-supet-text tracking-tight uppercase mb-3">
+              Faça login para comprar
+            </h1>
+            <p className="text-supet-text/60 font-medium mb-8">
+              Seus itens estão salvos na sacola. Entre ou crie sua conta para finalizar a compra.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link 
+                to="/login?redirect=/checkout"
+                className="inline-flex items-center justify-center bg-primary hover:opacity-90 text-primary-foreground font-black uppercase tracking-widest px-8 py-4 rounded-full transition-all hover:scale-105"
+              >
+                Entrar
+              </Link>
+              <Link 
+                to="/cadastro?redirect=/checkout"
+                className="inline-flex items-center justify-center border-2 border-primary text-primary font-black uppercase tracking-widest px-8 py-4 rounded-full transition-all hover:scale-105 hover:bg-primary/5"
+              >
+                Criar conta
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </Layout>
+    );
+  }
+
   return (
     <Layout>
       <div className="min-h-screen bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative overflow-hidden">
