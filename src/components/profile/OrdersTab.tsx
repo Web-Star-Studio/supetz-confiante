@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthContext";
 import { useCart } from "@/context/CartContext";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
-import { ShoppingBag, RefreshCw } from "lucide-react";
+import { ShoppingBag, RefreshCw, ChevronLeft, ChevronRight } from "lucide-react";
 import OrderTrackingTimeline from "./OrderTrackingTimeline";
 
 interface OrderItem {
@@ -25,6 +25,8 @@ interface Order {
   items: OrderItem[];
   customer_name: string | null;
 }
+
+const PAGE_SIZE = 5;
 
 const statusColors: Record<string, string> = {
   pending: "bg-yellow-100 text-yellow-800",
@@ -83,21 +85,31 @@ export default function OrdersTab() {
   const { addItem, openCart } = useCart();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(0);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     if (user) loadOrders();
-  }, [user]);
+  }, [user, page]);
 
   const loadOrders = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+
+    const { data, count } = await supabase
       .from("orders")
-      .select("id, created_at, status, total, items, customer_name")
+      .select("id, created_at, status, total, items, customer_name", { count: "exact" })
       .eq("user_id", user!.id)
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .range(from, to);
+
     setOrders((data as Order[]) || []);
+    setTotal(count || 0);
     setLoading(false);
   };
+
+  const totalPages = Math.ceil(total / PAGE_SIZE);
 
   const handleReorder = (order: Order) => {
     const items = Array.isArray(order.items) ? (order.items as OrderItem[]) : [];
@@ -126,7 +138,7 @@ export default function OrdersTab() {
 
   if (loading) return <OrdersSkeleton />;
 
-  if (orders.length === 0) {
+  if (orders.length === 0 && page === 0) {
     return (
       <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6">
         <div className="rounded-3xl bg-supet-bg-alt p-10 text-center">
@@ -171,6 +183,28 @@ export default function OrdersTab() {
           </motion.div>
         );
       })}
+
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-2 pt-2">
+          <button
+            onClick={() => setPage((p) => Math.max(0, p - 1))}
+            disabled={page === 0}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-supet-bg-alt text-foreground disabled:opacity-30 hover:bg-muted transition-colors"
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </button>
+          <span className="text-sm text-muted-foreground">
+            {page + 1} / {totalPages}
+          </span>
+          <button
+            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+            disabled={page >= totalPages - 1}
+            className="flex h-9 w-9 items-center justify-center rounded-full bg-supet-bg-alt text-foreground disabled:opacity-30 hover:bg-muted transition-colors"
+          >
+            <ChevronRight className="h-4 w-4" />
+          </button>
+        </div>
+      )}
     </motion.div>
   );
 }
