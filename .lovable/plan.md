@@ -1,36 +1,60 @@
 
 
-## Corrigir vinculação de afiliado existente
+## Rastreamento Robusto de Indicação de Afiliados
 
-### Problema
-O afiliado `design@webstar.studio` foi adicionado pelo admin **antes** da função `find_user_id_by_email` existir, então ficou com o `user_id` placeholder. O login via Google não dispara a trigger `handle_new_user` porque o usuário já existia. Resultado: o botão "Painel de Parceiro" não aparece no perfil.
+### Problema Atual
+O `supet_ref` já é salvo no `localStorage` pelo `RefTracker` e persiste entre navegações. Porém:
+1. O cupom do afiliado **nunca é aplicado automaticamente** no checkout — o ref só é passado como metadado no pedido
+2. Se o usuário não estiver logado, não há como aplicar cupom automaticamente
+3. Não há feedback visual de que o usuário chegou por indicação
+4. O timestamp da indicação não é salvo, então refs antigos ficam para sempre
 
 ### Solução
 
-#### 1. Migration SQL — Corrigir registros existentes e adicionar trigger de login
-Criar uma migration que:
-- **Atualiza imediatamente** todos os afiliados com placeholder `user_id` que possuem email correspondente em `auth.users`
-- **Cria uma trigger no evento de login** (`on_auth_sign_in`) que vincula afiliados automaticamente — cobrindo o caso de usuários que já existem mas ainda não foram vinculados
+#### 1. Salvar ref com timestamp no RefTracker
+Alterar `RefTracker.tsx` para salvar um objeto `{ slug, timestamp }` no localStorage em vez de apenas a string. Definir expiração de 30 dias — refs mais antigos são ignorados.
 
-```sql
--- Fix existing unlinked affiliates
-UPDATE public.affiliates a
-SET user_id = u.id
-FROM auth.users u
-WHERE a.email = u.email
-  AND a.user_id = '00000000-0000-0000-0000-000000000000';
+#### 2. Auto-aplicar cupom do afiliado no Checkout
+No `Checkout.tsx`, ao carregar a página:
+- Verificar se existe `supet_ref` no localStorage (e se não expirou)
+- Buscar o afiliado pelo `ref_slug` e pegar o `coupon_code`
+- Se o afiliado tiver cupom, pré-preencher o campo de cupom e exibir um banner "Você chegou por indicação de [nome]! Cupom aplicado automaticamente"
+- O cupom do afiliado funciona como cupom global (não precisa estar na tabela `user_coupons` do usuário) — buscar desconto diretamente da tabela `affiliates`
+
+#### 3. Banner de indicação no CartDrawer
+No `CartDrawer.tsx`, exibir um pequeno badge "Indicação ativa" quando `supet_ref` existir no localStorage, reforçando que o desconto será aplicado.
+
+#### 4. Persistir ref no perfil do usuário após login/cadastro
+No `AuthContext.tsx`, após login/cadastro bem-sucedido, verificar se existe `supet_ref` no localStorage. Se sim, manter no localStorage (já acontece naturalmente). Isso garante que mesmo após criar conta, o ref continua ativo.
+
+### Arquivos Modificados
+- `src/components/affiliate/RefTracker.tsx` — salvar ref com timestamp, expiração 30 dias
+- `src/pages/Checkout.tsx` — auto-aplicar cupom do afiliado, banner de indicação, buscar desconto da tabela affiliates
+- `src/components/layout/CartDrawer.tsx` — badge visual de indicação ativa
+- Nenhuma migration necessária (o `coupon_code` já existe na tabela `affiliates`)
+
+### Detalhes Técnicos
+
+**RefTracker** salvará:
+```typescript
+localStorage.setItem("supet_ref", JSON.stringify({ slug: ref, ts: Date.now() }));
 ```
 
-Isso resolverá o caso do `design@webstar.studio` imediatamente e qualquer outro afiliado não vinculado.
+**Checkout** fará na montagem:
+```typescript
+// Ler ref do localStorage
+const refData = JSON.parse(localStorage.getItem("supet_ref"));
+if (refData && Date.now() - refData.ts < 30 * 24 * 60 * 60 * 1000) {
+  // Buscar afiliado e aplicar cupom
+  const { data: aff } = await supabase
+    .from("affiliates")
+    .select("name, coupon_code, commission_percent")
+    .eq("ref_slug", refData.slug)
+    .eq("status", "active")
+    .maybeSingle();
+  // Auto-aplicar desconto como "cupom de afiliado" separado do sistema de cupons do user
+}
+```
 
-#### 2. Nenhuma alteração de código necessária
-O código no `Perfil.tsx` já verifica `affiliates` pelo `user_id` do usuário logado. Uma vez que o `user_id` seja atualizado no banco, o botão aparecerá automaticamente.
-
-### Arquivos modificados
-- **Nova migration SQL** — atualiza afiliados existentes não vinculados
-
-### Detalhes técnicos
-- O `user_id` do afiliado `design@webstar.studio` no banco é `00000000-0000-0000-0000-000000000000`
-- O `user_id` real no `auth.users` é `1fcf55e8-d128-4584-ac60-57b162abb938`
-- A migration fará o UPDATE cruzando emails entre `affiliates` e `auth.users`
+O desconto do afiliado será tratado como uma **categoria separada** dos cupons do usuário, permitindo acumular (cupom pessoal + desconto de indicação) ou não, conforme preferência. Na implementação inicial, o cupom do afiliado substituirá o campo de cupom manual se existir.
 
