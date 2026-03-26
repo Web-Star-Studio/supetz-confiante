@@ -71,6 +71,7 @@ const defaultCreateForm = {
   description: "",
   trigger_type: "pet_birthday",
   action_type: "notification",
+  scheduled_time: "09:00",
   trigger_config: {} as any,
   action_config: {
     notification_title: "",
