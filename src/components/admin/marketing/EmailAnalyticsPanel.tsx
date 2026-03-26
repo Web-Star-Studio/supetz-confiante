@@ -202,7 +202,29 @@ export default function EmailAnalyticsPanel() {
   }, [campaigns, recipients, dedupedLogs]);
 
   // Recent failures
-  const recentFailures = useMemo(() => {
+  // Current failure rate for alert banner
+  const currentFailureRate = useMemo(() => {
+    if (globalStats.total === 0) return 0;
+    return (globalStats.failed / globalStats.total) * 100;
+  }, [globalStats]);
+
+  const isAboveThreshold = alertEnabled && globalStats.total >= 5 && currentFailureRate >= alertThreshold;
+
+  const saveAlertConfig = async () => {
+    setSavingAlert(true);
+    const payload = { threshold: alertThreshold, window_hours: alertWindowHours, enabled: alertEnabled };
+    const { error } = await supabase
+      .from("store_settings")
+      .upsert({ key: "email_failure_alert_threshold", value: payload as any }, { onConflict: "key" });
+    setSavingAlert(false);
+    if (error) {
+      toast.error("Erro ao salvar configuração");
+    } else {
+      toast.success("Configuração de alerta salva!");
+      setShowAlertConfig(false);
+    }
+  };
+
     return dedupedLogs
       .filter((l) => l.status === "dlq" || l.status === "failed")
       .slice(0, 5);
