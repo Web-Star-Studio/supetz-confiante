@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarDays, Megaphone, Zap, Mail, Users,
-  Eye, ChevronDown, ChevronUp, Loader2, FileBarChart, Download,
+  Eye, ChevronDown, ChevronUp, Loader2, FileBarChart, Download, RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface WeeklySummary {
   id: string;
@@ -30,6 +31,33 @@ export default function WeeklySummaryPanel() {
   const [summaries, setSummaries] = useState<WeeklySummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+
+  const generateManualSummary = async () => {
+    setGenerating(true);
+    try {
+      const res = await supabase.functions.invoke("weekly-marketing-summary", { body: {} });
+      if (res.error) throw res.error;
+      const result = res.data;
+      if (result?.skipped) {
+        toast.info("Resumo desta semana já foi gerado anteriormente.");
+      } else {
+        toast.success(`Resumo da semana ${result?.week} gerado com sucesso!`);
+        // Refresh list
+        const { data } = await supabase
+          .from("weekly_marketing_summaries")
+          .select("*")
+          .order("week_start", { ascending: false })
+          .limit(12);
+        if (data) setSummaries(data as WeeklySummary[]);
+      }
+    } catch (err) {
+      toast.error("Erro ao gerar resumo. Tente novamente.");
+      console.error(err);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
@@ -124,17 +152,29 @@ export default function WeeklySummaryPanel() {
       <div className="flex items-center gap-2 mb-4">
         <FileBarChart className="w-4 h-4 text-primary" />
         <p className="text-sm font-bold text-foreground">Resumos Semanais</p>
-        {summaries.length > 0 && (
-          <button
-            onClick={exportPDF}
-            className="ml-auto flex items-center gap-1.5 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
-            title="Exportar PDF"
+        <div className="ml-auto flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={generateManualSummary}
+            disabled={generating}
+            className="h-7 text-[11px] rounded-xl gap-1.5"
           >
-            <Download className="w-3.5 h-3.5" />
-            PDF
-          </button>
-        )}
-        <span className={`text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ${summaries.length > 0 ? "" : "ml-auto"}`}>
+            <RefreshCw className={`w-3 h-3 ${generating ? "animate-spin" : ""}`} />
+            {generating ? "Gerando..." : "Gerar agora"}
+          </Button>
+          {summaries.length > 0 && (
+            <button
+              onClick={exportPDF}
+              className="flex items-center gap-1.5 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
+              title="Exportar PDF"
+            >
+              <Download className="w-3.5 h-3.5" />
+              PDF
+            </button>
+          )}
+        </div>
+        <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
           {summaries.length} semana{summaries.length !== 1 ? "s" : ""}
         </span>
       </div>
