@@ -137,6 +137,9 @@ export default function AdminFeedback() {
           ))}
         </div>
 
+        {/* Trend Charts */}
+        <FeedbackTrendChart feedbacks={allFeedbacks} />
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
