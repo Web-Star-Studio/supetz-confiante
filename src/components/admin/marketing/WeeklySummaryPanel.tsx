@@ -174,7 +174,7 @@ export default function WeeklySummaryPanel() {
             </button>
           )}
         </div>
-        <span className={`text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ${summaries.length > 0 ? "" : "ml-auto"}`}>
+        <span className="text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
           {summaries.length} semana{summaries.length !== 1 ? "s" : ""}
         </span>
       </div>
