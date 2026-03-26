@@ -419,7 +419,7 @@ export default function Afiliados() {
                             </button>
                           )}
                           <button
-                            onClick={() => { setSelectedAffiliate(aff); setEditCommission(aff.commission_percent); }}
+                            onClick={() => openAffiliateDetail(aff)}
                             className="text-muted-foreground hover:bg-muted p-1.5 rounded-lg"
                             title="Detalhes"
                           >
