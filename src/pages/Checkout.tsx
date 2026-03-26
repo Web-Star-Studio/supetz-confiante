@@ -568,7 +568,8 @@ export default function Checkout() {
                       </div>
                       <div>
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">CPF</label>
-                        <input required type="text" name="cpf" value={formData.cpf} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="000.000.000-00" />
+                        <input required type="text" name="cpf" value={formData.cpf} onChange={handleChange} maxLength={14} className={`w-full bg-supet-bg-alt border rounded-xl px-4 py-3 focus:outline-none focus:ring-1 transition-all duration-300 font-medium text-supet-text ${formErrors.cpf ? "border-red-400 focus:border-red-400 focus:ring-red-300" : "border-supet-text/10 focus:border-supet-orange focus:ring-supet-orange"}`} placeholder="000.000.000-00" />
+                        {formErrors.cpf && <p className="text-xs text-red-500 mt-1 font-semibold">{formErrors.cpf}</p>}
                       </div>
                     </div>
                   </motion.div>
