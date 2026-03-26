@@ -101,7 +101,7 @@ export default function Afiliados() {
       toast.error("Erro ao suspender");
     } else {
       toast.success(`${aff.name} suspenso.`);
-      logAction("suspend_affiliate", "affiliate", aff.id, { name: aff.name });
+      log({ action: "update", entity_type: "affiliate", entity_id: aff.id, details: { action: "suspend", name: aff.name } });
       loadData();
     }
   };
