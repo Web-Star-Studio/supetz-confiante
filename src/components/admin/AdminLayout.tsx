@@ -69,17 +69,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           }`}
         >
           {/* Logo */}
-          <div className={`flex items-center justify-between border-b border-border/50 ${collapsed ? "h-[72px] px-3" : "h-20 px-6"}`}>
+          <div className={`flex items-center justify-center border-b border-border/50 ${collapsed ? "h-[72px] px-3" : "h-24 px-6"}`}>
             <Link to="/admin" className="flex items-center">
               <img
                 src="/supetNewLogo.svg"
                 alt="Supet"
-                className={`transition-all duration-300 ${collapsed ? "h-8" : "h-14"}`}
+                className={`transition-all duration-300 ${collapsed ? "h-8" : "h-[42px]"}`}
               />
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="lg:hidden ml-auto w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -132,15 +132,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          {/* Collapse toggle (desktop only) */}
-          <div className="hidden lg:flex justify-center py-2 border-t border-border/50">
-            <button
-              onClick={() => setCollapsed((c) => !c)}
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-            </button>
-          </div>
 
           {/* User / Logout */}
           <div className={`border-t border-border/50 ${collapsed ? "p-2" : "p-3"}`}>
@@ -193,6 +184,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </button>
 
             {/* Breadcrumb */}
+            {/* Collapse toggle (desktop) */}
+            <button
+              onClick={() => setCollapsed((c) => !c)}
+              className="hidden lg:flex w-8 h-8 rounded-xl items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+            </button>
+
             <div className="hidden lg:flex items-center gap-2 text-sm">
               <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors">
                 Admin
