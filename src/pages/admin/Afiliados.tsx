@@ -416,12 +416,20 @@ export default function Afiliados() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-border bg-muted/50">
-                  <th className="text-left px-4 py-3 font-bold text-muted-foreground">Nome</th>
+                  <th className="text-left px-4 py-3 font-bold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleAffSort("name")}>
+                    <span className="inline-flex items-center gap-1">Nome {affSortCol === "name" ? (affSortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}</span>
+                  </th>
                   <th className="text-left px-4 py-3 font-bold text-muted-foreground hidden md:table-cell">Canal</th>
                   <th className="text-left px-4 py-3 font-bold text-muted-foreground hidden lg:table-cell">Cupom</th>
-                  <th className="text-left px-4 py-3 font-bold text-muted-foreground">Comissão</th>
-                  <th className="text-left px-4 py-3 font-bold text-muted-foreground">Ganho</th>
-                  <th className="text-left px-4 py-3 font-bold text-muted-foreground">Status</th>
+                  <th className="text-left px-4 py-3 font-bold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleAffSort("commission_percent")}>
+                    <span className="inline-flex items-center gap-1">Comissão {affSortCol === "commission_percent" ? (affSortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}</span>
+                  </th>
+                  <th className="text-left px-4 py-3 font-bold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleAffSort("total_earned")}>
+                    <span className="inline-flex items-center gap-1">Ganho {affSortCol === "total_earned" ? (affSortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}</span>
+                  </th>
+                  <th className="text-left px-4 py-3 font-bold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleAffSort("status")}>
+                    <span className="inline-flex items-center gap-1">Status {affSortCol === "status" ? (affSortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}</span>
+                  </th>
                   <th className="text-right px-4 py-3 font-bold text-muted-foreground">Ações</th>
                 </tr>
               </thead>
