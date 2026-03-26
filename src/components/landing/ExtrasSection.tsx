@@ -11,6 +11,7 @@ const EXTRA_CATEGORIES = ["extra", "acessorio", "higiene", "brinquedo", "aliment
 export default function ExtrasSection() {
     const { addItem } = useCart();
     const { products: extras, loading } = useProducts({ categories: EXTRA_CATEGORIES });
+    const ratings = useProductRatings(extras.map(p => p.id));
 
     if (loading) return null;
     if (extras.length === 0) return null;
