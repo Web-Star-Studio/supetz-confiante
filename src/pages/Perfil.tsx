@@ -126,6 +126,7 @@ export default function Perfil() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isAffiliate, setIsAffiliate] = useState(false);
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -139,7 +140,12 @@ export default function Perfil() {
   }, [authLoading, user, navigate]);
 
   useEffect(() => {
-    if (user) loadProfile();
+    if (user) {
+      loadProfile();
+      // Check if user is an affiliate
+      supabase.from("affiliates").select("id").eq("user_id", user.id).eq("status", "active").maybeSingle()
+        .then(({ data }) => setIsAffiliate(!!data));
+    }
   }, [user]);
 
   const loadProfile = async () => {

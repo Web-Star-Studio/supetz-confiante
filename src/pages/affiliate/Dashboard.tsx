@@ -185,9 +185,14 @@ export default function AffiliateDashboard() {
       <div className="min-h-screen bg-background pt-24 md:pt-32 pb-24">
         <div className="max-w-5xl mx-auto px-6">
           {/* Header */}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
-            <h1 className="text-3xl font-black text-foreground mb-1">Painel do Parceiro</h1>
-            <p className="text-muted-foreground">Olá, <span className="font-bold text-foreground">{affiliate.name}</span> · Comissão: {affiliate.commission_percent}%</p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-3xl font-black text-foreground mb-1">Painel do Parceiro</h1>
+              <p className="text-muted-foreground">Olá, <span className="font-bold text-foreground">{affiliate.name}</span> · Comissão: {affiliate.commission_percent}%</p>
+            </div>
+            <Link to="/perfil" className="bg-muted text-foreground font-bold px-4 py-2 rounded-xl text-sm hover:bg-muted/80 transition-colors flex items-center gap-2">
+              <User className="w-4 h-4" /> Minha Conta
+            </Link>
           </motion.div>
 
           {/* Share section */}
