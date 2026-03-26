@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuditLog } from "@/hooks/useAuditLog";
 
 const PAGE_SIZE = 10;
+
+type SortCol = "created_at" | "total" | "status" | "customer_name";
+type SortDir = "asc" | "desc";
+
+function SortIcon({ column, current, dir }: { column: string; current: string; dir: SortDir }) {
+  if (column !== current) return <ArrowUpDown className="w-3.5 h-3.5 opacity-40" />;
+  return dir === "asc" ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />;
+}
 
 function PedidosSkeleton() {
   return (
@@ -33,13 +41,25 @@ export default function AdminPedidos() {
   const [copied, setCopied] = useState(false);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortCol, setSortCol] = useState<SortCol>("created_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const { log } = useAuditLog();
+
+  const toggleSort = (col: SortCol) => {
+    if (sortCol === col) {
+      setSortDir(d => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortCol(col);
+      setSortDir("desc");
+    }
+    setPage(0);
+  };
 
   const fetchOrders = async () => {
     setLoading(true);
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
-    let query = supabase.from("orders").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
+    let query = supabase.from("orders").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
     if (statusFilter !== "all") query = query.eq("status", statusFilter);
     if (search.trim()) query = query.or(`customer_name.ilike.%${search.trim()}%,id.ilike.%${search.trim()}%`);
     const { data, count } = await query;
@@ -48,7 +68,7 @@ export default function AdminPedidos() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchOrders(); }, [statusFilter, page, search]);
+  useEffect(() => { fetchOrders(); }, [statusFilter, page, search, sortCol, sortDir]);
   useEffect(() => { setPage(0); }, [statusFilter, search]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
@@ -154,13 +174,21 @@ export default function AdminPedidos() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead>
+                 <thead>
                   <tr className="bg-muted/60">
                     <th className="text-left px-6 py-3 font-semibold text-muted-foreground">ID</th>
-                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Cliente</th>
-                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Status</th>
-                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Total</th>
-                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Data</th>
+                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("customer_name")}>
+                      <span className="inline-flex items-center gap-1">Cliente <SortIcon column="customer_name" current={sortCol} dir={sortDir} /></span>
+                    </th>
+                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("status")}>
+                      <span className="inline-flex items-center gap-1">Status <SortIcon column="status" current={sortCol} dir={sortDir} /></span>
+                    </th>
+                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("total")}>
+                      <span className="inline-flex items-center gap-1 justify-end">Total <SortIcon column="total" current={sortCol} dir={sortDir} /></span>
+                    </th>
+                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("created_at")}>
+                      <span className="inline-flex items-center gap-1 justify-end">Data <SortIcon column="created_at" current={sortCol} dir={sortDir} /></span>
+                    </th>
                     <th className="text-center px-6 py-3 font-semibold text-muted-foreground">Ações</th>
                   </tr>
                 </thead>

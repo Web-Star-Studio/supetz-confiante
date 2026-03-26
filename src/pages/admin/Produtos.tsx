@@ -2,10 +2,13 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Loader2, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, ImageIcon, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 
 const PAGE_SIZE = 12;
+
+type ProdSortCol = "created_at" | "price" | "quantity" | "title";
+type ProdSortDir = "asc" | "desc";
 
 interface ProductForm {
   title: string;
@@ -82,18 +85,26 @@ export default function AdminProdutos() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortCol, setSortCol] = useState<ProdSortCol>("created_at");
+  const [sortDir, setSortDir] = useState<ProdSortDir>("desc");
+
+  const toggleSort = (col: ProdSortCol) => {
+    if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortCol(col); setSortDir("desc"); }
+    setPage(0);
+  };
 
   const fetchProducts = async () => {
     setLoading(true);
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
-    const { data, count } = await supabase.from("products").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
+    const { data, count } = await supabase.from("products").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
     setProducts(data || []);
     setTotalCount(count || 0);
     setLoading(false);
   };
 
-  useEffect(() => { fetchProducts(); }, [page]);
+  useEffect(() => { fetchProducts(); }, [page, sortCol, sortDir]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -180,6 +191,23 @@ export default function AdminProdutos() {
           className="flex items-center gap-2 px-5 py-3 rounded-full bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity shadow-md shadow-primary/20">
           <Plus className="w-4 h-4" /> Novo Produto
         </motion.button>
+      </div>
+
+      {/* Sort controls */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-xs text-muted-foreground font-medium">Ordenar por:</span>
+        {([
+          { col: "created_at" as ProdSortCol, label: "Data" },
+          { col: "price" as ProdSortCol, label: "Preço" },
+          { col: "quantity" as ProdSortCol, label: "Estoque" },
+          { col: "title" as ProdSortCol, label: "Nome" },
+        ]).map(({ col, label }) => (
+          <button key={col} onClick={() => toggleSort(col)}
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${sortCol === col ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:text-foreground"}`}>
+            {label}
+            {sortCol === col ? (sortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
+          </button>
+        ))}
       </div>
 
       {loading ? <ProductsSkeleton /> : products.length === 0 ? (
