@@ -33,6 +33,7 @@ import AdminBaseConhecimento from "../../pages/admin/BaseConhecimento";
 import AdminGerenciarIA from "../../pages/admin/GerenciarIA";
 import AdminBlog from "../../pages/admin/BlogAdmin";
 import AdminAfiliados from "../../pages/admin/Afiliados";
+import AdminFeedback from "../../pages/admin/Feedback";
 import Parceiros from "../../pages/Parceiros";
 import AffiliateDashboard from "../../pages/affiliate/Dashboard";
 import RefTracker from "../../components/affiliate/RefTracker";
