@@ -4,6 +4,7 @@ import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
 import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check, MapPin, Sparkles, Search } from "lucide-react";
+import SEOHead from "@/components/SEOHead";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
