@@ -123,7 +123,7 @@ export default function Afiliados() {
       toast.error("Erro ao atualizar comissão");
     } else {
       toast.success("Comissão atualizada!");
-      logAction("update_commission", "affiliate", selectedAffiliate.id, { new_percent: editCommission });
+      log({ action: "update", entity_type: "affiliate", entity_id: selectedAffiliate.id, details: { new_percent: editCommission } });
       setSelectedAffiliate(null);
       loadData();
     }
