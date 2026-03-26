@@ -1,6 +1,7 @@
 import { Helmet } from "react-helmet-async";
 
 const BASE_URL = "https://supetz-playful-trust.lovable.app";
+const DEFAULT_OG_IMAGE = `${BASE_URL}/images/og-image.jpg`;
 const DEFAULT_IMAGE = `${BASE_URL}/favicon.png`;
 const SITE_NAME = "Supet";
 
@@ -12,15 +13,10 @@ interface SEOHeadProps {
   type?: "website" | "article" | "product";
   jsonLd?: Record<string, unknown> | Record<string, unknown>[];
   noindex?: boolean;
-  /** ISO date for article publish */
   publishedTime?: string;
-  /** ISO date for article modification */
   modifiedTime?: string;
-  /** Author name for articles */
   author?: string;
-  /** Article section / category */
   section?: string;
-  /** Article tags */
   tags?: string[];
 }
 
@@ -28,7 +24,7 @@ export default function SEOHead({
   title,
   description,
   path = "/",
-  image = DEFAULT_IMAGE,
+  image,
   type = "website",
   jsonLd,
   noindex = false,
@@ -40,6 +36,7 @@ export default function SEOHead({
 }: SEOHeadProps) {
   const url = `${BASE_URL}${path}`;
   const fullTitle = path === "/" ? title : `${title} | ${SITE_NAME}`;
+  const ogImage = image || DEFAULT_OG_IMAGE;
 
   return (
     <Helmet>
@@ -53,7 +50,9 @@ export default function SEOHead({
       <meta property="og:url" content={url} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
+      <meta property="og:image" content={ogImage} />
+      <meta property="og:image:width" content="1200" />
+      <meta property="og:image:height" content="630" />
       <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:locale" content="pt_BR" />
 
@@ -78,7 +77,7 @@ export default function SEOHead({
       <meta name="twitter:card" content="summary_large_image" />
       <meta name="twitter:title" content={fullTitle} />
       <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
+      <meta name="twitter:image" content={ogImage} />
 
       {/* JSON-LD */}
       {jsonLd && (
@@ -91,6 +90,8 @@ export default function SEOHead({
 }
 
 // ─── Reusable structured data builders ───────────────────────────
+
+export { BASE_URL, DEFAULT_IMAGE, DEFAULT_OG_IMAGE, SITE_NAME };
 
 export function buildFAQSchema(faqs: { question: string; answer: string }[]) {
   return {
@@ -127,6 +128,7 @@ export function buildProductSchema(product: {
   image?: string;
   rating?: number;
   reviewCount?: number;
+  sku?: string;
 }) {
   return {
     "@context": "https://schema.org",
@@ -134,6 +136,7 @@ export function buildProductSchema(product: {
     name: product.name,
     description: product.description,
     image: product.image || DEFAULT_IMAGE,
+    sku: product.sku || "SUPET-GOMAS",
     brand: { "@type": "Brand", name: "Supet" },
     offers: {
       "@type": "Offer",
@@ -141,6 +144,8 @@ export function buildProductSchema(product: {
       price: product.price.toFixed(2),
       availability: "https://schema.org/InStock",
       url: `${BASE_URL}/shop`,
+      priceValidUntil: new Date(Date.now() + 90 * 86400000).toISOString().split("T")[0],
+      seller: { "@type": "Organization", name: "Supet" },
     },
     ...(product.rating && {
       aggregateRating: {
@@ -148,15 +153,12 @@ export function buildProductSchema(product: {
         ratingValue: product.rating,
         reviewCount: product.reviewCount || 0,
         bestRating: 5,
+        worstRating: 1,
       },
     }),
   };
 }
 
-/**
- * Article schema for blog posts — critical for AEO/GEO.
- * Includes speakable markup for voice assistants.
- */
 export function buildArticleSchema(article: {
   title: string;
   description: string;
@@ -176,7 +178,7 @@ export function buildArticleSchema(article: {
     "@type": "Article",
     headline: article.title,
     description: article.description,
-    image: article.image || DEFAULT_IMAGE,
+    image: article.image || DEFAULT_OG_IMAGE,
     url: article.url,
     mainEntityOfPage: { "@type": "WebPage", "@id": article.url },
     datePublished: article.publishedAt,
@@ -194,9 +196,7 @@ export function buildArticleSchema(article: {
     ...(article.category && { articleSection: article.category }),
     ...(article.tags && { keywords: article.tags.join(", ") }),
     ...(article.wordCount && { wordCount: article.wordCount }),
-    ...(article.readTime && {
-      timeRequired: `PT${article.readTime}M`,
-    }),
+    ...(article.readTime && { timeRequired: `PT${article.readTime}M` }),
     inLanguage: "pt-BR",
     isAccessibleForFree: true,
     speakable: {
@@ -206,9 +206,6 @@ export function buildArticleSchema(article: {
   };
 }
 
-/**
- * HowTo schema — useful for treatment/usage guides.
- */
 export function buildHowToSchema(howTo: {
   name: string;
   description: string;
@@ -231,9 +228,6 @@ export function buildHowToSchema(howTo: {
   };
 }
 
-/**
- * ItemList schema for blog listing pages — improves carousels in SERPs.
- */
 export function buildItemListSchema(items: { url: string; name: string; image?: string }[]) {
   return {
     "@context": "https://schema.org",
@@ -248,9 +242,6 @@ export function buildItemListSchema(items: { url: string; name: string; image?: 
   };
 }
 
-/**
- * Local/online business schema for brand authority signals.
- */
 export function buildLocalBusinessSchema() {
   return {
     "@context": "https://schema.org",
@@ -267,5 +258,80 @@ export function buildLocalBusinessSchema() {
       contactType: "customer service",
       availableLanguage: "Portuguese",
     },
+    sameAs: [],
+  };
+}
+
+/**
+ * VideoObject schema for video testimonials — critical for Google Video results.
+ */
+export function buildVideoObjectSchema(video: {
+  name: string;
+  description: string;
+  thumbnailUrl?: string;
+  contentUrl: string;
+  uploadDate?: string;
+  duration?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "VideoObject",
+    name: video.name,
+    description: video.description,
+    thumbnailUrl: video.thumbnailUrl || DEFAULT_OG_IMAGE,
+    contentUrl: video.contentUrl,
+    uploadDate: video.uploadDate || "2025-01-01",
+    ...(video.duration && { duration: video.duration }),
+    inLanguage: "pt-BR",
+  };
+}
+
+/**
+ * CollectionPage schema for product listing pages.
+ */
+export function buildCollectionPageSchema(collection: {
+  name: string;
+  description: string;
+  url: string;
+  numberOfItems: number;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: collection.name,
+    description: collection.description,
+    url: collection.url,
+    mainEntity: {
+      "@type": "ItemList",
+      numberOfItems: collection.numberOfItems,
+    },
+  };
+}
+
+/**
+ * Educational content schema for Ciência page.
+ */
+export function buildEducationalSchema(content: {
+  name: string;
+  description: string;
+  url: string;
+  about: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "WebPage",
+    name: content.name,
+    description: content.description,
+    url: content.url,
+    educationalLevel: "general",
+    about: {
+      "@type": "Thing",
+      name: content.about,
+    },
+    speakable: {
+      "@type": "SpeakableSpecification",
+      cssSelector: ["h1", "h2", "[data-speakable='true']"],
+    },
+    inLanguage: "pt-BR",
   };
 }

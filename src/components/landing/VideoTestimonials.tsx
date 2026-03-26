@@ -47,6 +47,18 @@ const videos = [
   }
 ];
 
+const videoSchemas = videos.map(v => ({
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  name: `Depoimento Supet — ${v.author}`,
+  description: v.description,
+  thumbnailUrl: "https://supetz-playful-trust.lovable.app/images/og-image.jpg",
+  contentUrl: v.src,
+  uploadDate: "2025-01-01",
+  inLanguage: "pt-BR",
+}));
+
+
 export default function VideoTestimonials() {
   const [playingId, setPlayingId] = useState<number | null>(null);
   const [isMuted, setIsMuted] = useState(true);

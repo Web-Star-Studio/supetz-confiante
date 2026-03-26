@@ -2,7 +2,7 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Plus, Minus, Star, ShieldCheck, Leaf, PackageCheck, Check } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import SEOHead, { buildProductSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
+import SEOHead, { buildProductSchema, buildBreadcrumbSchema, buildCollectionPageSchema } from "@/components/SEOHead";
 import PricingSection from "@/components/landing/PricingSection";
 import ExtrasSection from "@/components/landing/ExtrasSection";
 import FAQStandaloneSection from "@/components/landing/FAQStandaloneSection";
@@ -90,6 +90,12 @@ export default function Shop() {
             { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
             { name: "Loja", url: "https://supetz-playful-trust.lovable.app/shop" },
           ]),
+          buildCollectionPageSchema({
+            name: "Loja Supet — Gomas Naturais",
+            description: "Coleção completa de gomas naturais Supet para a saúde do seu pet.",
+            url: "https://supetz-playful-trust.lovable.app/shop",
+            numberOfItems: comboProducts.length || 3,
+          }),
         ]}
       />
       <ShopHero

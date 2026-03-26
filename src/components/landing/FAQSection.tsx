@@ -47,7 +47,7 @@ export default function FAQSection() {
                     transition={{ duration: motionTokens.durationFast }}
                     className="overflow-hidden"
                   >
-                    <p className="px-5 pb-5 text-sm leading-relaxed text-supet-text/65">
+                    <p data-speakable="true" className="px-5 pb-5 text-sm leading-relaxed text-supet-text/65">
                       {faq.answer}
                     </p>
                   </motion.div>

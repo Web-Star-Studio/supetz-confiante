@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import SEOHead from "@/components/SEOHead";
+import SEOHead, { buildProductSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
 import ProductReviews from "@/components/product/ProductReviews";
 import Layout from "@/components/layout/Layout";
 
@@ -128,8 +128,26 @@ export default function Produto() {
   return (
     <Layout>
       <SEOHead
-        title={`${product.title} | Supet`}
+        title={product.title}
         description={product.description || product.subtitle}
+        path={`/produto/${id}`}
+        type="product"
+        jsonLd={[
+          buildProductSchema({
+            name: product.title,
+            description: product.description || product.subtitle,
+            price: product.price,
+            image: gallery[0],
+            rating: productRating?.avg || 4.9,
+            reviewCount: productRating?.count || 0,
+            sku: `SUPET-${id?.slice(0, 8).toUpperCase()}`,
+          }),
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+            { name: "Loja", url: "https://supetz-playful-trust.lovable.app/shop" },
+            { name: product.title, url: `https://supetz-playful-trust.lovable.app/produto/${id}` },
+          ]),
+        ]}
       />
 
       <div className="min-h-screen bg-background pt-28 pb-20 px-6">

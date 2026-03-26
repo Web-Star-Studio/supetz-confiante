@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
 import Layout from "@/components/layout/Layout";
 import { motion } from "framer-motion";
 import { Handshake, TrendingUp, Gift, Link2, Users, Star, CheckCircle, Loader2 } from "lucide-react";
@@ -70,6 +71,15 @@ export default function Parceiros() {
 
   return (
     <Layout>
+      <SEOHead
+        title="Programa de Parceiros — Ganhe Comissões"
+        description="Torne-se um parceiro Supet e ganhe comissões de até 15% em cada venda. Programa de afiliados para influenciadores, veterinários e amantes de pets."
+        path="/parceiros"
+        jsonLd={buildBreadcrumbSchema([
+          { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+          { name: "Parceiros", url: "https://supetz-playful-trust.lovable.app/parceiros" },
+        ])}
+      />
       <div className="min-h-screen bg-background">
         <ParceirosHero />
         <ParceirosStats />
