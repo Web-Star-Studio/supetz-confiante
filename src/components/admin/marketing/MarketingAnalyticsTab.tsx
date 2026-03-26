@@ -402,6 +402,9 @@ export default function MarketingAnalyticsTab() {
         </div>
       </div>
 
+      {/* Revenue vs Cost Trend */}
+      <RevenueCostTrendChart />
+
       {/* Weekly Summary Panel */}
       <WeeklySummaryPanel />
 
