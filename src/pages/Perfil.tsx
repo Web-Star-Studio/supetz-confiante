@@ -309,6 +309,20 @@ export default function Perfil() {
         })}
       </nav>
 
+      {isAffiliate && (
+        <div className="px-1.5 lg:px-2 xl:px-3">
+          <Link
+            to="/parceiros/painel"
+            title={sidebarCollapsed ? "Painel de Parceiro" : undefined}
+            className={`flex items-center gap-2 w-full rounded-2xl text-xs lg:text-sm font-semibold text-primary hover:bg-primary/10 transition-colors ${
+              sidebarCollapsed ? "justify-center px-2 py-2 lg:py-2.5" : "px-3 lg:px-4 py-2 lg:py-2.5"
+            }`}
+          >
+            <Handshake className="w-4 h-4" />
+            {!sidebarCollapsed && "Painel de Parceiro"}
+          </Link>
+        </div>
+      )}
       <div className="p-1.5 lg:p-2 xl:p-3">
         <button
           onClick={handleSignOut}
