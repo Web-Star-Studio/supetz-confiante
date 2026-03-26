@@ -96,10 +96,11 @@ export default function AdminMarketing() {
 
   const fetchCampaigns = useCallback(async () => {
     setLoading(true);
-    const [campRes, recipRes, tagsRes] = await Promise.all([
+    const [campRes, recipRes, tagsRes, tplRes] = await Promise.all([
       supabase.from("campaigns").select("*").order("created_at", { ascending: false }),
       supabase.from("campaign_recipients").select("campaign_id, opened, coupon_id"),
       supabase.from("customer_tags").select("*").order("name"),
+      supabase.from("campaign_templates").select("id, name, subject, category, html_content, accent_color").order("updated_at", { ascending: false }),
     ]);
 
     const camps = (campRes.data || []) as Campaign[];
