@@ -148,6 +148,26 @@ export default function Afiliados() {
     }
   };
 
+  const handleDelete = async (aff: Affiliate) => {
+    if (!window.confirm(`Tem certeza que deseja excluir permanentemente "${aff.name}"? Esta ação não pode ser desfeita.`)) return;
+    
+    // Delete related records first, then the affiliate
+    await Promise.all([
+      supabase.from("affiliate_sales").delete().eq("affiliate_id", aff.id),
+      supabase.from("affiliate_clicks").delete().eq("affiliate_id", aff.id),
+      supabase.from("affiliate_payouts").delete().eq("affiliate_id", aff.id),
+    ]);
+
+    const { error } = await supabase.from("affiliates").delete().eq("id", aff.id);
+    if (error) {
+      toast.error("Erro ao excluir afiliado: " + error.message);
+    } else {
+      toast.success(`${aff.name} excluído permanentemente.`);
+      log({ action: "delete", entity_type: "affiliate", entity_id: aff.id, details: { name: aff.name, email: aff.email } });
+      loadData();
+    }
+  };
+
   const handleUpdateCommission = async () => {
     if (!selectedAffiliate) return;
     const { error } = await supabase.from("affiliates").update({ commission_percent: editCommission }).eq("id", selectedAffiliate.id);
