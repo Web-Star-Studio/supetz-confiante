@@ -3,9 +3,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarDays, Megaphone, Zap, Mail, Users,
-  Eye, ChevronDown, ChevronUp, Loader2, FileBarChart, Download,
+  Eye, ChevronDown, ChevronUp, Loader2, FileBarChart, Download, RefreshCw,
 } from "lucide-react";
 import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 interface WeeklySummary {
   id: string;
