@@ -389,6 +389,7 @@ export default function Checkout() {
           street: formData.address,
           number: formData.number,
           complement: formData.complement,
+          neighborhood: formData.neighborhood,
           city: formData.city,
           state: formData.state,
           zip: formData.zipCode,
