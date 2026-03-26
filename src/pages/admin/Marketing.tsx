@@ -337,6 +337,7 @@ export default function AdminMarketing() {
           { key: "automations" as const, label: "Automações", icon: Zap },
           { key: "templates" as const, label: "Templates", icon: FileText },
           { key: "newsletter" as const, label: "Newsletter", icon: Mail },
+          { key: "analytics" as const, label: "Analytics", icon: BarChart3 },
         ]).map((tab) => (
           <button
             key={tab.key}
