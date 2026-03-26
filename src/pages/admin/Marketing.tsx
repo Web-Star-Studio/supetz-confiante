@@ -89,8 +89,10 @@ export default function AdminMarketing() {
 
   const [form, setForm] = useState(defaultForm);
   const [allTags, setAllTags] = useState<{ id: string; name: string; color: string }[]>([]);
+  const [allTemplates, setAllTemplates] = useState<EmailTemplate[]>([]);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
   const fetchCampaigns = useCallback(async () => {
     setLoading(true);
