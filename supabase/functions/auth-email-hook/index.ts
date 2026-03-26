@@ -17,12 +17,12 @@ const corsHeaders = {
 }
 
 const EMAIL_SUBJECTS: Record<string, string> = {
-  signup: 'Confirm your email',
-  invite: "You've been invited",
-  magiclink: 'Your login link',
-  recovery: 'Reset your password',
-  email_change: 'Confirm your new email',
-  reauthentication: 'Your verification code',
+  signup: 'Confirme seu e-mail — Supet 🐾',
+  invite: 'Você foi convidado — Supet 🐾',
+  magiclink: 'Seu link de acesso — Supet 🐾',
+  recovery: 'Redefinir sua senha — Supet 🐾',
+  email_change: 'Confirme seu novo e-mail — Supet 🐾',
+  reauthentication: 'Seu código de verificação — Supet 🐾',
 }
 
 // Template mapping
@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "supetz-playful-trust"
+const SITE_NAME = "Supet"
 const SENDER_DOMAIN = "notify.supet.com.br"
 const ROOT_DOMAIN = "supet.com.br"
 const FROM_DOMAIN = "supet.com.br" // Domain shown in From address (may be root or sender subdomain)

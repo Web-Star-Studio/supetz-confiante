@@ -4,12 +4,17 @@ import {
   Body, Button, Container, Head, Heading, Html, Link, Preview, Text, Section, Hr,
 } from 'npm:@react-email/components@0.0.22'
 
-interface EmailChangeEmailProps { siteName: string; email: string; newEmail: string; confirmationUrl: string }
+interface EmailChangeEmailProps {
+  siteName: string
+  email: string
+  newEmail: string
+  confirmationUrl: string
+}
 
 export const EmailChangeEmail = ({ siteName, email, newEmail, confirmationUrl }: EmailChangeEmailProps) => (
   <Html lang="pt-BR" dir="ltr">
     <Head />
-    <Preview>Confirme a alteração de e-mail — Supet 🐾</Preview>
+    <Preview>Confirme a alteração do seu e-mail — Supet 🐾</Preview>
     <Body style={main}>
       <Container style={container}>
         <Section style={header}><Text style={logoText}>🐾 Supet</Text></Section>
@@ -17,7 +22,7 @@ export const EmailChangeEmail = ({ siteName, email, newEmail, confirmationUrl }:
           <Text style={heroEmoji}>📧</Text>
           <Heading style={h1}>Alteração de e-mail</Heading>
           <Text style={text}>
-            Você solicitou a alteração do e-mail da sua conta Supet de{' '}
+            Você solicitou a alteração do seu e-mail de{' '}
             <Link href={`mailto:${email}`} style={link}>{email}</Link> para{' '}
             <Link href={`mailto:${newEmail}`} style={link}>{newEmail}</Link>.
           </Text>

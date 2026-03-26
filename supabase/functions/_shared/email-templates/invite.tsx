@@ -4,7 +4,11 @@ import {
   Body, Button, Container, Head, Heading, Html, Link, Preview, Text, Section, Hr,
 } from 'npm:@react-email/components@0.0.22'
 
-interface InviteEmailProps { siteName: string; siteUrl: string; confirmationUrl: string }
+interface InviteEmailProps {
+  siteName: string
+  siteUrl: string
+  confirmationUrl: string
+}
 
 export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailProps) => (
   <Html lang="pt-BR" dir="ltr">
@@ -17,7 +21,7 @@ export const InviteEmail = ({ siteName, siteUrl, confirmationUrl }: InviteEmailP
           <Text style={heroEmoji}>💌</Text>
           <Heading style={h1}>Você foi convidado!</Heading>
           <Text style={text}>
-            Você recebeu um convite para fazer parte da{' '}
+            Você recebeu um convite para participar da{' '}
             <Link href={siteUrl} style={link}><strong>Supet</strong></Link>.
             Clique no botão abaixo para aceitar o convite e criar sua conta.
           </Text>
