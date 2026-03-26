@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Plus, Tag, Download } from "lucide-react";
+import { Search, Plus, Tag, Download, CheckSquare, Bell, ArrowRightLeft, X } from "lucide-react";
 import CRMFunnelCards from "@/components/admin/crm/CRMFunnelCards";
 import CRMClientList, { type EnrichedClient } from "@/components/admin/crm/CRMClientList";
 import CRMClientDrawer from "@/components/admin/crm/CRMClientDrawer";
@@ -19,81 +19,89 @@ export default function AdminCRM() {
   const [newTagColor, setNewTagColor] = useState("#6366f1");
   const [showNewTag, setShowNewTag] = useState(false);
 
+  // Bulk actions
+  const [bulkMode, setBulkMode] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [bulkAction, setBulkAction] = useState<"tag" | "status" | "notify" | null>(null);
+  const [bulkTagId, setBulkTagId] = useState<string>("");
+  const [bulkStatus, setBulkStatus] = useState<string>("");
+  const [bulkNotifTitle, setBulkNotifTitle] = useState("");
+  const [bulkNotifMessage, setBulkNotifMessage] = useState("");
+  const [bulkProcessing, setBulkProcessing] = useState(false);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-    const [profilesRes, ordersRes, pointsRes, statusRes, tagsRes, assignmentsRes, newsletterRes] = await Promise.all([
-      supabase.from("profiles").select("*").order("created_at", { ascending: false }),
-      supabase.from("orders").select("user_id, total, created_at"),
-      supabase.from("loyalty_points").select("user_id, points"),
-      supabase.from("customer_status").select("user_id, status"),
-      supabase.from("customer_tags").select("*").order("name"),
-      supabase.from("customer_tag_assignments").select("user_id, tag_id"),
-      supabase.from("newsletter_subscribers" as any).select("*").is("user_id", null).eq("status", "active"),
-    ]);
+      const [profilesRes, ordersRes, pointsRes, statusRes, tagsRes, assignmentsRes, newsletterRes] = await Promise.all([
+        supabase.from("profiles").select("*").order("created_at", { ascending: false }),
+        supabase.from("orders").select("user_id, total, created_at"),
+        supabase.from("loyalty_points").select("user_id, points"),
+        supabase.from("customer_status").select("user_id, status"),
+        supabase.from("customer_tags").select("*").order("name"),
+        supabase.from("customer_tag_assignments").select("user_id, tag_id"),
+        supabase.from("newsletter_subscribers" as any).select("*").is("user_id", null).eq("status", "active"),
+      ]);
 
-    if (profilesRes.error || ordersRes.error || pointsRes.error || statusRes.error || tagsRes.error || assignmentsRes.error) {
-      toast.error("Erro ao carregar dados de clientes");
-    }
-
-    const profiles = profilesRes.data || [];
-    const orders = ordersRes.data || [];
-    const points = pointsRes.data || [];
-    const statuses = statusRes.data || [];
-    const tags = (tagsRes.data || []) as { id: string; name: string; color: string }[];
-    const assignments = assignmentsRes.data || [];
-    const nlLeads = (newsletterRes.data || []) as any[];
-
-    setAllTags(tags);
-
-    const enriched: EnrichedClient[] = profiles.map((p: any) => {
-      const userOrders = orders.filter((o: any) => o.user_id === p.user_id);
-      const userPoints = points.filter((pt: any) => pt.user_id === p.user_id);
-      const userStatus = statuses.find((s: any) => s.user_id === p.user_id);
-      const userTagIds = assignments.filter((a: any) => a.user_id === p.user_id).map((a: any) => a.tag_id);
-      const userTags = tags.filter((t) => userTagIds.includes(t.id));
-      const sorted = [...userOrders].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
-
-      // Auto-determine status if not set
-      let status = userStatus?.status || "lead";
-      if (!userStatus) {
-        if (userOrders.length > 0) status = "active";
+      if (profilesRes.error || ordersRes.error || pointsRes.error || statusRes.error || tagsRes.error || assignmentsRes.error) {
+        toast.error("Erro ao carregar dados de clientes");
       }
 
-      return {
-        id: p.id,
-        user_id: p.user_id,
-        full_name: p.full_name,
-        phone: p.phone,
-        avatar_url: p.avatar_url,
-        created_at: p.created_at,
-        orderCount: userOrders.length,
-        totalSpent: userOrders.reduce((s: number, o: any) => s + Number(o.total), 0),
-        totalPoints: userPoints.reduce((s: number, pt: any) => s + pt.points, 0),
-        lastOrderDate: sorted[0]?.created_at || null,
-        status,
-        tags: userTags,
-      };
-    });
+      const profiles = profilesRes.data || [];
+      const orders = ordersRes.data || [];
+      const points = pointsRes.data || [];
+      const statuses = statusRes.data || [];
+      const tags = (tagsRes.data || []) as { id: string; name: string; color: string }[];
+      const assignments = assignmentsRes.data || [];
+      const nlLeads = (newsletterRes.data || []) as any[];
 
-    // Add newsletter-only leads (no user account)
-    const nlClients: EnrichedClient[] = nlLeads.map((nl: any) => ({
-      id: nl.id,
-      user_id: "",
-      full_name: nl.name || nl.email,
-      phone: null,
-      avatar_url: null,
-      created_at: nl.subscribed_at,
-      orderCount: 0,
-      totalSpent: 0,
-      totalPoints: 0,
-      lastOrderDate: null,
-      status: "newsletter_lead",
-      tags: [],
-    }));
+      setAllTags(tags);
 
-    setClients([...enriched, ...nlClients]);
-    } catch (err) {
+      const enriched: EnrichedClient[] = profiles.map((p: any) => {
+        const userOrders = orders.filter((o: any) => o.user_id === p.user_id);
+        const userPoints = points.filter((pt: any) => pt.user_id === p.user_id);
+        const userStatus = statuses.find((s: any) => s.user_id === p.user_id);
+        const userTagIds = assignments.filter((a: any) => a.user_id === p.user_id).map((a: any) => a.tag_id);
+        const userTags = tags.filter((t) => userTagIds.includes(t.id));
+        const sorted = [...userOrders].sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+        let status = userStatus?.status || "lead";
+        if (!userStatus) {
+          if (userOrders.length > 0) status = "active";
+        }
+
+        return {
+          id: p.id,
+          user_id: p.user_id,
+          full_name: p.full_name,
+          phone: p.phone,
+          avatar_url: p.avatar_url,
+          created_at: p.created_at,
+          orderCount: userOrders.length,
+          totalSpent: userOrders.reduce((s: number, o: any) => s + Number(o.total), 0),
+          totalPoints: userPoints.reduce((s: number, pt: any) => s + pt.points, 0),
+          lastOrderDate: sorted[0]?.created_at || null,
+          status,
+          tags: userTags,
+        };
+      });
+
+      const nlClients: EnrichedClient[] = nlLeads.map((nl: any) => ({
+        id: nl.id,
+        user_id: "",
+        full_name: nl.name || nl.email,
+        phone: null,
+        avatar_url: null,
+        created_at: nl.subscribed_at,
+        orderCount: 0,
+        totalSpent: 0,
+        totalPoints: 0,
+        lastOrderDate: null,
+        status: "newsletter_lead",
+        tags: [],
+      }));
+
+      setClients([...enriched, ...nlClients]);
+    } catch {
       toast.error("Erro ao carregar dados de clientes");
     } finally {
       setLoading(false);
@@ -133,7 +141,6 @@ export default function AdminCRM() {
   function handleRefresh() {
     fetchData().then(() => {
       if (selectedClient) {
-        // Re-select with updated data
         setSelectedClient((prev) => {
           if (!prev) return null;
           const updated = clients.find((c) => c.id === prev.id);
@@ -146,12 +153,8 @@ export default function AdminCRM() {
   function handleExportCSV() {
     const headers = ["Nome", "Telefone", "Status", "Pedidos", "Gasto Total (R$)", "Pontos", "Tags", "Último Pedido", "Cadastro"];
     const rows = filtered.map((c) => [
-      c.full_name || "Sem nome",
-      c.phone || "",
-      c.status,
-      c.orderCount,
-      c.totalSpent.toFixed(2),
-      c.totalPoints,
+      c.full_name || "Sem nome", c.phone || "", c.status, c.orderCount,
+      c.totalSpent.toFixed(2), c.totalPoints,
       c.tags.map((t) => t.name).join("; "),
       c.lastOrderDate ? new Date(c.lastOrderDate).toLocaleDateString("pt-BR") : "",
       new Date(c.created_at).toLocaleDateString("pt-BR"),
@@ -166,7 +169,6 @@ export default function AdminCRM() {
     URL.revokeObjectURL(url);
   }
 
-  // Update selectedClient when clients change
   useEffect(() => {
     if (selectedClient) {
       const updated = clients.find((c) => c.id === selectedClient.id);
@@ -174,22 +176,195 @@ export default function AdminCRM() {
     }
   }, [clients]);
 
+  // Bulk action handlers
+  function handleToggleSelect(userId: string) {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(userId)) next.delete(userId);
+      else next.add(userId);
+      return next;
+    });
+  }
+
+  function handleSelectAll() {
+    const filteredUserIds = filtered.filter(c => c.user_id).map(c => c.user_id);
+    const allSelected = filteredUserIds.every(id => selectedIds.has(id));
+    if (allSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filteredUserIds));
+    }
+  }
+
+  async function executeBulkAction() {
+    if (selectedIds.size === 0) return;
+    setBulkProcessing(true);
+    const ids = Array.from(selectedIds);
+
+    try {
+      if (bulkAction === "tag" && bulkTagId) {
+        for (const uid of ids) {
+          await supabase.from("customer_tag_assignments").upsert(
+            { user_id: uid, tag_id: bulkTagId },
+            { onConflict: "user_id,tag_id" }
+          );
+        }
+        toast.success(`Tag aplicada a ${ids.length} clientes`);
+      } else if (bulkAction === "status" && bulkStatus) {
+        for (const uid of ids) {
+          await supabase.from("customer_status").upsert(
+            { user_id: uid, status: bulkStatus, updated_at: new Date().toISOString() },
+            { onConflict: "user_id" }
+          );
+        }
+        toast.success(`Status atualizado para ${ids.length} clientes`);
+      } else if (bulkAction === "notify" && bulkNotifTitle.trim()) {
+        for (const uid of ids) {
+          await supabase.from("user_notifications").insert({
+            user_id: uid,
+            title: bulkNotifTitle.trim(),
+            message: bulkNotifMessage.trim() || null,
+            type: "info",
+          });
+        }
+        toast.success(`Notificação enviada para ${ids.length} clientes`);
+      }
+    } catch {
+      toast.error("Erro ao executar ação em massa");
+    }
+
+    setBulkProcessing(false);
+    setBulkAction(null);
+    setBulkTagId("");
+    setBulkStatus("");
+    setBulkNotifTitle("");
+    setBulkNotifMessage("");
+    setSelectedIds(new Set());
+    setBulkMode(false);
+    fetchData();
+  }
+
   return (
     <AdminLayout>
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-8 flex items-center justify-between flex-wrap gap-3">
         <div>
           <h1 className="text-3xl font-extrabold text-foreground font-display">Clientes</h1>
           <p className="text-muted-foreground mt-1">Gestão avançada de clientes e funil de vendas</p>
         </div>
-        <button
-          onClick={handleExportCSV}
-          disabled={filtered.length === 0}
-          className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border/50 text-sm font-semibold text-foreground hover:border-primary/30 hover:shadow-md transition-all disabled:opacity-40 disabled:pointer-events-none"
-        >
-          <Download className="w-4 h-4" />
-          Exportar CSV
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => { setBulkMode(!bulkMode); setSelectedIds(new Set()); setBulkAction(null); }}
+            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
+              bulkMode
+                ? "bg-primary text-primary-foreground"
+                : "bg-card border border-border/50 text-foreground hover:border-primary/30"
+            }`}
+          >
+            <CheckSquare className="w-4 h-4" />
+            {bulkMode ? "Sair seleção" : "Ações em massa"}
+          </button>
+          <button
+            onClick={handleExportCSV}
+            disabled={filtered.length === 0}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border/50 text-sm font-semibold text-foreground hover:border-primary/30 hover:shadow-md transition-all disabled:opacity-40 disabled:pointer-events-none"
+          >
+            <Download className="w-4 h-4" />
+            Exportar CSV
+          </button>
+        </div>
       </div>
+
+      {/* Bulk action bar */}
+      {bulkMode && selectedIds.size > 0 && (
+        <div className="mb-6 bg-primary/5 border border-primary/20 rounded-2xl p-4 flex flex-wrap items-center gap-3">
+          <span className="text-sm font-bold text-foreground">{selectedIds.size} selecionado{selectedIds.size > 1 ? "s" : ""}</span>
+
+          <div className="flex gap-2 flex-wrap flex-1">
+            <button
+              onClick={() => setBulkAction(bulkAction === "tag" ? null : "tag")}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                bulkAction === "tag" ? "bg-primary text-primary-foreground" : "bg-card border border-border/50 text-foreground hover:border-primary/30"
+              }`}
+            >
+              <Tag className="w-3.5 h-3.5" /> Aplicar tag
+            </button>
+            <button
+              onClick={() => setBulkAction(bulkAction === "status" ? null : "status")}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                bulkAction === "status" ? "bg-primary text-primary-foreground" : "bg-card border border-border/50 text-foreground hover:border-primary/30"
+              }`}
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" /> Mudar status
+            </button>
+            <button
+              onClick={() => setBulkAction(bulkAction === "notify" ? null : "notify")}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all ${
+                bulkAction === "notify" ? "bg-primary text-primary-foreground" : "bg-card border border-border/50 text-foreground hover:border-primary/30"
+              }`}
+            >
+              <Bell className="w-3.5 h-3.5" /> Notificar
+            </button>
+          </div>
+
+          <button onClick={() => { setSelectedIds(new Set()); setBulkAction(null); }} className="text-muted-foreground hover:text-foreground">
+            <X className="w-4 h-4" />
+          </button>
+
+          {/* Inline form */}
+          {bulkAction === "tag" && (
+            <div className="w-full flex items-center gap-2 mt-2">
+              <select
+                value={bulkTagId}
+                onChange={(e) => setBulkTagId(e.target.value)}
+                className="px-3 py-2 rounded-xl bg-card border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              >
+                <option value="">Selecionar tag...</option>
+                {allTags.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
+              </select>
+              <button onClick={executeBulkAction} disabled={!bulkTagId || bulkProcessing} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold disabled:opacity-50">
+                {bulkProcessing ? "Aplicando..." : "Aplicar"}
+              </button>
+            </div>
+          )}
+          {bulkAction === "status" && (
+            <div className="w-full flex items-center gap-2 mt-2">
+              {["lead", "active", "inactive", "vip"].map((s) => (
+                <button
+                  key={s}
+                  onClick={() => setBulkStatus(s)}
+                  className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                    bulkStatus === s ? "bg-primary text-primary-foreground" : "bg-card border border-border/50 text-muted-foreground"
+                  }`}
+                >
+                  {s === "lead" ? "Lead" : s === "active" ? "Ativo" : s === "inactive" ? "Inativo" : "VIP"}
+                </button>
+              ))}
+              <button onClick={executeBulkAction} disabled={!bulkStatus || bulkProcessing} className="ml-auto px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold disabled:opacity-50">
+                {bulkProcessing ? "Aplicando..." : "Aplicar"}
+              </button>
+            </div>
+          )}
+          {bulkAction === "notify" && (
+            <div className="w-full space-y-2 mt-2">
+              <input
+                value={bulkNotifTitle}
+                onChange={(e) => setBulkNotifTitle(e.target.value)}
+                placeholder="Título da notificação"
+                className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <input
+                value={bulkNotifMessage}
+                onChange={(e) => setBulkNotifMessage(e.target.value)}
+                placeholder="Mensagem (opcional)"
+                className="w-full px-4 py-2.5 rounded-xl bg-card border border-border text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+              <button onClick={executeBulkAction} disabled={!bulkNotifTitle.trim() || bulkProcessing} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold disabled:opacity-50">
+                {bulkProcessing ? "Enviando..." : "Enviar para todos"}
+              </button>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Stats overview */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
@@ -226,7 +401,6 @@ export default function AdminCRM() {
           />
         </div>
 
-        {/* Tag filter */}
         <div className="flex items-center gap-2 flex-wrap">
           <Tag className="w-4 h-4 text-muted-foreground" />
           {allTags.map((tag) => (
@@ -263,7 +437,15 @@ export default function AdminCRM() {
         </div>
       </div>
 
-      <CRMClientList clients={filtered} loading={loading} onSelect={setSelectedClient} />
+      <CRMClientList
+        clients={filtered}
+        loading={loading}
+        onSelect={setSelectedClient}
+        bulkMode={bulkMode}
+        selectedIds={selectedIds}
+        onToggleSelect={handleToggleSelect}
+        onSelectAll={handleSelectAll}
+      />
 
       {selectedClient && (
         <CRMClientDrawer client={selectedClient} onClose={() => setSelectedClient(null)} allTags={allTags} onRefresh={handleRefresh} />
