@@ -4,7 +4,9 @@ import { motion } from "framer-motion";
 import {
   Mail, Send, ShieldOff, AlertTriangle, Eye, CheckCircle2,
   XCircle, Loader2, ChevronDown, ChevronUp, MailWarning,
+  Settings2, BellRing, Save,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface EmailLog {
   id: string;
