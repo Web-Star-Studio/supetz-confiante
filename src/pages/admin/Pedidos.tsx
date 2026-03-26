@@ -101,13 +101,7 @@ export default function AdminPedidos() {
     cancelled: { label: "Cancelado", className: "bg-rose-100 text-rose-700" },
   };
 
-  const filtered = orders.filter(o =>
-    !search || (o.customer_name || "").toLowerCase().includes(search.toLowerCase()) || o.id.includes(search)
-  );
-
-  // Summary counts
-  const pendingCount = orders.filter(o => o.status === "pending").length;
-  const shippedCount = orders.filter(o => o.status === "shipped").length;
+  const filtered = orders;
 
   const formatAddress = (addr: any) => {
     if (!addr || typeof addr !== "object") return null;
