@@ -94,6 +94,7 @@ export default function Footer() {
               <li><Link to="/sobre" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Sobre</Link></li>
               <li><Link to="/blog" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Blog</Link></li>
               <li><Link to="/faq" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">FAQ</Link></li>
+              <li><Link to="/parceiros" className="text-white/80 hover:text-white hover:translate-x-1 inline-block transition-all">Parceiros</Link></li>
             </ul>
           </div>
 
