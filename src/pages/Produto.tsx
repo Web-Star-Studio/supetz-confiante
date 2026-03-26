@@ -10,6 +10,7 @@ import { ChevronRight, Minus, Plus, Check, ShoppingBag } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import SEOHead from "@/components/SEOHead";
+import ProductReviews from "@/components/product/ProductReviews";
 
 export default function Produto() {
   const { id } = useParams<{ id: string }>();
