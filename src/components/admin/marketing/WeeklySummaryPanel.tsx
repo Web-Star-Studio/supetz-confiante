@@ -3,8 +3,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   CalendarDays, Megaphone, Zap, Mail, Users,
-  Eye, ChevronDown, ChevronUp, Loader2, FileBarChart,
+  Eye, ChevronDown, ChevronUp, Loader2, FileBarChart, Download,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface WeeklySummary {
   id: string;
