@@ -6,6 +6,7 @@ import {
   Play, Settings2, ChevronDown, ChevronUp, Activity,
   BarChart3, Bell, Save, Loader2, Plus, Trash2, Copy,
   TrendingUp, AlertTriangle, CheckCircle2, Info, X,
+  Mail, Ticket, Sparkles, Eye, ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
@@ -34,6 +35,15 @@ interface Execution {
   created_at: string;
 }
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  category: string;
+  html_content: string;
+  accent_color: string;
+}
+
 const triggerInfo: Record<string, { label: string; icon: typeof PawPrint; color: string; description: string; variables: string[] }> = {
   pet_birthday: { label: "Aniversário do Pet", icon: PawPrint, color: "#ec4899", description: "Quando o pet faz aniversário", variables: ["{{pet_nome}}"] },
   inactive_customer: { label: "Cliente Inativo", icon: UserX, color: "#f59e0b", description: "Sem compras há X dias", variables: [] },
@@ -43,11 +53,17 @@ const triggerInfo: Record<string, { label: string; icon: typeof PawPrint; color:
   restock_reminder: { label: "Lembrete Reposição", icon: AlertTriangle, color: "#ef4444", description: "Produto próximo de acabar", variables: ["{{produto}}"] },
 };
 
-const actionLabels: Record<string, string> = {
-  notification: "Notificação",
-  coupon: "Cupom",
-  both: "Notificação + Cupom",
+const actionInfo: Record<string, { label: string; icon: typeof Bell; color: string; description: string }> = {
+  notification: { label: "Notificação", icon: Bell, color: "#10b981", description: "Envia notificação in-app" },
+  coupon: { label: "Cupom", icon: Ticket, color: "#f59e0b", description: "Gera cupom exclusivo" },
+  both: { label: "Notificação + Cupom", icon: Gift, color: "#8b5cf6", description: "Notifica e gera cupom" },
+  email: { label: "E-mail", icon: Mail, color: "#3b82f6", description: "Envia e-mail com template" },
+  email_and_notification: { label: "E-mail + Notificação", icon: Sparkles, color: "#ec4899", description: "E-mail e notificação in-app" },
 };
+
+const actionLabels: Record<string, string> = Object.fromEntries(
+  Object.entries(actionInfo).map(([k, v]) => [k, v.label])
+);
 
 const defaultCreateForm = {
   name: "",
@@ -62,12 +78,14 @@ const defaultCreateForm = {
     coupon_discount_value: 10,
     coupon_min_order: 0,
     coupon_expires_days: 14,
+    email_template_id: "",
   } as any,
 };
 
 export default function AutomationsTab() {
   const [automations, setAutomations] = useState<Automation[]>([]);
   const [executions, setExecutions] = useState<Execution[]>([]);
+  const [allTemplates, setAllTemplates] = useState<EmailTemplate[]>([]);
   const [loading, setLoading] = useState(true);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -78,16 +96,20 @@ export default function AutomationsTab() {
   const [createForm, setCreateForm] = useState({ ...defaultCreateForm });
   const [creating, setCreating] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [createStep, setCreateStep] = useState<1 | 2 | 3>(1);
+  const [previewTemplateId, setPreviewTemplateId] = useState<string | null>(null);
   const { log } = useAuditLog();
 
   const fetchData = useCallback(async () => {
     setLoading(true);
-    const [autoRes, execRes] = await Promise.all([
+    const [autoRes, execRes, tplRes] = await Promise.all([
       supabase.from("marketing_automations").select("*").order("created_at"),
       supabase.from("automation_executions").select("*").order("created_at", { ascending: false }).limit(500),
+      supabase.from("campaign_templates").select("id, name, subject, category, html_content, accent_color").order("updated_at", { ascending: false }),
     ]);
     setAutomations((autoRes.data || []) as Automation[]);
     setExecutions((execRes.data || []) as Execution[]);
+    setAllTemplates((tplRes.data || []) as EmailTemplate[]);
     setLoading(false);
   }, []);
 
@@ -170,6 +192,7 @@ export default function AutomationsTab() {
     setCreateForm({ ...defaultCreateForm });
     setShowCreate(false);
     setCreating(false);
+    setCreateStep(1);
     fetchData();
   };
 
@@ -190,7 +213,6 @@ export default function AutomationsTab() {
 
   const handleDelete = async (id: string) => {
     setDeleting(id);
-    // Delete executions first
     await supabase.from("automation_executions").delete().eq("automation_id", id);
     const { error } = await supabase.from("marketing_automations").delete().eq("id", id);
     if (error) { toast.error("Erro ao excluir"); setDeleting(null); return; }
@@ -225,9 +247,11 @@ export default function AutomationsTab() {
   }, [executions]);
 
   const maxDayCount = Math.max(1, ...last7Days.map((d) => d.count));
+  const successRate = totalExecutions > 0 ? 100 : 0;
 
-  // Success rate (executions with metadata containing errors = -1 results)
-  const successRate = totalExecutions > 0 ? 100 : 0; // All logged executions are successful
+  const needsEmail = (actionType: string) => actionType === "email" || actionType === "email_and_notification";
+  const needsNotification = (actionType: string) => actionType === "notification" || actionType === "both" || actionType === "email_and_notification";
+  const needsCoupon = (actionType: string) => actionType === "coupon" || actionType === "both";
 
   const renderTriggerConfig = (triggerType: string, config: any, onChange: (c: any) => void) => {
     switch (triggerType) {
@@ -294,20 +318,23 @@ export default function AutomationsTab() {
     const vars = triggerInfo[triggerType || ""]?.variables || [];
     return (
       <>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div>
-            <label className="text-[10px] text-muted-foreground mb-1 block">Título da notificação</label>
-            <input value={config.notification_title || ""}
-              onChange={(e) => onChange({ ...config, notification_title: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+        {needsNotification(actionType) && (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className="text-[10px] text-muted-foreground mb-1 block">Título da notificação</label>
+              <input value={config.notification_title || ""}
+                onChange={(e) => onChange({ ...config, notification_title: e.target.value })}
+                className="w-full px-3 py-2.5 rounded-xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            </div>
+            <div>
+              <label className="text-[10px] text-muted-foreground mb-1 block">Mensagem</label>
+              <input value={config.notification_message || ""}
+                onChange={(e) => onChange({ ...config, notification_message: e.target.value })}
+                className="w-full px-3 py-2.5 rounded-xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+            </div>
           </div>
-          <div>
-            <label className="text-[10px] text-muted-foreground mb-1 block">Mensagem</label>
-            <input value={config.notification_message || ""}
-              onChange={(e) => onChange({ ...config, notification_message: e.target.value })}
-              className="w-full px-3 py-2.5 rounded-xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-          </div>
-        </div>
+        )}
+
         {vars.length > 0 && (
           <div className="flex items-center gap-2 mt-2">
             <Info className="w-3 h-3 text-muted-foreground flex-shrink-0" />
@@ -318,7 +345,61 @@ export default function AutomationsTab() {
             </p>
           </div>
         )}
-        {(actionType === "coupon" || actionType === "both") && (
+
+        {needsEmail(actionType) && (
+          <div className="mt-3">
+            <label className="text-[10px] text-muted-foreground mb-2 block font-semibold">Template de e-mail</label>
+            {allTemplates.length === 0 ? (
+              <p className="text-xs text-muted-foreground">Nenhum template disponível. Crie um na aba Templates.</p>
+            ) : (
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {allTemplates.map((tpl) => (
+                  <button
+                    key={tpl.id}
+                    type="button"
+                    onClick={() => onChange({ ...config, email_template_id: tpl.id })}
+                    className={`flex-shrink-0 w-32 rounded-2xl border-2 transition-all overflow-hidden ${
+                      config.email_template_id === tpl.id ? "border-primary shadow-md" : "border-border/50 bg-card hover:border-primary/30"
+                    }`}
+                  >
+                    <div className="h-16 overflow-hidden relative" style={{ background: `${tpl.accent_color}10` }}>
+                      <div className="transform scale-[0.15] origin-top-left w-[666%]"
+                        dangerouslySetInnerHTML={{ __html: `<div style="font-family:Arial,sans-serif">${tpl.html_content}</div>` }} />
+                    </div>
+                    <div className="p-1.5">
+                      <p className="text-[10px] font-semibold text-foreground truncate">{tpl.name}</p>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            {config.email_template_id && (
+              <button
+                type="button"
+                onClick={() => setPreviewTemplateId(previewTemplateId === config.email_template_id ? null : config.email_template_id)}
+                className="text-[10px] text-primary font-semibold hover:underline flex items-center gap-1 mt-1"
+              >
+                <Eye className="w-3 h-3" /> {previewTemplateId === config.email_template_id ? "Ocultar preview" : "Ver preview"}
+              </button>
+            )}
+            <AnimatePresence>
+              {previewTemplateId && config.email_template_id === previewTemplateId && (() => {
+                const tpl = allTemplates.find((t) => t.id === previewTemplateId);
+                if (!tpl) return null;
+                return (
+                  <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }} className="overflow-hidden mt-2">
+                    <div className="bg-muted/50 rounded-2xl p-3">
+                      <div className="bg-white rounded-xl shadow-sm max-w-[400px] mx-auto overflow-hidden"
+                        dangerouslySetInnerHTML={{ __html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">${tpl.html_content}</div>` }} />
+                    </div>
+                  </motion.div>
+                );
+              })()}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {needsCoupon(actionType) && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-3">
             <div>
               <label className="text-[10px] text-muted-foreground mb-1 block">Tipo desconto</label>
@@ -404,7 +485,7 @@ export default function AutomationsTab() {
       {/* Action bar */}
       <div className="flex justify-between items-center">
         <button
-          onClick={() => setShowCreate(!showCreate)}
+          onClick={() => { setShowCreate(!showCreate); setCreateStep(1); setCreateForm({ ...defaultCreateForm }); }}
           className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-card border border-border/50 text-foreground font-semibold text-sm hover:bg-muted transition-all"
         >
           {showCreate ? <X className="w-4 h-4" /> : <Plus className="w-4 h-4" />}
@@ -420,7 +501,7 @@ export default function AutomationsTab() {
         </button>
       </div>
 
-      {/* Create form */}
+      {/* Step-based Create form */}
       <AnimatePresence>
         {showCreate && (
           <motion.div
@@ -430,79 +511,203 @@ export default function AutomationsTab() {
             className="overflow-hidden"
           >
             <div className="bg-card rounded-3xl p-6 space-y-5">
-              <h3 className="text-lg font-extrabold text-foreground">Nova Automação</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Nome</label>
-                  <input
-                    value={createForm.name}
-                    onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
-                    placeholder="Ex: Cupom de aniversário"
-                    className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  />
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Gatilho</label>
-                  <select
-                    value={createForm.trigger_type}
-                    onChange={(e) => setCreateForm({ ...createForm, trigger_type: e.target.value, trigger_config: {} })}
-                    className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  >
-                    {Object.entries(triggerInfo).map(([key, info]) => (
-                      <option key={key} value={key}>{info.label}</option>
-                    ))}
-                  </select>
+              {/* Progress steps */}
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-lg font-extrabold text-foreground">Nova Automação</h3>
+                <div className="flex items-center gap-1.5">
+                  {[1, 2, 3].map((step) => (
+                    <div key={step} className="flex items-center gap-1.5">
+                      <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all ${
+                        createStep >= step ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                      }`}>
+                        {step}
+                      </div>
+                      {step < 3 && <div className={`w-6 h-0.5 rounded-full transition-all ${createStep > step ? "bg-primary" : "bg-border"}`} />}
+                    </div>
+                  ))}
                 </div>
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Descrição</label>
-                <input
-                  value={createForm.description}
-                  onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
-                  placeholder="Descreva o objetivo desta automação"
-                  className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                />
-              </div>
+              {/* Step 1: Choose trigger */}
+              {createStep === 1 && (
+                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+                  <div>
+                    <p className="text-sm font-bold text-foreground mb-1">Escolha o gatilho</p>
+                    <p className="text-xs text-muted-foreground">Quando esta automação deve ser acionada?</p>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {Object.entries(triggerInfo).map(([key, info]) => {
+                      const Icon = info.icon;
+                      const selected = createForm.trigger_type === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => setCreateForm({ ...createForm, trigger_type: key, trigger_config: {} })}
+                          className={`rounded-2xl p-4 text-left transition-all border-2 ${
+                            selected ? "border-primary bg-primary/5 shadow-lg shadow-primary/10" : "border-border/50 bg-card hover:border-primary/30 hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style={{ background: `${info.color}15` }}>
+                            <Icon className="w-5 h-5" style={{ color: info.color }} />
+                          </div>
+                          <p className="text-sm font-bold text-foreground">{info.label}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{info.description}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
 
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Ação</label>
-                <select
-                  value={createForm.action_type}
-                  onChange={(e) => setCreateForm({ ...createForm, action_type: e.target.value })}
-                  className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 max-w-xs"
-                >
-                  <option value="notification">Notificação</option>
-                  <option value="coupon">Cupom</option>
-                  <option value="both">Notificação + Cupom</option>
-                </select>
-              </div>
+                  {/* Trigger config inline */}
+                  <div className="bg-muted/50 rounded-2xl p-4">
+                    <p className="text-xs font-semibold text-muted-foreground mb-2">Configuração do gatilho</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                      {renderTriggerConfig(createForm.trigger_type, createForm.trigger_config, (c) => setCreateForm({ ...createForm, trigger_config: c }))}
+                    </div>
+                  </div>
 
-              {/* Trigger config */}
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground mb-2">Configuração do gatilho</p>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {renderTriggerConfig(createForm.trigger_type, createForm.trigger_config, (c) => setCreateForm({ ...createForm, trigger_config: c }))}
-                </div>
-              </div>
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => setCreateStep(2)}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/20"
+                    >
+                      Próximo <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
 
-              {/* Action config */}
-              <div>
-                <p className="text-xs font-semibold text-muted-foreground mb-2">Configuração da ação</p>
-                {renderActionConfig(createForm.action_type, createForm.action_config, (c) => setCreateForm({ ...createForm, action_config: c }), createForm.trigger_type)}
-              </div>
+              {/* Step 2: Choose action */}
+              {createStep === 2 && (
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+                  <div>
+                    <p className="text-sm font-bold text-foreground mb-1">Escolha a ação</p>
+                    <p className="text-xs text-muted-foreground">O que deve acontecer quando o gatilho é acionado?</p>
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                    {Object.entries(actionInfo).map(([key, info]) => {
+                      const Icon = info.icon;
+                      const selected = createForm.action_type === key;
+                      return (
+                        <button
+                          key={key}
+                          onClick={() => setCreateForm({ ...createForm, action_type: key })}
+                          className={`rounded-2xl p-4 text-left transition-all border-2 ${
+                            selected ? "border-primary bg-primary/5 shadow-lg shadow-primary/10" : "border-border/50 bg-card hover:border-primary/30 hover:bg-muted/50"
+                          }`}
+                        >
+                          <div className="w-10 h-10 rounded-2xl flex items-center justify-center mb-3" style={{ background: `${info.color}15` }}>
+                            <Icon className="w-5 h-5" style={{ color: info.color }} />
+                          </div>
+                          <p className="text-sm font-bold text-foreground">{info.label}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{info.description}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
 
-              <div className="flex justify-end">
-                <button
-                  onClick={handleCreate}
-                  disabled={creating || !createForm.name.trim()}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/20 disabled:opacity-50"
-                >
-                  {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Plus className="w-4 h-4" />}
-                  {creating ? "Criando..." : "Criar Automação"}
-                </button>
-              </div>
+                  {/* Action config inline */}
+                  <div className="bg-muted/50 rounded-2xl p-4">
+                    <p className="text-xs font-semibold text-muted-foreground mb-2">Configuração da ação</p>
+                    {renderActionConfig(createForm.action_type, createForm.action_config, (c) => setCreateForm({ ...createForm, action_config: c }), createForm.trigger_type)}
+                  </div>
+
+                  <div className="flex justify-between">
+                    <button
+                      onClick={() => setCreateStep(1)}
+                      className="px-4 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      ← Voltar
+                    </button>
+                    <button
+                      onClick={() => setCreateStep(3)}
+                      className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/20"
+                    >
+                      Próximo <ArrowRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+
+              {/* Step 3: Name & confirm */}
+              {createStep === 3 && (
+                <motion.div initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="space-y-4">
+                  <div>
+                    <p className="text-sm font-bold text-foreground mb-1">Finalize sua automação</p>
+                    <p className="text-xs text-muted-foreground">Dê um nome e revise as configurações.</p>
+                  </div>
+
+                  {/* Summary */}
+                  <div className="bg-muted/50 rounded-2xl p-4 flex items-center gap-4">
+                    {(() => {
+                      const tInfo = triggerInfo[createForm.trigger_type];
+                      const aInfo = actionInfo[createForm.action_type];
+                      const TIcon = tInfo?.icon || Zap;
+                      const AIcon = aInfo?.icon || Bell;
+                      return (
+                        <>
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: `${tInfo?.color || "#666"}15` }}>
+                              <TIcon className="w-5 h-5" style={{ color: tInfo?.color || "#666" }} />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-foreground">{tInfo?.label || createForm.trigger_type}</p>
+                              <p className="text-[10px] text-muted-foreground">Gatilho</p>
+                            </div>
+                          </div>
+                          <ArrowRight className="w-4 h-4 text-muted-foreground flex-shrink-0" />
+                          <div className="flex items-center gap-3 flex-1">
+                            <div className="w-10 h-10 rounded-2xl flex items-center justify-center" style={{ background: `${aInfo?.color || "#666"}15` }}>
+                              <AIcon className="w-5 h-5" style={{ color: aInfo?.color || "#666" }} />
+                            </div>
+                            <div>
+                              <p className="text-xs font-bold text-foreground">{aInfo?.label || createForm.action_type}</p>
+                              <p className="text-[10px] text-muted-foreground">Ação</p>
+                            </div>
+                          </div>
+                        </>
+                      );
+                    })()}
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Nome *</label>
+                      <input
+                        value={createForm.name}
+                        onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                        placeholder="Ex: Cupom de aniversário"
+                        className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Descrição</label>
+                      <input
+                        value={createForm.description}
+                        onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                        placeholder="Descreva o objetivo"
+                        className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between">
+                    <button
+                      onClick={() => setCreateStep(2)}
+                      className="px-4 py-2 rounded-xl text-sm text-muted-foreground hover:text-foreground"
+                    >
+                      ← Voltar
+                    </button>
+                    <button
+                      onClick={handleCreate}
+                      disabled={creating || !createForm.name.trim()}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-primary/20 disabled:opacity-50"
+                    >
+                      {creating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4" />}
+                      {creating ? "Criando..." : "Criar Automação"}
+                    </button>
+                  </div>
+                </motion.div>
+              )}
             </div>
           </motion.div>
         )}
@@ -531,6 +736,7 @@ export default function AutomationsTab() {
         <div className="space-y-3">
           {automations.map((auto, i) => {
             const info = triggerInfo[auto.trigger_type] || { label: auto.trigger_type, icon: Zap, color: "#666", description: "", variables: [] };
+            const aInfo = actionInfo[auto.action_type] || { label: auto.action_type, icon: Bell, color: "#666", description: "" };
             const TriggerIcon = info.icon;
             const isExpanded = expandedId === auto.id;
             const isEditing = editingId === auto.id;
@@ -563,12 +769,15 @@ export default function AutomationsTab() {
                       >
                         {info.label}
                       </span>
+                      <span
+                        className="text-[10px] font-semibold px-2 py-0.5 rounded-full"
+                        style={{ background: `${aInfo.color}15`, color: aInfo.color }}
+                      >
+                        {aInfo.label}
+                      </span>
                     </div>
                     <p className="text-xs text-muted-foreground mt-0.5 truncate">{auto.description}</p>
                     <div className="flex items-center gap-3 mt-1.5 flex-wrap">
-                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
-                        <Bell className="w-3 h-3" /> {actionLabels[auto.action_type] || auto.action_type}
-                      </span>
                       <span className="text-[10px] text-muted-foreground flex items-center gap-1">
                         <Activity className="w-3 h-3" /> {autoExecs.length} execuções
                       </span>
@@ -580,6 +789,14 @@ export default function AutomationsTab() {
                           <Clock className="w-3 h-3" /> {new Date(auto.last_run_at).toLocaleDateString("pt-BR")}
                         </span>
                       )}
+                      {auto.action_config?.email_template_id && (() => {
+                        const tpl = allTemplates.find((t) => t.id === auto.action_config.email_template_id);
+                        return tpl ? (
+                          <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                            <Mail className="w-3 h-3" /> {tpl.name}
+                          </span>
+                        ) : null;
+                      })()}
                     </div>
                   </div>
 
@@ -622,9 +839,9 @@ export default function AutomationsTab() {
                             <select value={editForm.action_type}
                               onChange={(e) => setEditForm({ ...editForm, action_type: e.target.value })}
                               className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
-                              <option value="notification">Notificação</option>
-                              <option value="coupon">Cupom</option>
-                              <option value="both">Notificação + Cupom</option>
+                              {Object.entries(actionInfo).map(([k, v]) => (
+                                <option key={k} value={k}>{v.label}</option>
+                              ))}
                             </select>
                           </div>
                         </div>
@@ -707,6 +924,8 @@ export default function AutomationsTab() {
                                 <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${
                                   exec.action_taken === "both" ? "bg-violet-500/15 text-violet-600"
                                     : exec.action_taken === "coupon" ? "bg-amber-500/15 text-amber-600"
+                                    : exec.action_taken === "email" ? "bg-blue-500/15 text-blue-600"
+                                    : exec.action_taken === "email_and_notification" ? "bg-pink-500/15 text-pink-600"
                                     : "bg-emerald-500/15 text-emerald-600"
                                 }`}>
                                   {actionLabels[exec.action_taken] || exec.action_taken}
