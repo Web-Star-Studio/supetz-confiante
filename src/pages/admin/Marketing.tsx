@@ -46,6 +46,7 @@ export default function AdminMarketing() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter">("campaigns");
 
   // Form state
   const [form, setForm] = useState({
