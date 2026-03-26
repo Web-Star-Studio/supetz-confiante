@@ -73,15 +73,23 @@ export default function AdminFeedback() {
     });
   }, []);
 
+  const filteredByPeriod = useMemo(() => {
+    if (period === "all") return allFeedbacks;
+    const days = Number(period);
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    return allFeedbacks.filter(f => new Date(f.created_at) >= cutoff);
+  }, [allFeedbacks, period]);
+
   const kpis = useMemo(() => {
-    const totalCount = allFeedbacks.length;
-    const positives = allFeedbacks.filter(f => f.rating === "positive").length;
-    const negatives = allFeedbacks.filter(f => f.rating === "negative").length;
+    const totalCount = filteredByPeriod.length;
+    const positives = filteredByPeriod.filter(f => f.rating === "positive").length;
+    const negatives = filteredByPeriod.filter(f => f.rating === "negative").length;
     const rate = totalCount > 0 ? Math.round((positives / totalCount) * 100) : 0;
     const today = new Date().toISOString().split("T")[0];
-    const todayCount = allFeedbacks.filter(f => f.created_at?.startsWith(today)).length;
+    const todayCount = filteredByPeriod.filter(f => f.created_at?.startsWith(today)).length;
     return { totalCount, positives, negatives, rate, todayCount };
-  }, [allFeedbacks]);
+  }, [filteredByPeriod]);
 
   const exportCSV = () => {
     const BOM = "\uFEFF";
