@@ -379,7 +379,7 @@ export default function Checkout() {
         ...(idx === 0 ? { coupon_code: orderCouponCode, affiliate_ref: affiliateRef } : {}),
       }));
 
-      const { error: orderError } = await supabase.from("orders").insert({
+      const { data: orderData, error: orderError } = await supabase.from("orders").insert({
         user_id: user.id,
         total: finalPrice,
         items: orderItems,
@@ -395,13 +395,23 @@ export default function Checkout() {
           state: formData.state,
           zip: formData.zipCode,
         },
-      });
+      }).select("id").single();
 
       if (orderError) {
         toast.error("Erro ao criar pedido. Tente novamente.");
         setIsProcessing(false);
         return;
       }
+
+      // Send in-app notification for order confirmation
+      const orderId = orderData?.id;
+      await supabase.from("user_notifications").insert({
+        user_id: user.id,
+        title: "Pedido confirmado! 🎉",
+        message: `Seu pedido #${orderId?.slice(0, 8) || ""} de R$ ${finalPrice.toFixed(2).replace(".", ",")} foi recebido com sucesso. Acompanhe o status na sua área de pedidos.`,
+        type: "order",
+        link: "/perfil",
+      });
 
       // Mark coupon as used
       if (appliedCoupon) {
