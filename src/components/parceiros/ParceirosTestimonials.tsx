@@ -44,7 +44,7 @@ const cardVariants = {
     transition: {
       delay: i * 0.12,
       duration: motionTokens.durationBase,
-      ease: motionTokens.easeOut as unknown as number[],
+      ease,
     },
   }),
 };
