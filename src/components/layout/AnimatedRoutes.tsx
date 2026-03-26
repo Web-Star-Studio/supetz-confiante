@@ -31,6 +31,10 @@ import AdminAuditoria from "../../pages/admin/Auditoria";
 import AdminBaseConhecimento from "../../pages/admin/BaseConhecimento";
 import AdminGerenciarIA from "../../pages/admin/GerenciarIA";
 import AdminBlog from "../../pages/admin/BlogAdmin";
+import AdminAfiliados from "../../pages/admin/Afiliados";
+import Parceiros from "../../pages/Parceiros";
+import AffiliateDashboard from "../../pages/affiliate/Dashboard";
+import RefTracker from "../../components/affiliate/RefTracker";
 
 import PageTransition from "./PageTransition";
 
