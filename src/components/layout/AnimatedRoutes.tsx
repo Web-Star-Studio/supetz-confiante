@@ -16,6 +16,7 @@ import Cadastro from "../../pages/Cadastro";
 import RecuperarSenha from "../../pages/RecuperarSenha";
 import ResetPassword from "../../pages/ResetPassword";
 import Perfil from "../../pages/Perfil";
+import Produto from "../../pages/Produto";
 
 import AdminRoute from "../../components/admin/AdminRoute";
 import AdminDashboard from "../../pages/admin/Dashboard";
@@ -56,6 +57,7 @@ export default function AnimatedRoutes() {
         <Route path="/sobre" element={<PageTransition><Sobre /></PageTransition>} />
         <Route path="/ciencia" element={<PageTransition><Ciencia /></PageTransition>} />
         <Route path="/faq" element={<PageTransition><FAQ /></PageTransition>} />
+        <Route path="/produto/:id" element={<PageTransition><Produto /></PageTransition>} />
         <Route path="/parceiros" element={<PageTransition><Parceiros /></PageTransition>} />
         <Route path="/parceiros/painel" element={<PageTransition><AffiliateDashboard /></PageTransition>} />
 

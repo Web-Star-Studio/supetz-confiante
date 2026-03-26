@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
 import { Check } from "lucide-react";
@@ -67,7 +68,9 @@ export default function PricingSection() {
                 </span>
               )}
 
-              <h3 className="mt-2 text-xl font-extrabold">{product.title}</h3>
+              <Link to={`/produto/${product.id}`} className="hover:opacity-80 transition-opacity">
+                <h3 className="mt-2 text-xl font-extrabold">{product.title}</h3>
+              </Link>
               <p className={`mt-1 text-sm ${product.highlighted ? "text-white/80" : "text-supet-text/50"}`}>
                 {product.subtitle}
               </p>

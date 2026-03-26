@@ -8,7 +8,7 @@ export interface Product {
   quantity: number;
   badge?: string;
   highlighted?: boolean;
-  category?: "combo" | "extra";
+  category?: "combo" | "extra" | "acessorio" | "higiene" | "brinquedo" | "alimentacao";
   image?: string;
   description?: string;
   variants?: ProductVariant[];
