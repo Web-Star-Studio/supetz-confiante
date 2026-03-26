@@ -236,6 +236,29 @@ serve(async (req) => {
       }
     }
 
+    // Fetch recent negative feedbacks for auto-correction
+    let autoCorrectionBlock = "";
+    try {
+      const { data: negFeedbacks } = await supabaseAdmin
+        .from("chat_feedback")
+        .select("reason, comment, message_content")
+        .eq("rating", "negative")
+        .order("created_at", { ascending: false })
+        .limit(5);
+
+      if (negFeedbacks && negFeedbacks.length > 0) {
+        const items = negFeedbacks.map((f: any, i: number) =>
+          `${i + 1}. Motivo: "${f.reason || "não especificado"}"${f.comment ? ` — "${f.comment}"` : ""}`
+        ).join("\n");
+        autoCorrectionBlock = `\n\n## ⚠️ AUTO-CORREÇÃO (baseada em feedbacks recentes de usuários)
+Os seguintes problemas foram reportados:
+${items}
+Ajuste suas respostas para evitar esses problemas. Seja mais precisa, direta e útil nas áreas mencionadas.`;
+      }
+    } catch (e) {
+      console.error("Error fetching feedback for auto-correction:", e);
+    }
+
     const systemPrompt = `Você é a Super IA, a assistente inteligente e simpática da loja Supet — especializada em suplementos naturais para cães.
 
 Suas capacidades:
@@ -265,6 +288,7 @@ Regras gerais:
 - Ao final de cada resposta, sugira 2-3 perguntas de follow-up curtas no formato: "💡 Você pode perguntar: [pergunta1] | [pergunta2] | [pergunta3]". IMPORTANTE: As perguntas de follow-up devem ser texto puro, SEM markdown, SEM negrito, SEM asteriscos.
 ${userContext ? `\nContexto do usuário logado:${userContext}` : "\nO usuário não está logado."}
 ${extraPrompt ? `\nINSTRUÇÕES EXTRAS DO ADMIN:\n${extraPrompt}` : ""}
+${autoCorrectionBlock}
 
 ${DOG_KNOWLEDGE_SUMMARY}`;
 
