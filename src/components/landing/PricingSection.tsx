@@ -61,7 +61,7 @@ export default function PricingSection() {
             >
               {product.badge && (
                 <span
-                  className={`absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-4 py-1 text-xs font-bold ${product.highlighted
+                  className={`absolute -top-3 left-1/2 -translate-x-1/2 rounded-full px-5 py-1.5 text-sm font-bold whitespace-nowrap ${product.highlighted
                     ? "bg-white text-supet-orange"
                     : "bg-supet-orange text-white"
                     }`}
