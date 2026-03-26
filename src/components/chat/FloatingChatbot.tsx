@@ -9,12 +9,13 @@ import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
 import ReactMarkdown from "react-markdown";
 import supetIaAvatar from "@/assets/supet-ia-avatar.png";
+import NegativeFeedbackForm from "./NegativeFeedbackForm";
 
 type Msg = {
   id?: string;
   role: "user" | "assistant";
   content: string;
-  feedback?: "positive" | "negative" | null;
+  feedbackSent?: boolean;
   isStreaming?: boolean;
   isEmergency?: boolean;
 };
@@ -28,7 +29,6 @@ const quickQuestions = [
   "Como acompanhar meu pedido?",
 ];
 
-// Extract follow-up suggestions from AI response
 function stripMarkdown(text: string): string {
   return text.replace(/\*\*/g, '').replace(/\*/g, '').replace(/__/g, '').replace(/_/g, '').replace(/`/g, '').replace(/#+\s?/g, '').trim();
 }
@@ -51,17 +51,16 @@ export default function FloatingChatbot() {
   const [unread, setUnread] = useState(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [historyLoaded, setHistoryLoaded] = useState(false);
+  const [negativeFeedbackIndex, setNegativeFeedbackIndex] = useState<number | null>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
-  // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
     }
-  }, [messages, suggestions]);
+  }, [messages, suggestions, negativeFeedbackIndex]);
 
-  // Focus input when opened
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 300);
@@ -69,7 +68,6 @@ export default function FloatingChatbot() {
     }
   }, [open]);
 
-  // Load chat history on first open
   useEffect(() => {
     if (open && user && !historyLoaded) {
       setHistoryLoaded(true);
@@ -81,7 +79,7 @@ export default function FloatingChatbot() {
     if (!user) return;
     const { data } = await supabase
       .from("chat_messages")
-      .select("id, role, content, feedback, conversation_id")
+      .select("id, role, content, conversation_id")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -92,16 +90,41 @@ export default function FloatingChatbot() {
         id: m.id,
         role: m.role as "user" | "assistant",
         content: m.content,
-        feedback: m.feedback as "positive" | "negative" | null,
       })));
     }
   };
+
+  const sendFeedback = useCallback(async (
+    index: number,
+    rating: "positive" | "negative",
+    reason?: string,
+    comment?: string
+  ) => {
+    const msg = messages[index];
+    if (!user || msg.feedbackSent) return;
+
+    await supabase.from("chat_feedback" as any).insert({
+      user_id: user.id,
+      conversation_id: conversationId,
+      message_content: msg.content.slice(0, 500),
+      rating,
+      reason: reason || null,
+      comment: comment || null,
+    });
+
+    setMessages(prev =>
+      prev.map((m, i) => i === index ? { ...m, feedbackSent: true } : m)
+    );
+    setNegativeFeedbackIndex(null);
+    toast.success("Obrigado pelo feedback! 🐾");
+  }, [messages, user, conversationId]);
 
   const sendMessage = useCallback(async (text?: string) => {
     const content = (text || input).trim();
     if (!content || loading) return;
 
     setSuggestions([]);
+    setNegativeFeedbackIndex(null);
     const userMsg: Msg = { role: "user", content };
     const allMessages = [...messages, userMsg];
     setMessages(allMessages);
@@ -139,7 +162,6 @@ export default function FloatingChatbot() {
         throw new Error(err.error || `Erro ${resp.status}`);
       }
 
-      // Check for emergency JSON response (non-streaming)
       const contentType = resp.headers.get("Content-Type") || "";
       if (contentType.includes("application/json")) {
         const data = await resp.json();
@@ -175,19 +197,16 @@ export default function FloatingChatbot() {
         }
       }
 
-      // Extract suggestions from final text
       const { cleanContent, suggestions: newSuggestions } = extractSuggestions(assistantText);
       if (newSuggestions.length > 0) {
         setSuggestions(newSuggestions);
         assistantText = cleanContent;
       }
 
-      // Finalize streaming flag
       setMessages((prev) =>
         prev.map((m, i) => i === prev.length - 1 && m.isStreaming ? { ...m, isStreaming: false, content: assistantText } : m)
       );
 
-      // Save assistant response if logged in
       if (user && assistantText) {
         const { data } = await supabase.from("chat_messages").insert({
           user_id: user.id,
@@ -212,30 +231,14 @@ export default function FloatingChatbot() {
     setLoading(false);
   }, [input, loading, messages, conversationId, user, open]);
 
-  const handleFeedback = async (index: number, feedback: "positive" | "negative") => {
-    const msg = messages[index];
-    if (!msg.id || !user) return;
-
-    const newFeedback = msg.feedback === feedback ? null : feedback;
-
-    setMessages((prev) =>
-      prev.map((m, i) => i === index ? { ...m, feedback: newFeedback } : m)
-    );
-
-    await supabase
-      .from("chat_messages")
-      .update({ feedback: newFeedback })
-      .eq("id", msg.id);
-  };
-
   const clearChat = () => {
     setMessages([]);
     setSuggestions([]);
+    setNegativeFeedbackIndex(null);
   };
 
   return (
     <>
-      {/* Floating button */}
       <AnimatePresence>
         {!open && (
           <motion.button
@@ -257,7 +260,6 @@ export default function FloatingChatbot() {
         )}
       </AnimatePresence>
 
-      {/* Chat window */}
       <AnimatePresence>
         {open && (
           <motion.div
@@ -299,12 +301,8 @@ export default function FloatingChatbot() {
                     <PawPrint className="h-8 w-8 text-primary" />
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-foreground">
-                      Olá! 🐾
-                    </h4>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      Sou a Super IA da Supet. Como posso ajudar?
-                    </p>
+                    <h4 className="text-sm font-bold text-foreground">Olá! 🐾</h4>
+                    <p className="text-xs text-muted-foreground mt-1">Sou a Super IA da Supet. Como posso ajudar?</p>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     {quickQuestions.map((q) => (
@@ -345,36 +343,41 @@ export default function FloatingChatbot() {
                       )}
                     </div>
 
-                    {/* Feedback buttons for assistant messages */}
-                    {m.role === "assistant" && !m.isStreaming && user && (
+                    {/* Feedback buttons */}
+                    {m.role === "assistant" && !m.isStreaming && user && !m.feedbackSent && (
                       <div className="flex items-center gap-1 px-1">
                         <button
-                          onClick={() => handleFeedback(i, "positive")}
-                          className={`h-6 w-6 rounded-full flex items-center justify-center transition-all ${
-                            m.feedback === "positive"
-                              ? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30"
-                              : "hover:bg-muted text-muted-foreground/50 hover:text-muted-foreground"
-                          }`}
+                          onClick={() => sendFeedback(i, "positive")}
+                          className="h-6 w-6 rounded-full flex items-center justify-center transition-all hover:bg-emerald-100 dark:hover:bg-emerald-900/30 text-muted-foreground/50 hover:text-emerald-600"
                         >
                           <ThumbsUp className="h-3 w-3" />
                         </button>
                         <button
-                          onClick={() => handleFeedback(i, "negative")}
-                          className={`h-6 w-6 rounded-full flex items-center justify-center transition-all ${
-                            m.feedback === "negative"
-                              ? "bg-red-100 text-red-600 dark:bg-red-900/30"
-                              : "hover:bg-muted text-muted-foreground/50 hover:text-muted-foreground"
-                          }`}
+                          onClick={() => setNegativeFeedbackIndex(i)}
+                          className="h-6 w-6 rounded-full flex items-center justify-center transition-all hover:bg-red-100 dark:hover:bg-red-900/30 text-muted-foreground/50 hover:text-red-600"
                         >
                           <ThumbsDown className="h-3 w-3" />
                         </button>
                       </div>
                     )}
+
+                    {m.feedbackSent && m.role === "assistant" && (
+                      <p className="text-[10px] text-muted-foreground/60 px-1">✓ Feedback enviado</p>
+                    )}
+
+                    {/* Negative feedback form */}
+                    <AnimatePresence>
+                      {negativeFeedbackIndex === i && (
+                        <NegativeFeedbackForm
+                          onSubmit={(reason, comment) => sendFeedback(i, "negative", reason, comment)}
+                          onCancel={() => setNegativeFeedbackIndex(null)}
+                        />
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
               ))}
 
-              {/* Contextual suggestion chips */}
               {suggestions.length > 0 && !loading && (
                 <div className="flex flex-wrap gap-1.5 pt-1">
                   {suggestions.map((s, i) => (

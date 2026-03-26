@@ -33,6 +33,7 @@ import AdminBaseConhecimento from "../../pages/admin/BaseConhecimento";
 import AdminGerenciarIA from "../../pages/admin/GerenciarIA";
 import AdminBlog from "../../pages/admin/BlogAdmin";
 import AdminAfiliados from "../../pages/admin/Afiliados";
+import AdminFeedback from "../../pages/admin/Feedback";
 import Parceiros from "../../pages/Parceiros";
 import AffiliateDashboard from "../../pages/affiliate/Dashboard";
 import RefTracker from "../../components/affiliate/RefTracker";
@@ -85,6 +86,7 @@ export default function AnimatedRoutes() {
         <Route path="/admin/blog" element={<AdminRoute><AdminBlog /></AdminRoute>} />
         <Route path="/admin/base-conhecimento" element={<AdminRoute><AdminBaseConhecimento /></AdminRoute>} />
         <Route path="/admin/afiliados" element={<AdminRoute><AdminAfiliados /></AdminRoute>} />
+        <Route path="/admin/feedback" element={<AdminRoute><AdminFeedback /></AdminRoute>} />
         <Route path="/admin/clientes" element={<Navigate to="/admin/crm" replace />} />
 
         <Route path="/unsubscribe" element={<PageTransition><Unsubscribe /></PageTransition>} />
