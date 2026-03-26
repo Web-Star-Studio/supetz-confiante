@@ -35,6 +35,7 @@ import AdminAfiliados from "../../pages/admin/Afiliados";
 import Parceiros from "../../pages/Parceiros";
 import AffiliateDashboard from "../../pages/affiliate/Dashboard";
 import RefTracker from "../../components/affiliate/RefTracker";
+import Unsubscribe from "../../pages/Unsubscribe";
 
 import PageTransition from "./PageTransition";
 
