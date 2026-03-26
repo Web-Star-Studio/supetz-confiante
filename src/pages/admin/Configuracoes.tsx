@@ -46,13 +46,14 @@ export default function AdminConfiguracoes() {
       { key: "store_name", value: { value: storeName } },
       { key: "store_phone", value: { value: storePhone } },
       { key: "store_address", value: { value: storeAddress } },
+      { key: "feedback_satisfaction_threshold", value: { value: String(feedbackThreshold) } },
     ];
     for (const s of settings) {
       await supabase.from("store_settings").upsert(s, { onConflict: "key" });
     }
     setSavingStore(false);
     setStoreSuccess(true);
-    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress } });
+    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress, feedbackThreshold } });
     setTimeout(() => setStoreSuccess(false), 3000);
   };
 
