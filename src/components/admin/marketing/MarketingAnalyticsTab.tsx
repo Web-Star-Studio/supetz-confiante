@@ -401,6 +401,9 @@ export default function MarketingAnalyticsTab() {
         </div>
       </div>
 
+      {/* Weekly Summary Panel */}
+      <WeeklySummaryPanel />
+
       {/* Email Analytics Panel */}
       <EmailAnalyticsPanel />
     </div>
