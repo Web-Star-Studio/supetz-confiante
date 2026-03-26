@@ -55,6 +55,8 @@ export default function AnimatedRoutes() {
         <Route path="/sobre" element={<PageTransition><Sobre /></PageTransition>} />
         <Route path="/ciencia" element={<PageTransition><Ciencia /></PageTransition>} />
         <Route path="/faq" element={<PageTransition><FAQ /></PageTransition>} />
+        <Route path="/parceiros" element={<PageTransition><Parceiros /></PageTransition>} />
+        <Route path="/parceiros/painel" element={<PageTransition><AffiliateDashboard /></PageTransition>} />
 
         {/* Profile */}
         <Route path="/perfil" element={<PageTransition><Perfil /></PageTransition>} />
