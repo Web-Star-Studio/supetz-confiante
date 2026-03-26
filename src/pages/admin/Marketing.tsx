@@ -61,6 +61,7 @@ export default function AdminMarketing() {
     segment_tag: "" as string,
     segment_min_spent: "",
     segment_days_inactive: "",
+    segment_newsletter: "" as "" | "all" | "leads" | "registered",
   });
 
   const [allTags, setAllTags] = useState<{ id: string; name: string; color: string }[]>([]);
@@ -214,7 +215,7 @@ export default function AdminMarketing() {
     }
 
     // Reset
-    setForm({ name: "", type: "notification", message: "", coupon_discount_type: "percentage", coupon_discount_value: 10, coupon_min_order: 50, coupon_expires_days: 30, segment_status: "", segment_tag: "", segment_min_spent: "", segment_days_inactive: "" });
+    setForm({ name: "", type: "notification", message: "", coupon_discount_type: "percentage", coupon_discount_value: 10, coupon_min_order: 50, coupon_expires_days: 30, segment_status: "", segment_tag: "", segment_min_spent: "", segment_days_inactive: "", segment_newsletter: "" });
     setShowCreate(false);
     setPreviewCount(null);
     setSending(false);
@@ -386,7 +387,7 @@ export default function AdminMarketing() {
               {/* Segmentation */}
               <div>
                 <p className="text-sm font-bold text-foreground mb-3">Segmentação</p>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Status</label>
                     <select value={form.segment_status} onChange={(e) => setForm({ ...form, segment_status: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
@@ -404,6 +405,15 @@ export default function AdminMarketing() {
                       {allTags.map((t) => (
                         <option key={t.id} value={t.id}>{t.name}</option>
                       ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Newsletter</label>
+                    <select value={form.segment_newsletter} onChange={(e) => setForm({ ...form, segment_newsletter: e.target.value as any })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                      <option value="">Ignorar</option>
+                      <option value="all">Todos inscritos</option>
+                      <option value="leads">Apenas leads</option>
+                      <option value="registered">Apenas registrados</option>
                     </select>
                   </div>
                   <div>

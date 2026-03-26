@@ -1,11 +1,12 @@
 import { motion } from "framer-motion";
-import { UserCheck, UserPlus, UserX, Crown } from "lucide-react";
+import { UserCheck, UserPlus, UserX, Crown, Mail } from "lucide-react";
 
 interface FunnelData {
   lead: number;
   active: number;
   inactive: number;
   vip: number;
+  newsletter_lead: number;
 }
 
 interface Props {
@@ -19,11 +20,12 @@ const funnelItems = [
   { key: "active", label: "Ativos", icon: UserCheck, color: "text-emerald-600", bg: "bg-emerald-500/15" },
   { key: "inactive", label: "Inativos", icon: UserX, color: "text-amber-600", bg: "bg-amber-500/15" },
   { key: "vip", label: "VIP", icon: Crown, color: "text-violet-600", bg: "bg-violet-500/15" },
+  { key: "newsletter_lead", label: "Newsletter", icon: Mail, color: "text-sky-600", bg: "bg-sky-500/15" },
 ];
 
 export default function CRMFunnelCards({ data, selected, onSelect }: Props) {
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+    <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-6">
       {funnelItems.map((item) => {
         const isActive = selected === item.key;
         return (

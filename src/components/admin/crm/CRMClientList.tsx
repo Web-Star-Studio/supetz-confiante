@@ -50,6 +50,7 @@ const statusLabels: Record<string, { label: string; class: string }> = {
   active: { label: "Ativo", class: "bg-emerald-500/15 text-emerald-700" },
   inactive: { label: "Inativo", class: "bg-amber-500/15 text-amber-700" },
   vip: { label: "VIP", class: "bg-violet-500/15 text-violet-700" },
+  newsletter_lead: { label: "Lead (Newsletter)", class: "bg-sky-500/15 text-sky-700" },
 };
 
 const sortOptions: { key: SortKey; label: string }[] = [
