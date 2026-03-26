@@ -174,13 +174,21 @@ export default function AdminPedidos() {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
-                <thead>
+                 <thead>
                   <tr className="bg-muted/60">
                     <th className="text-left px-6 py-3 font-semibold text-muted-foreground">ID</th>
-                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Cliente</th>
-                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Status</th>
-                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Total</th>
-                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground">Data</th>
+                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("customer_name")}>
+                      <span className="inline-flex items-center gap-1">Cliente <SortIcon column="customer_name" current={sortCol} dir={sortDir} /></span>
+                    </th>
+                    <th className="text-left px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("status")}>
+                      <span className="inline-flex items-center gap-1">Status <SortIcon column="status" current={sortCol} dir={sortDir} /></span>
+                    </th>
+                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("total")}>
+                      <span className="inline-flex items-center gap-1 justify-end">Total <SortIcon column="total" current={sortCol} dir={sortDir} /></span>
+                    </th>
+                    <th className="text-right px-6 py-3 font-semibold text-muted-foreground cursor-pointer select-none hover:text-foreground transition-colors" onClick={() => toggleSort("created_at")}>
+                      <span className="inline-flex items-center gap-1 justify-end">Data <SortIcon column="created_at" current={sortCol} dir={sortDir} /></span>
+                    </th>
                     <th className="text-center px-6 py-3 font-semibold text-muted-foreground">Ações</th>
                   </tr>
                 </thead>

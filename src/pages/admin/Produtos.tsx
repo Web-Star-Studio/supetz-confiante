@@ -85,18 +85,26 @@ export default function AdminProdutos() {
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortCol, setSortCol] = useState<ProdSortCol>("created_at");
+  const [sortDir, setSortDir] = useState<ProdSortDir>("desc");
+
+  const toggleSort = (col: ProdSortCol) => {
+    if (sortCol === col) setSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setSortCol(col); setSortDir("desc"); }
+    setPage(0);
+  };
 
   const fetchProducts = async () => {
     setLoading(true);
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
-    const { data, count } = await supabase.from("products").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
+    const { data, count } = await supabase.from("products").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
     setProducts(data || []);
     setTotalCount(count || 0);
     setLoading(false);
   };
 
-  useEffect(() => { fetchProducts(); }, [page]);
+  useEffect(() => { fetchProducts(); }, [page, sortCol, sortDir]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
