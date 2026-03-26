@@ -151,7 +151,19 @@ export default function Produto() {
             >
               {gallery.length > 0 ? (
                 <div className="space-y-4 sticky top-28">
-                  <div className="relative aspect-square rounded-3xl overflow-hidden bg-muted">
+                  <div
+                    ref={imgRef}
+                    className="relative aspect-square rounded-3xl overflow-hidden bg-muted cursor-zoom-in"
+                    onMouseMove={(e) => {
+                      const rect = imgRef.current?.getBoundingClientRect();
+                      if (!rect) return;
+                      setZoomPos({
+                        x: ((e.clientX - rect.left) / rect.width) * 100,
+                        y: ((e.clientY - rect.top) / rect.height) * 100,
+                      });
+                    }}
+                    onMouseLeave={() => setZoomPos(null)}
+                  >
                     <AnimatePresence mode="wait">
                       <motion.img
                         key={mainImg}
@@ -161,7 +173,16 @@ export default function Produto() {
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ duration: 0.3 }}
-                        className="w-full h-full object-cover"
+                        className="w-full h-full object-cover pointer-events-none"
+                        style={
+                          zoomPos
+                            ? {
+                                transform: "scale(2)",
+                                transformOrigin: `${zoomPos.x}% ${zoomPos.y}%`,
+                                transition: "transform 0.1s ease-out",
+                              }
+                            : { transition: "transform 0.3s ease-out" }
+                        }
                       />
                     </AnimatePresence>
                     {discount > 0 && (
