@@ -290,11 +290,7 @@ export default function Afiliados() {
     }
   };
 
-  const filtered = affiliates.filter((a) => {
-    if (statusFilter !== "all" && a.status !== statusFilter) return false;
-    if (search && !a.name.toLowerCase().includes(search.toLowerCase()) && !a.email.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  const filtered = affiliates;
 
   const activeCount = affiliates.filter((a) => a.status === "active").length;
   const pendingCount = affiliates.filter((a) => a.status === "pending").length;
