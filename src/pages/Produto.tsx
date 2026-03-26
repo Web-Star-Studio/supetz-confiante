@@ -153,7 +153,7 @@ export default function Produto() {
       <div className="min-h-screen bg-background pt-16 md:pt-28 pb-20 px-4 md:px-6">
         <div className="mx-auto max-w-6xl">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-10">
+          <nav className="flex items-center gap-1.5 text-xs md:text-sm text-muted-foreground mb-6 md:mb-10">
             <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <Link to="/shop" className="hover:text-foreground transition-colors">Loja</Link>
