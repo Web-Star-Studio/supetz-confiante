@@ -76,6 +76,7 @@ export default function Afiliados() {
 
   const handleApprove = async (aff: Affiliate) => {
     const couponCode = `SUPET-${aff.name.split(" ")[0].toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
+    const refSlug = aff.ref_slug || aff.name.split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "") + Math.random().toString(36).substring(2, 5);
 
     const { error } = await supabase
       .from("affiliates")
@@ -83,16 +84,41 @@ export default function Afiliados() {
         status: "active",
         approved_at: new Date().toISOString(),
         coupon_code: couponCode,
+        ref_slug: refSlug,
       })
       .eq("id", aff.id);
 
     if (error) {
       toast.error("Erro ao aprovar afiliado");
-    } else {
-      toast.success(`${aff.name} aprovado! Cupom: ${couponCode}`);
-      log({ action: "create", entity_type: "affiliate", entity_id: aff.id, details: { name: aff.name, coupon: couponCode } });
-      loadData();
+      return;
     }
+
+    // Send in-app notification to the affiliate
+    const affiliateLink = `${window.location.origin}/?ref=${refSlug}`;
+    await supabase.from("user_notifications").insert({
+      user_id: aff.user_id,
+      title: "🎉 Você foi aprovado como parceiro Supet!",
+      message: `Parabéns, ${aff.name}! Seu cupom exclusivo é ${couponCode} (${aff.commission_percent}% de comissão). Compartilhe seu link: ${affiliateLink}`,
+      type: "affiliate",
+      link: "/parceiros/dashboard",
+    });
+
+    // Send approval email via edge function
+    await supabase.functions.invoke("notify-affiliate-approved", {
+      body: {
+        affiliateId: aff.id,
+        name: aff.name,
+        email: aff.email,
+        couponCode,
+        refSlug,
+        commissionPercent: aff.commission_percent,
+        affiliateLink,
+      },
+    });
+
+    toast.success(`${aff.name} aprovado! Cupom: ${couponCode}`);
+    log({ action: "create", entity_type: "affiliate", entity_id: aff.id, details: { name: aff.name, coupon: couponCode, refSlug } });
+    loadData();
   };
 
   const handleSuspend = async (aff: Affiliate) => {
