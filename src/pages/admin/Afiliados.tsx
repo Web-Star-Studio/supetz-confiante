@@ -6,11 +6,15 @@ import { useAuditLog } from "@/hooks/useAuditLog";
 import {
   Handshake, Users, DollarSign, TrendingUp, CheckCircle, XCircle,
   Clock, Eye, Loader2, Search, Wallet, Plus, Trash2, ChevronLeft, ChevronRight,
+  ArrowUpDown, ArrowUp, ArrowDown,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const AFF_PAGE_SIZE = 10;
+
+type AffSortCol = "created_at" | "total_earned" | "commission_percent" | "status" | "name";
+type AffSortDir = "asc" | "desc";
 
 interface Affiliate {
   id: string;
