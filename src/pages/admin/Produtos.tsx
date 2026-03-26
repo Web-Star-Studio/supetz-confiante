@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Loader2, ImageIcon, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, ImageIcon, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown, Search } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 
 const PAGE_SIZE = 12;
@@ -76,6 +76,7 @@ function DeleteConfirmation({ name, onConfirm, onCancel }: { name: string; onCon
 export default function AdminProdutos() {
   const [products, setProducts] = useState<any[]>([]);
   const { log } = useAuditLog();
+  const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editing, setEditing] = useState<string | null>(null);
@@ -98,13 +99,16 @@ export default function AdminProdutos() {
     setLoading(true);
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
-    const { data, count } = await supabase.from("products").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
+    let query = supabase.from("products").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
+    if (searchQuery.trim()) query = query.or(`title.ilike.%${searchQuery.trim()}%,subtitle.ilike.%${searchQuery.trim()}%,category.ilike.%${searchQuery.trim()}%`);
+    const { data, count } = await query;
     setProducts(data || []);
     setTotalCount(count || 0);
     setLoading(false);
   };
 
-  useEffect(() => { fetchProducts(); }, [page, sortCol, sortDir]);
+  useEffect(() => { fetchProducts(); }, [page, sortCol, sortDir, searchQuery]);
+  useEffect(() => { setPage(0); }, [searchQuery]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
@@ -193,21 +197,29 @@ export default function AdminProdutos() {
         </motion.button>
       </div>
 
-      {/* Sort controls */}
-      <div className="flex items-center gap-2 mb-4">
-        <span className="text-xs text-muted-foreground font-medium">Ordenar por:</span>
-        {([
-          { col: "created_at" as ProdSortCol, label: "Data" },
-          { col: "price" as ProdSortCol, label: "Preço" },
-          { col: "quantity" as ProdSortCol, label: "Estoque" },
-          { col: "title" as ProdSortCol, label: "Nome" },
-        ]).map(({ col, label }) => (
-          <button key={col} onClick={() => toggleSort(col)}
-            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${sortCol === col ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:text-foreground"}`}>
-            {label}
-            {sortCol === col ? (sortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
-          </button>
-        ))}
+      {/* Search + Sort controls */}
+      <div className="flex flex-col sm:flex-row gap-3 mb-4">
+        <div className="relative flex-1">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+          <input type="text" value={searchQuery} onChange={e => setSearchQuery(e.target.value)}
+            placeholder="Buscar por nome, subtítulo ou categoria..."
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm" />
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-xs text-muted-foreground font-medium">Ordenar:</span>
+          {([
+            { col: "created_at" as ProdSortCol, label: "Data" },
+            { col: "price" as ProdSortCol, label: "Preço" },
+            { col: "quantity" as ProdSortCol, label: "Estoque" },
+            { col: "title" as ProdSortCol, label: "Nome" },
+          ]).map(({ col, label }) => (
+            <button key={col} onClick={() => toggleSort(col)}
+              className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${sortCol === col ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:text-foreground"}`}>
+              {label}
+              {sortCol === col ? (sortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
+            </button>
+          ))}
+        </div>
       </div>
 
       {loading ? <ProductsSkeleton /> : products.length === 0 ? (
