@@ -2,7 +2,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import { useRef, useState } from "react";
 import { Leaf, Heart, Microscope, Target, ArrowRight, Beaker } from "lucide-react";
 import Layout from "@/components/layout/Layout";
-import SEOHead, { buildBreadcrumbSchema } from "@/components/SEOHead";
+import SEOHead, { buildBreadcrumbSchema, buildLocalBusinessSchema } from "@/components/SEOHead";
 import { motionTokens } from "@/lib/motion";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 
