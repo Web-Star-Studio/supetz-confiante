@@ -34,6 +34,7 @@ export default function AdminFeedback() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
+  const [period, setPeriod] = useState<string>("30");
 
   useEffect(() => { setPage(0); }, [ratingFilter, searchQuery]);
 
@@ -72,15 +73,23 @@ export default function AdminFeedback() {
     });
   }, []);
 
+  const filteredByPeriod = useMemo(() => {
+    if (period === "all") return allFeedbacks;
+    const days = Number(period);
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - days);
+    return allFeedbacks.filter(f => new Date(f.created_at) >= cutoff);
+  }, [allFeedbacks, period]);
+
   const kpis = useMemo(() => {
-    const totalCount = allFeedbacks.length;
-    const positives = allFeedbacks.filter(f => f.rating === "positive").length;
-    const negatives = allFeedbacks.filter(f => f.rating === "negative").length;
+    const totalCount = filteredByPeriod.length;
+    const positives = filteredByPeriod.filter(f => f.rating === "positive").length;
+    const negatives = filteredByPeriod.filter(f => f.rating === "negative").length;
     const rate = totalCount > 0 ? Math.round((positives / totalCount) * 100) : 0;
     const today = new Date().toISOString().split("T")[0];
-    const todayCount = allFeedbacks.filter(f => f.created_at?.startsWith(today)).length;
+    const todayCount = filteredByPeriod.filter(f => f.created_at?.startsWith(today)).length;
     return { totalCount, positives, negatives, rate, todayCount };
-  }, [allFeedbacks]);
+  }, [filteredByPeriod]);
 
   const exportCSV = () => {
     const BOM = "\uFEFF";
@@ -107,14 +116,26 @@ export default function AdminFeedback() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Feedback da Super IA</h1>
             <p className="text-sm text-muted-foreground">Monitore a satisfação e melhore as respostas automaticamente</p>
           </div>
-          <Button variant="outline" size="sm" onClick={exportCSV} className="gap-2">
-            <Download className="h-4 w-4" /> Exportar CSV
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={period} onValueChange={setPeriod}>
+              <SelectTrigger className="w-[130px] rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7">7 dias</SelectItem>
+                <SelectItem value="30">30 dias</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" onClick={exportCSV} className="gap-2">
+              <Download className="h-4 w-4" /> Exportar CSV
+            </Button>
+          </div>
         </div>
 
         {/* KPIs */}
@@ -138,11 +159,11 @@ export default function AdminFeedback() {
         </div>
 
         {/* Trend Charts */}
-        <FeedbackTrendChart feedbacks={allFeedbacks} />
+        <FeedbackTrendChart feedbacks={filteredByPeriod} />
 
         {/* Negative Reasons Ranking */}
         {(() => {
-          const negatives = allFeedbacks.filter(f => f.rating === "negative" && f.reason);
+          const negatives = filteredByPeriod.filter(f => f.rating === "negative" && f.reason);
           const reasonCounts: Record<string, number> = {};
           negatives.forEach(f => {
             if (f.reason) reasonCounts[f.reason] = (reasonCounts[f.reason] || 0) + 1;
