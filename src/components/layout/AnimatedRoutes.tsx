@@ -85,6 +85,7 @@ export default function AnimatedRoutes() {
         <Route path="/admin/afiliados" element={<AdminRoute><AdminAfiliados /></AdminRoute>} />
         <Route path="/admin/clientes" element={<Navigate to="/admin/crm" replace />} />
 
+        <Route path="/unsubscribe" element={<PageTransition><Unsubscribe /></PageTransition>} />
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
         </Routes>
       </AnimatePresence>

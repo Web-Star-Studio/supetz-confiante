@@ -50,7 +50,6 @@ export default function AdminPedidos() {
   };
 
   const updateStatus = async (orderId: string, newStatus: string) => {
-    // Get order to find user_id
     const order = orders.find(o => o.id === orderId);
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     log({ action: "update", entity_type: "order", entity_id: orderId, details: { status: newStatus } });
@@ -63,6 +62,23 @@ export default function AdminPedidos() {
         message: statusMessages[newStatus],
         type: "order",
         link: "/perfil",
+      });
+    }
+
+    // Send status update email
+    if (order?.customer_email && newStatus !== "pending") {
+      supabase.functions.invoke("send-transactional-email", {
+        body: {
+          templateName: "order-status-update",
+          recipientEmail: order.customer_email,
+          idempotencyKey: `order-status-${orderId}-${newStatus}`,
+          templateData: {
+            customerName: order.customer_name || "Cliente",
+            orderId,
+            status: newStatus,
+            total: Number(order.total).toFixed(2).replace(".", ","),
+          },
+        },
       });
     }
 
