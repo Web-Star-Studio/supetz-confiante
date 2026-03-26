@@ -543,6 +543,12 @@ export default function Checkout() {
 
   return (
     <Layout>
+      <SEOHead
+        title="Checkout — Finalizar Compra"
+        description="Finalize sua compra das gomas naturais Supet. Pagamento seguro via Pix e cartão. Frete grátis em pedidos acima de 2 potes."
+        path="/checkout"
+        noindex
+      />
       <div className="min-h-screen bg-supet-bg pt-24 md:pt-32 pb-24 border-b border-supet-text/5 relative overflow-hidden">
         
         <div className="absolute top-40 left-0 w-96 h-96 bg-supet-orange/5 rounded-full blur-[100px] pointer-events-none" />

@@ -43,10 +43,18 @@ export default function Ciencia() {
         title="A Ciência por Trás da Supet"
         description="Descubra a fórmula científica Supet: Ômega 3, Colágeno, Biotina e Zinco Quelato. Desenvolvida por veterinários dermatologistas para tratar alergias e coceira de dentro para fora."
         path="/ciencia"
-        jsonLd={buildBreadcrumbSchema([
-          { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
-          { name: "Ciência", url: "https://supetz-playful-trust.lovable.app/ciencia" },
-        ])}
+        jsonLd={[
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+            { name: "Ciência", url: "https://supetz-playful-trust.lovable.app/ciencia" },
+          ]),
+          buildEducationalSchema({
+            name: "A Ciência por Trás da Supet",
+            description: "Fórmula científica com Ômega 3, Colágeno, Biotina e Zinco Quelato para tratar alergias e coceira em cães.",
+            url: "https://supetz-playful-trust.lovable.app/ciencia",
+            about: "Suplementos naturais para saúde dermatológica canina",
+          }),
+        ]}
       />
       <div className="bg-supet-bg min-h-screen pt-24 pb-20 overflow-hidden relative">
         <div className="absolute top-[-20%] left-[-10%] w-[800px] h-[800px] bg-supet-orange/5 rounded-full blur-[120px] pointer-events-none" />

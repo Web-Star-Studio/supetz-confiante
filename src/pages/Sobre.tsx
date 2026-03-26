@@ -98,10 +98,13 @@ export default function Sobre() {
         title="Sobre a Supet"
         description="Conheça a missão da Supet: criar suplementos 100% naturais e aprovados por veterinários para acabar com coceiras, alergias e queda de pelo nos cães."
         path="/sobre"
-        jsonLd={buildBreadcrumbSchema([
-          { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
-          { name: "Sobre", url: "https://supetz-playful-trust.lovable.app/sobre" },
-        ])}
+        jsonLd={[
+          buildBreadcrumbSchema([
+            { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
+            { name: "Sobre", url: "https://supetz-playful-trust.lovable.app/sobre" },
+          ]),
+          buildLocalBusinessSchema(),
+        ]}
       />
       <div ref={containerRef} className="relative bg-supet-bg">
         

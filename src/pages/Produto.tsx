@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import SEOHead from "@/components/SEOHead";
+import SEOHead, { buildProductSchema, buildBreadcrumbSchema } from "@/components/SEOHead";
 import ProductReviews from "@/components/product/ProductReviews";
 import Layout from "@/components/layout/Layout";
 
