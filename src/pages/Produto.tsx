@@ -121,7 +121,7 @@ export default function Produto() {
   const installment = product.price > 0 ? (product.price / 3).toFixed(2).replace(".", ",") : "0,00";
 
   return (
-    <>
+    <Layout>
       <SEOHead
         title={`${product.title} | Supet`}
         description={product.description || product.subtitle}
