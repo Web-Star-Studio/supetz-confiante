@@ -36,7 +36,7 @@ const EMAIL_TEMPLATES: Record<string, React.ComponentType<any>> = {
 }
 
 // Configuration
-const SITE_NAME = "supetz-playful-trust"
+const SITE_NAME = "Supet"
 const SENDER_DOMAIN = "notify.supet.com.br"
 const ROOT_DOMAIN = "supet.com.br"
 const FROM_DOMAIN = "supet.com.br" // Domain shown in From address (may be root or sender subdomain)
