@@ -17,7 +17,7 @@ interface Notification {
 }
 
 type StatusFilter = "all" | "unread" | "read";
-type TypeFilter = "all" | "order" | "restock";
+type TypeFilter = "all" | "order" | "restock" | "stock";
 
 export default function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
