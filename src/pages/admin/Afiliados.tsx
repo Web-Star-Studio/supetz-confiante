@@ -5,10 +5,12 @@ import { toast } from "sonner";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import {
   Handshake, Users, DollarSign, TrendingUp, CheckCircle, XCircle,
-  Clock, Eye, Loader2, Search, Wallet, Plus, Trash2,
+  Clock, Eye, Loader2, Search, Wallet, Plus, Trash2, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+const AFF_PAGE_SIZE = 10;
 
 interface Affiliate {
   id: string;
