@@ -31,6 +31,10 @@ import AdminAuditoria from "../../pages/admin/Auditoria";
 import AdminBaseConhecimento from "../../pages/admin/BaseConhecimento";
 import AdminGerenciarIA from "../../pages/admin/GerenciarIA";
 import AdminBlog from "../../pages/admin/BlogAdmin";
+import AdminAfiliados from "../../pages/admin/Afiliados";
+import Parceiros from "../../pages/Parceiros";
+import AffiliateDashboard from "../../pages/affiliate/Dashboard";
+import RefTracker from "../../components/affiliate/RefTracker";
 
 import PageTransition from "./PageTransition";
 
@@ -38,9 +42,11 @@ export default function AnimatedRoutes() {
   const location = useLocation();
 
   return (
-    <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
-        <Route path="/" element={<PageTransition><Index /></PageTransition>} />
+    <>
+      <RefTracker />
+      <AnimatePresence mode="wait">
+        <Routes location={location} key={location.pathname}>
+          <Route path="/" element={<PageTransition><Index /></PageTransition>} />
         <Route path="/shop" element={<PageTransition><Shop /></PageTransition>} />
         <Route path="/checkout" element={<PageTransition><Checkout /></PageTransition>} />
         <Route path="/success" element={<PageTransition><Success /></PageTransition>} />
@@ -49,6 +55,8 @@ export default function AnimatedRoutes() {
         <Route path="/sobre" element={<PageTransition><Sobre /></PageTransition>} />
         <Route path="/ciencia" element={<PageTransition><Ciencia /></PageTransition>} />
         <Route path="/faq" element={<PageTransition><FAQ /></PageTransition>} />
+        <Route path="/parceiros" element={<PageTransition><Parceiros /></PageTransition>} />
+        <Route path="/parceiros/painel" element={<PageTransition><AffiliateDashboard /></PageTransition>} />
 
         {/* Profile */}
         <Route path="/perfil" element={<PageTransition><Perfil /></PageTransition>} />
@@ -73,10 +81,12 @@ export default function AnimatedRoutes() {
         <Route path="/admin/ia" element={<AdminRoute><AdminGerenciarIA /></AdminRoute>} />
         <Route path="/admin/blog" element={<AdminRoute><AdminBlog /></AdminRoute>} />
         <Route path="/admin/base-conhecimento" element={<AdminRoute><AdminBaseConhecimento /></AdminRoute>} />
+        <Route path="/admin/afiliados" element={<AdminRoute><AdminAfiliados /></AdminRoute>} />
         <Route path="/admin/clientes" element={<Navigate to="/admin/crm" replace />} />
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-      </Routes>
-    </AnimatePresence>
+        </Routes>
+      </AnimatePresence>
+    </>
   );
 }

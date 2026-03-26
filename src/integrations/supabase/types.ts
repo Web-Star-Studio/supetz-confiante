@@ -52,6 +52,178 @@ export type Database = {
           },
         ]
       }
+      affiliate_clicks: {
+        Row: {
+          affiliate_id: string
+          created_at: string
+          id: string
+          ip_hash: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          affiliate_id: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          affiliate_id?: string
+          created_at?: string
+          id?: string
+          ip_hash?: string | null
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_clicks_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_payouts: {
+        Row: {
+          affiliate_id: string
+          amount: number
+          created_at: string
+          id: string
+          method: string
+          notes: string | null
+          paid_at: string | null
+          pix_key: string | null
+          status: string
+        }
+        Insert: {
+          affiliate_id: string
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          notes?: string | null
+          paid_at?: string | null
+          pix_key?: string | null
+          status?: string
+        }
+        Update: {
+          affiliate_id?: string
+          amount?: number
+          created_at?: string
+          id?: string
+          method?: string
+          notes?: string | null
+          paid_at?: string | null
+          pix_key?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_payouts_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliate_sales: {
+        Row: {
+          affiliate_id: string
+          commission_amount: number
+          created_at: string
+          id: string
+          order_id: string
+          order_total: number
+          status: string
+        }
+        Insert: {
+          affiliate_id: string
+          commission_amount?: number
+          created_at?: string
+          id?: string
+          order_id: string
+          order_total?: number
+          status?: string
+        }
+        Update: {
+          affiliate_id?: string
+          commission_amount?: number
+          created_at?: string
+          id?: string
+          order_id?: string
+          order_total?: number
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "affiliate_sales_affiliate_id_fkey"
+            columns: ["affiliate_id"]
+            isOneToOne: false
+            referencedRelation: "affiliates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "affiliate_sales_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      affiliates: {
+        Row: {
+          approved_at: string | null
+          channel_type: string
+          commission_percent: number
+          coupon_code: string | null
+          created_at: string
+          email: string
+          id: string
+          instagram: string | null
+          name: string
+          pix_key: string | null
+          ref_slug: string | null
+          status: string
+          total_earned: number
+          user_id: string
+        }
+        Insert: {
+          approved_at?: string | null
+          channel_type?: string
+          commission_percent?: number
+          coupon_code?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          instagram?: string | null
+          name: string
+          pix_key?: string | null
+          ref_slug?: string | null
+          status?: string
+          total_earned?: number
+          user_id: string
+        }
+        Update: {
+          approved_at?: string | null
+          channel_type?: string
+          commission_percent?: number
+          coupon_code?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          instagram?: string | null
+          name?: string
+          pix_key?: string | null
+          ref_slug?: string | null
+          status?: string
+          total_earned?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       ai_access_credits: {
         Row: {
           days_granted: number
