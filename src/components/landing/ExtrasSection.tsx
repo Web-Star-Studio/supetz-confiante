@@ -19,8 +19,8 @@ export default function ExtrasSection() {
     return (
         <section className="relative py-24 md:py-40 bg-white border-t border-supet-text/5">
             <div className="mx-auto max-w-7xl px-6">
-                <div className="flex flex-col md:flex-row items-end justify-between gap-8 mb-20">
-                    <div>
+                <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-20">
+                    <div className="text-left">
                         <span className="text-xs md:text-sm font-black uppercase tracking-[0.2em] text-supet-orange flex items-center gap-4 mb-4">
                             <span className="w-8 h-[2px] bg-supet-orange/50"></span> Acessórios
                         </span>
@@ -29,7 +29,7 @@ export default function ExtrasSection() {
                             <span className="text-supet-orange italic font-serif">Essencial.</span>
                         </h2>
                     </div>
-                    <p className="max-w-md text-lg text-supet-text/60 font-medium">
+                    <p className="max-w-md text-lg text-supet-text/60 font-medium text-left">
                         Itens de curadoria exclusiva desenhados para elevar a rotina e o bem-estar do seu pet.
                     </p>
                 </div>
