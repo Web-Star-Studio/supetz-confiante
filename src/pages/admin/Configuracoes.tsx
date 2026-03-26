@@ -3,7 +3,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle, Store } from "lucide-react";
+import { Loader2, CheckCircle, Store, BrainCircuit } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 
 export default function AdminConfiguracoes() {
@@ -21,6 +21,9 @@ export default function AdminConfiguracoes() {
   const [savingStore, setSavingStore] = useState(false);
   const [storeSuccess, setStoreSuccess] = useState(false);
 
+  // Feedback threshold
+  const [feedbackThreshold, setFeedbackThreshold] = useState(70);
+
   useEffect(() => {
     async function loadSettings() {
       const { data } = await supabase.from("store_settings").select("*");
@@ -29,6 +32,7 @@ export default function AdminConfiguracoes() {
           if (s.key === "store_name") setStoreName((s.value as any)?.value || "");
           if (s.key === "store_phone") setStorePhone((s.value as any)?.value || "");
           if (s.key === "store_address") setStoreAddress((s.value as any)?.value || "");
+          if (s.key === "feedback_satisfaction_threshold") setFeedbackThreshold(Number((s.value as any)?.value) || 70);
         });
       }
     }
@@ -42,13 +46,14 @@ export default function AdminConfiguracoes() {
       { key: "store_name", value: { value: storeName } },
       { key: "store_phone", value: { value: storePhone } },
       { key: "store_address", value: { value: storeAddress } },
+      { key: "feedback_satisfaction_threshold", value: { value: String(feedbackThreshold) } },
     ];
     for (const s of settings) {
       await supabase.from("store_settings").upsert(s, { onConflict: "key" });
     }
     setSavingStore(false);
     setStoreSuccess(true);
-    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress } });
+    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress, feedbackThreshold } });
     setTimeout(() => setStoreSuccess(false), 3000);
   };
 
@@ -92,6 +97,28 @@ export default function AdminConfiguracoes() {
             <div>
               <label className="text-sm font-semibold text-foreground mb-1 block">Endereço</label>
               <input value={storeAddress} onChange={e => setStoreAddress(e.target.value)} placeholder="Rua..." className={inputClass} />
+            </div>
+
+            {/* Feedback Threshold */}
+            <div className="pt-3 border-t border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <BrainCircuit className="w-4 h-4 text-primary" />
+                <label className="text-sm font-semibold text-foreground">Limiar de Satisfação da Super IA</label>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Notificação automática quando a taxa de satisfação dos últimos 7 dias cair abaixo deste valor.
+              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min={10}
+                  max={100}
+                  value={feedbackThreshold}
+                  onChange={e => setFeedbackThreshold(Math.min(100, Math.max(10, Number(e.target.value))))}
+                  className={`${inputClass} w-24 text-center`}
+                />
+                <span className="text-sm text-muted-foreground font-medium">%</span>
+              </div>
             </div>
             {storeSuccess && (
               <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 rounded-2xl p-3 text-sm font-medium">
