@@ -193,6 +193,23 @@ export default function AdminProdutos() {
         </motion.button>
       </div>
 
+      {/* Sort controls */}
+      <div className="flex items-center gap-2 mb-4">
+        <span className="text-xs text-muted-foreground font-medium">Ordenar por:</span>
+        {([
+          { col: "created_at" as ProdSortCol, label: "Data" },
+          { col: "price" as ProdSortCol, label: "Preço" },
+          { col: "quantity" as ProdSortCol, label: "Estoque" },
+          { col: "title" as ProdSortCol, label: "Nome" },
+        ]).map(({ col, label }) => (
+          <button key={col} onClick={() => toggleSort(col)}
+            className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-semibold transition-colors ${sortCol === col ? "bg-primary/15 text-primary" : "bg-card text-muted-foreground hover:text-foreground"}`}>
+            {label}
+            {sortCol === col ? (sortDir === "asc" ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />) : <ArrowUpDown className="w-3 h-3 opacity-40" />}
+          </button>
+        ))}
+      </div>
+
       {loading ? <ProductsSkeleton /> : products.length === 0 ? (
         <div className="bg-card rounded-3xl p-10 text-center text-muted-foreground text-sm">Nenhum produto cadastrado.</div>
       ) : (
