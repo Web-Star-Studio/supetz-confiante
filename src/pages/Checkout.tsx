@@ -1,9 +1,9 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
-import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check, MapPin, Sparkles } from "lucide-react";
+import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check, MapPin, Sparkles, Search } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
@@ -32,6 +32,41 @@ interface SavedAddress {
   is_default: boolean;
 }
 
+// --- Utility functions ---
+function maskCPF(value: string) {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 11)
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d)/, "$1.$2")
+    .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+}
+
+function maskCEP(value: string) {
+  return value
+    .replace(/\D/g, "")
+    .slice(0, 8)
+    .replace(/(\d{5})(\d)/, "$1-$2");
+}
+
+function validateCPF(cpf: string): boolean {
+  const digits = cpf.replace(/\D/g, "");
+  if (digits.length !== 11 || /^(\d)\1{10}$/.test(digits)) return false;
+  let sum = 0;
+  for (let i = 0; i < 9; i++) sum += parseInt(digits[i]) * (10 - i);
+  let rest = (sum * 10) % 11;
+  if (rest === 10) rest = 0;
+  if (rest !== parseInt(digits[9])) return false;
+  sum = 0;
+  for (let i = 0; i < 10; i++) sum += parseInt(digits[i]) * (11 - i);
+  rest = (sum * 10) % 11;
+  if (rest === 10) rest = 0;
+  return rest === parseInt(digits[10]);
+}
+
+const SHIPPING_FREE_THRESHOLD = 299.80;
+const SHIPPING_COST = 19.90;
+
 export default function Checkout() {
   const { items, totalPrice, clearCart } = useCart();
   const { user } = useAuth();
@@ -45,12 +80,15 @@ export default function Checkout() {
     address: "",
     number: "",
     complement: "",
+    neighborhood: "",
     city: "",
     state: "",
     paymentMethod: "credit_card"
   });
 
   const [isProcessing, setIsProcessing] = useState(false);
+  const [formErrors, setFormErrors] = useState<Record<string, string>>({});
+  const [cepLoading, setCepLoading] = useState(false);
 
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
@@ -71,6 +109,9 @@ export default function Checkout() {
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null);
 
+  // Shipping
+  const shippingCost = totalPrice >= SHIPPING_FREE_THRESHOLD ? 0 : SHIPPING_COST;
+
   // Calculate discounts
   const couponDiscount = appliedCoupon
     ? appliedCoupon.discount_type === "percentage"
@@ -78,7 +119,7 @@ export default function Checkout() {
       : appliedCoupon.discount_value
     : 0;
   const totalDiscount = couponDiscount + pointsValue;
-  const finalPrice = Math.max(0, totalPrice - totalDiscount);
+  const finalPrice = Math.max(0, totalPrice - totalDiscount + shippingCost);
 
   // Load affiliate referral data
   useEffect(() => {
@@ -187,6 +228,7 @@ export default function Checkout() {
       address: addr.street,
       number: addr.number,
       complement: addr.complement || "",
+      neighborhood: addr.neighborhood || "",
       city: addr.city,
       state: addr.state,
     }));
@@ -246,15 +288,80 @@ export default function Checkout() {
 
   const maxPointsForOrder = Math.min(totalPoints, Math.floor((totalPrice - couponDiscount) / 0.01));
 
+  // CEP auto-fill via ViaCEP
+  const fetchAddressByCEP = useCallback(async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length !== 8) return;
+    setCepLoading(true);
+    try {
+      const resp = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const data = await resp.json();
+      if (!data.erro) {
+        setFormData((prev) => ({
+          ...prev,
+          address: data.logradouro || prev.address,
+          neighborhood: data.bairro || prev.neighborhood,
+          city: data.localidade || prev.city,
+          state: data.uf || prev.state,
+        }));
+        setFormErrors((prev) => ({ ...prev, zipCode: "" }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, zipCode: "CEP não encontrado" }));
+      }
+    } catch {
+      // silently fail — user can type manually
+    }
+    setCepLoading(false);
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === "cpf") {
+      const masked = maskCPF(value);
+      setFormData((prev) => ({ ...prev, cpf: masked }));
+      if (masked.replace(/\D/g, "").length === 11) {
+        setFormErrors((prev) => ({ ...prev, cpf: validateCPF(masked) ? "" : "CPF inválido" }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, cpf: "" }));
+      }
+      return;
+    }
+    
+    if (name === "zipCode") {
+      const masked = maskCEP(value);
+      setFormData((prev) => ({ ...prev, zipCode: masked }));
+      const clean = masked.replace(/\D/g, "");
+      if (clean.length === 8) {
+        fetchAddressByCEP(clean);
+      }
+      return;
+    }
+    
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) {
       toast.error("Você precisa estar logado para finalizar a compra.");
+      return;
+    }
+    // Validate CPF
+    if (!validateCPF(formData.cpf)) {
+      setFormErrors((prev) => ({ ...prev, cpf: "CPF inválido" }));
+      toast.error("Verifique o CPF informado.");
+      return;
+    }
+    // Validate CEP
+    if (formData.zipCode.replace(/\D/g, "").length !== 8) {
+      setFormErrors((prev) => ({ ...prev, zipCode: "CEP inválido" }));
+      toast.error("Verifique o CEP informado.");
+      return;
+    }
+    // Validate name length
+    if (formData.name.trim().length < 3) {
+      toast.error("Nome deve ter pelo menos 3 caracteres.");
       return;
     }
     setIsProcessing(true);
@@ -283,6 +390,7 @@ export default function Checkout() {
           street: formData.address,
           number: formData.number,
           complement: formData.complement,
+          neighborhood: formData.neighborhood,
           city: formData.city,
           state: formData.state,
           zip: formData.zipCode,
@@ -462,7 +570,8 @@ export default function Checkout() {
                       </div>
                       <div>
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">CPF</label>
-                        <input required type="text" name="cpf" value={formData.cpf} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="000.000.000-00" />
+                        <input required type="text" name="cpf" value={formData.cpf} onChange={handleChange} maxLength={14} className={`w-full bg-supet-bg-alt border rounded-xl px-4 py-3 focus:outline-none focus:ring-1 transition-all duration-300 font-medium text-supet-text ${formErrors.cpf ? "border-red-400 focus:border-red-400 focus:ring-red-300" : "border-supet-text/10 focus:border-supet-orange focus:ring-supet-orange"}`} placeholder="000.000.000-00" />
+                        {formErrors.cpf && <p className="text-xs text-red-500 mt-1 font-semibold">{formErrors.cpf}</p>}
                       </div>
                     </div>
                   </motion.div>
@@ -513,7 +622,7 @@ export default function Checkout() {
                             type="button"
                             onClick={() => {
                               setSelectedAddressId(null);
-                              setFormData((prev) => ({ ...prev, zipCode: "", address: "", number: "", complement: "", city: "", state: "" }));
+                              setFormData((prev) => ({ ...prev, zipCode: "", address: "", number: "", complement: "", neighborhood: "", city: "", state: "" }));
                             }}
                             className={`text-left border-2 border-dashed rounded-xl p-4 transition-all duration-300 ${
                               selectedAddressId === null
@@ -535,19 +644,28 @@ export default function Checkout() {
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
                       <div className="md:col-span-4">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">CEP</label>
-                        <input required type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="00000-000" />
+                        <div className="relative">
+                          <input required type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} maxLength={9} className={`w-full bg-supet-bg-alt border rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-1 transition-all duration-300 font-medium text-supet-text ${formErrors.zipCode ? "border-red-400 focus:border-red-400 focus:ring-red-300" : "border-supet-text/10 focus:border-supet-orange focus:ring-supet-orange"}`} placeholder="00000-000" />
+                          {cepLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-supet-orange animate-spin" />}
+                          {!cepLoading && formData.city && !formErrors.zipCode && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />}
+                        </div>
+                        {formErrors.zipCode && <p className="text-xs text-red-500 mt-1 font-semibold">{formErrors.zipCode}</p>}
                       </div>
                       <div className="md:col-span-8">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Endereço</label>
                         <input required type="text" name="address" value={formData.address} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Nome da rua, avenida..." />
                       </div>
-                      <div className="md:col-span-4">
+                      <div className="md:col-span-3">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Número</label>
                         <input required type="text" name="number" value={formData.number} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="123" />
                       </div>
-                      <div className="md:col-span-8">
+                      <div className="md:col-span-5">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Complemento</label>
-                        <input type="text" name="complement" value={formData.complement} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Apto, Bloco, etc. (opcional)" />
+                        <input type="text" name="complement" value={formData.complement} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Apto, Bloco (opcional)" />
+                      </div>
+                      <div className="md:col-span-4">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Bairro</label>
+                        <input required type="text" name="neighborhood" value={formData.neighborhood} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Bairro" />
                       </div>
                       <div className="md:col-span-8">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Cidade</label>
@@ -555,7 +673,7 @@ export default function Checkout() {
                       </div>
                       <div className="md:col-span-4">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Estado</label>
-                        <input required type="text" name="state" value={formData.state} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="UF" />
+                        <input required type="text" name="state" value={formData.state} onChange={handleChange} maxLength={2} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text uppercase" placeholder="UF" />
                       </div>
                     </div>
                   </motion.div>
@@ -818,12 +936,17 @@ export default function Checkout() {
 
                   <div className="flex justify-between items-center text-supet-text/60 font-bold">
                     <span>Frete</span>
-                    {totalPrice > 299.80 ? (
+                    {shippingCost === 0 ? (
                       <span className="text-green-500 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5"/> Grátis</span>
                     ) : (
-                      <span>Calculando...</span>
+                      <span>R$ {shippingCost.toFixed(2).replace('.', ',')}</span>
                     )}
                   </div>
+                  {shippingCost > 0 && (
+                    <p className="text-xs text-supet-text/40 font-medium">
+                      Frete grátis para compras acima de R$ {SHIPPING_FREE_THRESHOLD.toFixed(2).replace('.', ',')}
+                    </p>
+                  )}
                   <div className="border-t border-supet-text/10 pt-4 flex justify-between items-center text-supet-text font-black text-xl">
                     <span>Total</span>
                     <span className="text-supet-orange">R$ {finalPrice.toFixed(2).replace('.', ',')}</span>
