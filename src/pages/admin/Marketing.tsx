@@ -7,6 +7,7 @@ import {
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
 } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
+import { toast } from "sonner";
 
 interface Campaign {
   id: string;
