@@ -1,30 +1,72 @@
 
 
-## Plan: Redesign Parceiros Page + Remove from Header
+## Plan: Complete Newsletter System with Lead Management
 
-### Changes Overview
+### Overview
 
-**Two files to modify:**
+Build a full newsletter subscription system where visitors become leads in the CRM, registered users are auto-enrolled, and admins can manage email marketing campaigns targeting both subscriber types.
 
-1. **`src/components/layout/Header.tsx`** — Remove "Parceiros" from the `navLinks` array. Footer already has the link.
+### Database Changes (Migration)
 
-2. **`src/pages/Parceiros.tsx`** — Full visual redesign following the "Playful Trust" aesthetic with these improvements:
+**New table: `newsletter_subscribers`**
+- `id` (uuid, PK)
+- `email` (text, unique, not null)
+- `name` (text, nullable)
+- `user_id` (uuid, nullable) — links to auth.users if registered
+- `source` (text, default 'footer') — where they subscribed (footer, landing, popup)
+- `status` (text, default 'active') — active, unsubscribed
+- `subscribed_at` (timestamptz, default now())
+- `unsubscribed_at` (timestamptz, nullable)
 
-### Design Upgrades
+RLS: public can insert (for anonymous signups), admins can read/manage all, service_role can update.
 
-- **Hero section**: Large gradient background with decorative orange circle (matching brand), bold typography with generous whitespace, animated entrance
-- **Benefits cards**: Upgrade from flat bordered cards to rounded-3xl cards with subtle gradient backgrounds, larger icons, more breathing room — matching the premium feel of Sobre/Ciencia pages
-- **"Como funciona" timeline**: Replace simple list with a horizontal stepped timeline on desktop (vertical on mobile), with connecting lines between steps and animated number badges
-- **Application form**: Elevate with a soft background section (light orange tint), rounded-3xl card, pill-shaped submit button (rounded-full per brand guidelines), refined input styling with larger padding and softer borders
-- **Success state**: Animated confetti-style checkmark with more celebratory feel
-- **Add a stats/social proof strip** between hero and benefits: "500+ parceiros ativos", "R$ 2M+ em comissões pagas", "15% de comissão"
-- **CTA at bottom**: Reuse or mirror the FinalCTASection pattern for consistency
+**Auto-link trigger**: When a new user registers (`handle_new_user`), check if their email exists in `newsletter_subscribers` and link the `user_id`.
+
+### Frontend Changes
+
+#### 1. Footer Newsletter Form (`src/components/layout/Footer.tsx`)
+- Make the existing form functional: on submit, insert into `newsletter_subscribers`
+- Show success/error toast feedback
+- No auth required (anonymous insert via anon key)
+- Validate email client-side
+
+#### 2. Landing Page Newsletter Section
+- Add a small newsletter CTA component to the Index page (before FinalCTA)
+- Reuse the same subscribe logic
+
+#### 3. Admin: Newsletter Tab in Marketing Page (`src/pages/admin/Marketing.tsx`)
+- Add a tabbed interface: "Campanhas" (existing) | "Newsletter"
+- Newsletter tab shows:
+  - **Stats**: total subscribers, registered vs anonymous, active vs unsubscribed
+  - **Subscriber list** with search, sortable columns, pagination
+  - **Badge system**: "Registrado" (has user_id) vs "Lead" (no user_id)
+  - **Export CSV** of subscribers
+  - **Segment targeting**: when creating campaigns, add "Newsletter subscribers" as a segment option, differentiating registered vs lead-only
+
+#### 4. Campaign Segmentation Enhancement
+- Add newsletter subscriber targeting to campaign creation form
+- Options: "All newsletter subscribers", "Only leads (no account)", "Only registered users", or combine with existing CRM filters
+
+#### 5. CRM Integration
+- In CRM client list, newsletter-only subscribers (no user_id) appear as a separate "Lead (Newsletter)" status
+- Differentiated with a distinct badge/tag
+
+### Files to Create/Modify
+
+| File | Action |
+|------|--------|
+| Migration SQL | Create `newsletter_subscribers` table + trigger |
+| `src/components/layout/Footer.tsx` | Wire up newsletter form with Supabase insert |
+| `src/components/landing/NewsletterSection.tsx` | New standalone CTA component |
+| `src/pages/Index.tsx` | Add NewsletterSection |
+| `src/pages/admin/Marketing.tsx` | Add Newsletter tab with subscriber management |
+| `src/components/admin/AdminLayout.tsx` | No change needed (Marketing already in sidebar) |
 
 ### Technical Details
 
-- Use `framer-motion` for staggered card animations and scroll-triggered reveals (consistent with Sobre page patterns)
-- Cards use `rounded-3xl` per component guidelines
-- Buttons use `rounded-full` (pill shape) per brand
-- Generous whitespace, no heavy shadows or hard borders
-- Mobile: single-column layout, left-aligned text, full-width form
+- Newsletter inserts use `.insert()` with `onConflict: 'email'` to prevent duplicates
+- The `handle_new_user` trigger is updated to auto-link `newsletter_subscribers.user_id` when email matches
+- RLS allows anonymous inserts (only email + name columns) but blocks reads for non-admins
+- Campaign sending logic extended to query `newsletter_subscribers` when "newsletter" segment is selected
+- Subscriber badges use color-coded pills: green "Registrado" / blue "Lead"
 
