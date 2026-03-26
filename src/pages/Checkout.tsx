@@ -611,6 +611,40 @@ export default function Checkout() {
                   ))}
                 </div>
 
+                {/* Affiliate Referral Banner */}
+                {affiliateInfo && (
+                  <div className="border-t border-supet-text/10 pt-5 mb-2">
+                    <div className="flex items-center gap-3 bg-supet-orange/10 border border-supet-orange/20 rounded-xl px-4 py-3">
+                      <Sparkles className="w-5 h-5 text-supet-orange flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-supet-text">Indicação de {affiliateInfo.name}</p>
+                        {affiliateInfo.coupon_code && (
+                          <p className="text-xs text-supet-text/60 mt-0.5">
+                            Cupom <span className="font-mono font-bold text-supet-orange">{affiliateInfo.coupon_code}</span> disponível para aplicar
+                          </p>
+                        )}
+                      </div>
+                      {affiliateInfo.coupon_code && !appliedCoupon && !affiliateCouponApplied && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCouponCode(affiliateInfo.coupon_code!);
+                            setAffiliateCouponApplied(true);
+                            // Auto-apply: search in user_coupons or just set as manual code
+                            handleApplyCouponByCode(affiliateInfo.coupon_code!);
+                          }}
+                          className="bg-supet-orange text-white rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-supet-orange-dark transition-colors flex-shrink-0"
+                        >
+                          Aplicar
+                        </button>
+                      )}
+                      {(appliedCoupon || affiliateCouponApplied) && (
+                        <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Coupon Section */}
                 {user && (
                   <div className="border-t border-supet-text/10 pt-5 mb-5 space-y-3">
