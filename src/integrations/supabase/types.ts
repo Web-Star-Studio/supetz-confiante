@@ -565,6 +565,39 @@ export type Database = {
           },
         ]
       }
+      chat_feedback: {
+        Row: {
+          comment: string | null
+          conversation_id: string
+          created_at: string
+          id: string
+          message_content: string
+          rating: string
+          reason: string | null
+          user_id: string
+        }
+        Insert: {
+          comment?: string | null
+          conversation_id: string
+          created_at?: string
+          id?: string
+          message_content: string
+          rating: string
+          reason?: string | null
+          user_id: string
+        }
+        Update: {
+          comment?: string | null
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          message_content?: string
+          rating?: string
+          reason?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       chat_messages: {
         Row: {
           content: string
