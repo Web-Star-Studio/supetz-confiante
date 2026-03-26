@@ -132,15 +132,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             })}
           </nav>
 
-          {/* Collapse toggle (desktop only) */}
-          <div className="hidden lg:flex justify-center py-2 border-t border-border/50">
-            <button
-              onClick={() => setCollapsed((c) => !c)}
-              className="w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-            >
-              {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
-            </button>
-          </div>
 
           {/* User / Logout */}
           <div className={`border-t border-border/50 ${collapsed ? "p-2" : "p-3"}`}>
