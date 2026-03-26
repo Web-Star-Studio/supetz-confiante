@@ -73,6 +73,18 @@ export default function PricingSection() {
               <Link to={`/produto/${product.id}`} className="hover:opacity-80 transition-opacity">
                 <h3 className="mt-2 text-xl font-extrabold">{product.title}</h3>
               </Link>
+              {ratings[product.id] && (
+                <div className="flex items-center gap-1.5 mt-2">
+                  <div className="flex">
+                    {[1, 2, 3, 4, 5].map(s => (
+                      <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(ratings[product.id].avg) ? (product.highlighted ? "fill-white text-white" : "fill-supet-orange text-supet-orange") : (product.highlighted ? "text-white/30" : "text-supet-text/20")}`} />
+                    ))}
+                  </div>
+                  <span className={`text-xs font-bold ${product.highlighted ? "text-white/70" : "text-supet-text/40"}`}>
+                    ({ratings[product.id].count})
+                  </span>
+                </div>
+              )}
               <p className={`mt-1 text-sm ${product.highlighted ? "text-white/80" : "text-supet-text/50"}`}>
                 {product.subtitle}
               </p>
