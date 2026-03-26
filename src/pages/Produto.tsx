@@ -268,7 +268,7 @@ export default function Produto() {
               </div>
 
               {/* Trust signals */}
-              <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {[
                   { icon: Truck, label: "Frete grátis", sub: "Acima de R$99" },
                   { icon: ShieldCheck, label: "Compra segura", sub: "Dados protegidos" },
