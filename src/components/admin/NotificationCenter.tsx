@@ -103,6 +103,7 @@ export default function NotificationCenter() {
     switch (type) {
       case "order": return <ShoppingCart className="w-4 h-4 text-primary" />;
       case "restock": return <Clock className="w-4 h-4 text-amber-600" />;
+      case "stock": return <Bell className="w-4 h-4 text-red-500" />;
       default: return <Bell className="w-4 h-4 text-primary" />;
     }
   };
