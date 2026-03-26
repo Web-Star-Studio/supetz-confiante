@@ -34,6 +34,7 @@ export default function AdminFeedback() {
   const [searchQuery, setSearchQuery] = useState("");
   const [page, setPage] = useState(0);
   const [total, setTotal] = useState(0);
+  const [period, setPeriod] = useState<string>("30");
 
   useEffect(() => { setPage(0); }, [ratingFilter, searchQuery]);
 
