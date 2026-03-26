@@ -5,8 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useCart } from "@/context/CartContext";
 import { useProductImages } from "@/hooks/useProductImages";
 import { useProducts } from "@/hooks/useProducts";
+import { useProductRatings } from "@/hooks/useProductRatings";
 import type { Product } from "@/types";
-import { ChevronRight, Minus, Plus, Check, ShoppingBag } from "lucide-react";
+import {
+  ChevronRight, Minus, Plus, Check, ShoppingBag, Star,
+  Truck, ShieldCheck, RotateCcw, Leaf, Package
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import SEOHead from "@/components/SEOHead";
@@ -20,7 +24,7 @@ export default function Produto() {
   const [qty, setQty] = useState(1);
   const [mainImg, setMainImg] = useState(0);
   const [added, setAdded] = useState(false);
-  const { images: bucketImages, loading: imagesLoading } = useProductImages(id);
+  const { images: bucketImages } = useProductImages(id);
 
   useEffect(() => {
     if (!id) return;
@@ -65,6 +69,8 @@ export default function Produto() {
     category: product?.category || undefined,
   });
   const relatedFiltered = related.filter((p) => p.id !== id).slice(0, 3);
+  const ratings = useProductRatings(id ? [id] : []);
+  const productRating = id ? ratings[id] : undefined;
 
   const handleAdd = () => {
     if (!product) return;
@@ -76,8 +82,7 @@ export default function Produto() {
   const discount =
     product && product.originalPrice > product.price
       ? Math.round(
-          ((product.originalPrice - product.price) / product.originalPrice) *
-            100
+          ((product.originalPrice - product.price) / product.originalPrice) * 100
         )
       : 0;
 
@@ -112,6 +117,8 @@ export default function Produto() {
     );
   }
 
+  const installment = product.price > 0 ? (product.price / 3).toFixed(2).replace(".", ",") : "0,00";
+
   return (
     <>
       <SEOHead
@@ -123,16 +130,9 @@ export default function Produto() {
         <div className="mx-auto max-w-6xl">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-10">
-            <Link to="/" className="hover:text-foreground transition-colors">
-              Home
-            </Link>
+            <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
-            <Link
-              to="/shop"
-              className="hover:text-foreground transition-colors"
-            >
-              Loja
-            </Link>
+            <Link to="/shop" className="hover:text-foreground transition-colors">Loja</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <span className="text-foreground font-medium truncate max-w-[200px]">
               {product.title}
@@ -147,23 +147,28 @@ export default function Produto() {
               transition={{ duration: 0.5 }}
             >
               {gallery.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-4 sticky top-28">
                   <div className="relative aspect-square rounded-3xl overflow-hidden bg-muted">
                     <AnimatePresence mode="wait">
                       <motion.img
                         key={mainImg}
                         src={gallery[mainImg]}
                         alt={product.title}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
+                        initial={{ opacity: 0, scale: 1.02 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.98 }}
                         transition={{ duration: 0.3 }}
                         className="w-full h-full object-cover"
                       />
                     </AnimatePresence>
                     {discount > 0 && (
-                      <span className="absolute top-4 left-4 bg-destructive text-destructive-foreground text-xs font-bold px-3 py-1 rounded-full">
+                      <span className="absolute top-4 left-4 bg-destructive text-destructive-foreground text-xs font-bold px-3 py-1.5 rounded-full">
                         -{discount}%
+                      </span>
+                    )}
+                    {product.badge && (
+                      <span className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-bold px-3 py-1.5 rounded-full">
+                        {product.badge}
                       </span>
                     )}
                   </div>
@@ -179,11 +184,7 @@ export default function Produto() {
                               : "border-border hover:border-primary/50"
                           }`}
                         >
-                          <img
-                            src={src}
-                            alt=""
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={src} alt="" className="w-full h-full object-cover" />
                         </button>
                       ))}
                     </div>
@@ -203,23 +204,16 @@ export default function Produto() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="flex flex-col"
             >
+              {/* Category badges */}
               <div className="flex items-center gap-3 mb-3">
-                {product.badge && (
-                  <Badge className="bg-primary text-primary-foreground text-xs">
-                    {product.badge}
-                  </Badge>
-                )}
                 {product.category && (
-                  <Badge
-                    variant="outline"
-                    className="text-xs capitalize text-muted-foreground"
-                  >
+                  <Badge variant="outline" className="text-xs capitalize text-muted-foreground">
                     {product.category}
                   </Badge>
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+              <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
                 {product.title}
               </h1>
               {product.subtitle && (
@@ -228,46 +222,93 @@ export default function Produto() {
                 </p>
               )}
 
-              {/* Price */}
-              <div className="mt-8 flex items-baseline gap-3">
-                <span className="text-4xl font-black text-foreground">
-                  R$ {product.price.toFixed(2).replace(".", ",")}
-                </span>
-                {product.originalPrice > product.price && (
-                  <span className="text-lg line-through text-muted-foreground/50">
-                    R$ {product.originalPrice.toFixed(2).replace(".", ",")}
+              {/* Rating summary */}
+              {productRating && productRating.count > 0 && (
+                <div className="flex items-center gap-2 mt-3">
+                  <div className="flex gap-0.5">
+                    {[1, 2, 3, 4, 5].map((s) => (
+                      <Star
+                        key={s}
+                        className={`w-4 h-4 ${
+                          s <= Math.round(productRating.avg)
+                            ? "fill-amber-400 text-amber-400"
+                            : "text-muted-foreground/30"
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-sm text-muted-foreground">
+                    {productRating.avg.toFixed(1)} ({productRating.count}{" "}
+                    {productRating.count === 1 ? "avaliação" : "avaliações"})
                   </span>
+                </div>
+              )}
+
+              {/* Price block */}
+              <div className="mt-8 p-6 rounded-2xl bg-muted/50 border border-border">
+                <div className="flex items-baseline gap-3">
+                  <span className="text-4xl font-black text-foreground">
+                    R$ {product.price.toFixed(2).replace(".", ",")}
+                  </span>
+                  {product.originalPrice > product.price && (
+                    <span className="text-lg line-through text-muted-foreground/50">
+                      R$ {product.originalPrice.toFixed(2).replace(".", ",")}
+                    </span>
+                  )}
+                </div>
+                <p className="text-sm text-muted-foreground mt-1.5">
+                  ou 3x de R$ {installment} sem juros
+                </p>
+                {product.pricePerUnit && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {product.pricePerUnit}
+                  </p>
                 )}
               </div>
-              {product.pricePerUnit && (
-                <p className="text-sm text-muted-foreground mt-1">
-                  {product.pricePerUnit}
-                </p>
-              )}
+
+              {/* Trust signals */}
+              <div className="mt-6 grid grid-cols-2 gap-3">
+                {[
+                  { icon: Truck, label: "Frete grátis", sub: "Acima de R$99" },
+                  { icon: ShieldCheck, label: "Compra segura", sub: "Dados protegidos" },
+                  { icon: RotateCcw, label: "Troca fácil", sub: "Até 30 dias" },
+                  { icon: Leaf, label: "100% natural", sub: "Sem químicos" },
+                ].map(({ icon: Icon, label, sub }) => (
+                  <div key={label} className="flex items-center gap-2.5 p-3 rounded-xl bg-background border border-border">
+                    <Icon className="w-5 h-5 text-primary shrink-0" />
+                    <div>
+                      <p className="text-xs font-semibold text-foreground leading-tight">{label}</p>
+                      <p className="text-[10px] text-muted-foreground">{sub}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
               {/* Description */}
               {product.description && (
-                <div className="mt-8 text-muted-foreground leading-relaxed whitespace-pre-line border-t border-border pt-6">
-                  {product.description}
+                <div className="mt-8 border-t border-border pt-6">
+                  <h3 className="text-sm font-bold text-foreground mb-3 flex items-center gap-2">
+                    <Package className="w-4 h-4 text-primary" />
+                    Sobre o produto
+                  </h3>
+                  <p className="text-muted-foreground text-sm leading-relaxed whitespace-pre-line">
+                    {product.description}
+                  </p>
                 </div>
               )}
 
               {/* Quantity + CTA */}
-              <div className="mt-auto pt-10 space-y-4">
+              <div className="mt-8 pt-6 border-t border-border space-y-4">
                 <div className="flex items-center gap-4">
-                  <span className="text-sm font-semibold text-foreground">
-                    Quantidade
-                  </span>
-                  <div className="flex items-center border border-border rounded-full">
+                  <span className="text-sm font-semibold text-foreground">Quantidade</span>
+                  <div className="flex items-center border border-border rounded-full bg-background">
                     <button
                       onClick={() => setQty((q) => Math.max(1, q - 1))}
                       className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
                     >
                       <Minus className="w-4 h-4" />
                     </button>
-                    <span className="w-10 text-center font-bold text-foreground">
-                      {qty}
-                    </span>
+                    <span className="w-10 text-center font-bold text-foreground">{qty}</span>
                     <button
                       onClick={() => setQty((q) => q + 1)}
                       className="w-10 h-10 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
@@ -275,6 +316,11 @@ export default function Produto() {
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
+                  {qty > 1 && (
+                    <span className="text-sm text-muted-foreground">
+                      Total: <span className="font-bold text-foreground">R$ {(product.price * qty).toFixed(2).replace(".", ",")}</span>
+                    </span>
+                  )}
                 </div>
 
                 <motion.button
