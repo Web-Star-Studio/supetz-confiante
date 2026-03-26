@@ -74,7 +74,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
               <img
                 src="/supetNewLogo.svg"
                 alt="Supet"
-                className={`transition-all duration-300 ${collapsed ? "h-8" : "h-[42px]"}`}
+                className={`transition-all duration-300 ${collapsed ? "h-10" : "h-[80px]"}`}
               />
             </Link>
             <button
