@@ -174,6 +174,26 @@ Deno.serve(async (req) => {
             }
             break;
           }
+
+          case "restock_reminder": {
+            const daysBefore = auto.trigger_config?.days_before_end ?? 5;
+            const targetDate = new Date(now);
+            targetDate.setDate(targetDate.getDate() + daysBefore);
+            const targetStr = targetDate.toISOString().split("T")[0];
+
+            const { data: reminders } = await supabase
+              .from("restock_reminders")
+              .select("user_id, product_title")
+              .eq("reminded", false)
+              .lte("estimated_end_date", targetStr);
+
+            if (reminders) {
+              for (const r of reminders) {
+                targetUserIds.push(r.user_id);
+              }
+            }
+            break;
+          }
         }
 
         // Deduplicate
@@ -221,8 +241,10 @@ Deno.serve(async (req) => {
 
           // Send notification
           if (auto.action_type === "notification" || auto.action_type === "both") {
-            // Get pet name for variable replacement
+            // Get contextual data for variable replacement
             let petName = "";
+            let productTitle = "";
+
             if (auto.trigger_type === "pet_birthday") {
               const { data: pet } = await supabase
                 .from("pets")
@@ -233,10 +255,23 @@ Deno.serve(async (req) => {
               petName = pet?.name || "seu pet";
             }
 
+            if (auto.trigger_type === "restock_reminder") {
+              const { data: reminder } = await supabase
+                .from("restock_reminders")
+                .select("product_title")
+                .eq("user_id", uid)
+                .eq("reminded", false)
+                .limit(1)
+                .single();
+              productTitle = reminder?.product_title || "seu produto";
+            }
+
             const title = (actionConfig.notification_title || "")
-              .replace("{{pet_nome}}", petName);
+              .replace("{{pet_nome}}", petName)
+              .replace("{{produto}}", productTitle);
             const message = (actionConfig.notification_message || "")
-              .replace("{{pet_nome}}", petName);
+              .replace("{{pet_nome}}", petName)
+              .replace("{{produto}}", productTitle);
 
             await supabase.from("user_notifications").insert({
               user_id: uid,
