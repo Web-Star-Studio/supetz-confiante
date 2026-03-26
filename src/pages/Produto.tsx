@@ -150,7 +150,7 @@ export default function Produto() {
         ]}
       />
 
-      <div className="min-h-screen bg-background pt-28 pb-20 px-6">
+      <div className="min-h-screen bg-background pt-16 md:pt-28 pb-20 px-4 md:px-6">
         <div className="mx-auto max-w-6xl">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-10">
