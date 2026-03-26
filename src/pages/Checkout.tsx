@@ -346,6 +346,23 @@ export default function Checkout() {
       toast.error("Você precisa estar logado para finalizar a compra.");
       return;
     }
+    // Validate CPF
+    if (!validateCPF(formData.cpf)) {
+      setFormErrors((prev) => ({ ...prev, cpf: "CPF inválido" }));
+      toast.error("Verifique o CPF informado.");
+      return;
+    }
+    // Validate CEP
+    if (formData.zipCode.replace(/\D/g, "").length !== 8) {
+      setFormErrors((prev) => ({ ...prev, zipCode: "CEP inválido" }));
+      toast.error("Verifique o CEP informado.");
+      return;
+    }
+    // Validate name length
+    if (formData.name.trim().length < 3) {
+      toast.error("Nome deve ter pelo menos 3 caracteres.");
+      return;
+    }
     setIsProcessing(true);
 
     try {
