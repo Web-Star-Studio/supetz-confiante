@@ -353,6 +353,56 @@ Deno.serve(async (req) => {
     }
   }
 
+  // 3. Check email failure rate and alert if above threshold
+  try {
+    const { data: thresholdSetting } = await supabase
+      .from('store_settings')
+      .select('value')
+      .eq('key', 'email_failure_alert_threshold')
+      .maybeSingle()
+
+    const threshold = thresholdSetting?.value?.threshold ?? 10 // default 10%
+    const checkWindow = thresholdSetting?.value?.window_hours ?? 24
+    const enabled = thresholdSetting?.value?.enabled !== false
+
+    if (enabled && totalProcessed > 0) {
+      const windowStart = new Date(Date.now() - checkWindow * 3600000).toISOString()
+
+      const { data: recentLogs } = await supabase
+        .from('email_send_log')
+        .select('status')
+        .gte('created_at', windowStart)
+
+      if (recentLogs && recentLogs.length >= 5) {
+        const failed = recentLogs.filter(
+          (l: { status: string }) => l.status === 'failed' || l.status === 'dlq'
+        ).length
+        const failRate = (failed / recentLogs.length) * 100
+
+        if (failRate >= threshold) {
+          // Check if we already alerted in the last hour to avoid spam
+          const oneHourAgo = new Date(Date.now() - 3600000).toISOString()
+          const { data: recentAlert } = await supabase
+            .from('admin_notifications')
+            .select('id')
+            .eq('type', 'email_alert')
+            .gte('created_at', oneHourAgo)
+            .limit(1)
+
+          if (!recentAlert?.length) {
+            await supabase.from('admin_notifications').insert({
+              title: '🚨 Taxa de falha de e-mails alta!',
+              message: `${failRate.toFixed(1)}% dos e-mails falharam nas últimas ${checkWindow}h (limite: ${threshold}%). ${failed}/${recentLogs.length} e-mails.`,
+              type: 'email_alert',
+            })
+          }
+        }
+      }
+    }
+  } catch (alertErr) {
+    console.error('Failed to check email failure rate alert', alertErr)
+  }
+
   return new Response(
     JSON.stringify({ processed: totalProcessed }),
     { headers: { 'Content-Type': 'application/json' } }

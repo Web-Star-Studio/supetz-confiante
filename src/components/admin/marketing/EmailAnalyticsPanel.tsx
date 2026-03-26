@@ -4,7 +4,9 @@ import { motion } from "framer-motion";
 import {
   Mail, Send, ShieldOff, AlertTriangle, Eye, CheckCircle2,
   XCircle, Loader2, ChevronDown, ChevronUp, MailWarning,
+  Settings2, BellRing, Save,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface EmailLog {
   id: string;
@@ -52,13 +54,20 @@ export default function EmailAnalyticsPanel() {
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
   const [period, setPeriod] = useState<"7d" | "30d" | "90d">("30d");
 
+  // Alert threshold config
+  const [showAlertConfig, setShowAlertConfig] = useState(false);
+  const [alertThreshold, setAlertThreshold] = useState(10);
+  const [alertWindowHours, setAlertWindowHours] = useState(24);
+  const [alertEnabled, setAlertEnabled] = useState(true);
+  const [savingAlert, setSavingAlert] = useState(false);
+
   useEffect(() => {
     (async () => {
       setLoading(true);
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - (period === "7d" ? 7 : period === "30d" ? 30 : 90));
 
-      const [logRes, campRes, recipRes] = await Promise.all([
+      const [logRes, campRes, recipRes, alertRes] = await Promise.all([
         supabase
           .from("email_send_log")
           .select("id, message_id, template_name, recipient_email, status, error_message, created_at")
@@ -73,11 +82,24 @@ export default function EmailAnalyticsPanel() {
         supabase
           .from("campaign_recipients")
           .select("campaign_id, opened, sent_at"),
+        supabase
+          .from("store_settings")
+          .select("value")
+          .eq("key", "email_failure_alert_threshold")
+          .maybeSingle(),
       ]);
 
       setLogs((logRes.data || []) as EmailLog[]);
       setCampaigns((campRes.data || []) as Campaign[]);
       setRecipients((recipRes.data || []) as CampaignRecipient[]);
+
+      if (alertRes.data?.value) {
+        const v = alertRes.data.value as Record<string, unknown>;
+        setAlertThreshold((v.threshold as number) ?? 10);
+        setAlertWindowHours((v.window_hours as number) ?? 24);
+        setAlertEnabled(v.enabled !== false);
+      }
+
       setLoading(false);
     })();
   }, [period]);
@@ -186,6 +208,29 @@ export default function EmailAnalyticsPanel() {
       .slice(0, 5);
   }, [dedupedLogs]);
 
+  // Current failure rate for alert banner
+  const currentFailureRate = useMemo(() => {
+    if (globalStats.total === 0) return 0;
+    return (globalStats.failed / globalStats.total) * 100;
+  }, [globalStats]);
+
+  const isAboveThreshold = alertEnabled && globalStats.total >= 5 && currentFailureRate >= alertThreshold;
+
+  const saveAlertConfig = async () => {
+    setSavingAlert(true);
+    const payload = { threshold: alertThreshold, window_hours: alertWindowHours, enabled: alertEnabled };
+    const { error } = await supabase
+      .from("store_settings")
+      .upsert({ key: "email_failure_alert_threshold", value: payload as any }, { onConflict: "key" });
+    setSavingAlert(false);
+    if (error) {
+      toast.error("Erro ao salvar configuração");
+    } else {
+      toast.success("Configuração de alerta salva!");
+      setShowAlertConfig(false);
+    }
+  };
+
   const chartSampled = globalStats.daily.length > 30
     ? globalStats.daily.filter((_, i) => i % Math.ceil(globalStats.daily.length / 30) === 0 || i === globalStats.daily.length - 1)
     : globalStats.daily;
@@ -207,20 +252,107 @@ export default function EmailAnalyticsPanel() {
           <Mail className="w-5 h-5 text-blue-600" />
           <h3 className="text-lg font-extrabold text-foreground">Analytics de E-mails</h3>
         </div>
-        <div className="flex gap-1 bg-card rounded-2xl p-1">
-          {(["7d", "30d", "90d"] as const).map((p) => (
-            <button
-              key={p}
-              onClick={() => setPeriod(p)}
-              className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
-                period === p ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {p === "7d" ? "7 dias" : p === "30d" ? "30 dias" : "90 dias"}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setShowAlertConfig(!showAlertConfig)}
+            className="p-2 rounded-xl hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
+            title="Configurar alertas"
+          >
+            <BellRing className="w-4 h-4" />
+          </button>
+          <div className="flex gap-1 bg-card rounded-2xl p-1">
+            {(["7d", "30d", "90d"] as const).map((p) => (
+              <button
+                key={p}
+                onClick={() => setPeriod(p)}
+                className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all ${
+                  period === p ? "bg-primary text-primary-foreground shadow-sm" : "text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {p === "7d" ? "7 dias" : p === "30d" ? "30 dias" : "90 dias"}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Alert banner */}
+      {isAboveThreshold && (
+        <motion.div
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center gap-3 p-4 rounded-2xl bg-destructive/10 border border-destructive/20"
+        >
+          <AlertTriangle className="w-5 h-5 text-destructive flex-shrink-0" />
+          <div className="flex-1">
+            <p className="text-sm font-bold text-destructive">Taxa de falha acima do limite!</p>
+            <p className="text-xs text-destructive/80">
+              {currentFailureRate.toFixed(1)}% dos e-mails falharam no período (limite configurado: {alertThreshold}%)
+            </p>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Alert config panel */}
+      {showAlertConfig && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="bg-card rounded-3xl p-5 border border-border"
+        >
+          <div className="flex items-center gap-2 mb-4">
+            <Settings2 className="w-4 h-4 text-primary" />
+            <p className="text-sm font-bold text-foreground">Configuração de Alertas</p>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1.5">Limite de falha (%)</label>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={alertThreshold}
+                onChange={(e) => setAlertThreshold(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1.5">Janela de análise (horas)</label>
+              <input
+                type="number"
+                min={1}
+                max={168}
+                value={alertWindowHours}
+                onChange={(e) => setAlertWindowHours(Number(e.target.value))}
+                className="w-full px-3 py-2 rounded-xl bg-muted border border-border text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <div>
+              <label className="text-xs font-semibold text-muted-foreground block mb-1.5">Status</label>
+              <button
+                onClick={() => setAlertEnabled(!alertEnabled)}
+                className={`w-full px-3 py-2 rounded-xl text-sm font-semibold transition-all ${
+                  alertEnabled
+                    ? "bg-emerald-500/15 text-emerald-600 border border-emerald-500/20"
+                    : "bg-muted text-muted-foreground border border-border"
+                }`}
+              >
+                {alertEnabled ? "✅ Ativo" : "⏸️ Desativado"}
+              </button>
+            </div>
+          </div>
+          <div className="flex justify-end mt-4">
+            <button
+              onClick={saveAlertConfig}
+              disabled={savingAlert}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-50"
+            >
+              {savingAlert ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              Salvar
+            </button>
+          </div>
+        </motion.div>
+      )}
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
