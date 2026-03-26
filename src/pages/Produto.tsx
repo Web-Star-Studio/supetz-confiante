@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import SEOHead from "@/components/SEOHead";
 import ProductReviews from "@/components/product/ProductReviews";
+import Layout from "@/components/layout/Layout";
 
 export default function Produto() {
   const { id } = useParams<{ id: string }>();
@@ -120,7 +121,7 @@ export default function Produto() {
   const installment = product.price > 0 ? (product.price / 3).toFixed(2).replace(".", ",") : "0,00";
 
   return (
-    <>
+    <Layout>
       <SEOHead
         title={`${product.title} | Supet`}
         description={product.description || product.subtitle}
@@ -405,6 +406,6 @@ export default function Produto() {
           <ProductReviews productId={id!} />
         </div>
       </div>
-    </>
+    </Layout>
   );
 }
