@@ -869,6 +869,14 @@ export default function AutomationsTab() {
                             className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                         </div>
                         <div>
+                          <label className="text-xs font-semibold text-muted-foreground mb-1 block flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5" /> Horário de execução diária
+                          </label>
+                          <input type="time" value={editForm.scheduled_time || "09:00"}
+                            onChange={(e) => setEditForm({ ...editForm, scheduled_time: e.target.value })}
+                            className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                        </div>
+                        <div>
                           <p className="text-xs font-semibold text-muted-foreground mb-2">Configuração do gatilho</p>
                           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                             {renderTriggerConfig(auto.trigger_type, editForm.trigger_config, (c) => setEditForm({ ...editForm, trigger_config: c }))}
