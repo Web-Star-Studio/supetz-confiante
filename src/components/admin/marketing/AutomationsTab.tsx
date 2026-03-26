@@ -24,6 +24,7 @@ interface Automation {
   last_run_at: string | null;
   created_at: string;
   updated_at: string;
+  scheduled_time: string | null;
 }
 
 interface Execution {
