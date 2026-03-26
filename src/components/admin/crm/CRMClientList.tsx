@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { motion } from "framer-motion";
-import { ShoppingBag, Crown, ChevronRight, ArrowUpDown, ChevronLeft, ChevronsLeft, ChevronsRight } from "lucide-react";
+import { ShoppingBag, Crown, ChevronRight, ArrowUpDown, ChevronLeft, ChevronsLeft, ChevronsRight, CheckSquare, Square, Tag, Bell, ArrowRightLeft } from "lucide-react";
 
 export interface EnrichedClient {
   id: string;
@@ -21,6 +21,10 @@ interface Props {
   clients: EnrichedClient[];
   loading: boolean;
   onSelect: (client: EnrichedClient) => void;
+  selectedIds?: Set<string>;
+  onToggleSelect?: (id: string) => void;
+  onSelectAll?: () => void;
+  bulkMode?: boolean;
 }
 
 type SortKey = "name" | "orders" | "spent" | "date";
@@ -60,7 +64,7 @@ const sortOptions: { key: SortKey; label: string }[] = [
   { key: "date", label: "Cadastro" },
 ];
 
-export default function CRMClientList({ clients, loading, onSelect }: Props) {
+export default function CRMClientList({ clients, loading, onSelect, selectedIds, onToggleSelect, onSelectAll, bulkMode }: Props) {
   const [sortKey, setSortKey] = useState<SortKey>("date");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(0);
@@ -92,7 +96,6 @@ export default function CRMClientList({ clients, loading, onSelect }: Props) {
   const safePage = Math.min(page, totalPages - 1);
   const paginated = sorted.slice(safePage * PAGE_SIZE, (safePage + 1) * PAGE_SIZE);
 
-  // Reset page when clients change
   useMemo(() => setPage(0), [clients.length]);
 
   function toggleSort(key: SortKey) {
@@ -115,10 +118,25 @@ export default function CRMClientList({ clients, loading, onSelect }: Props) {
     );
   }
 
+  const allSelected = selectedIds && paginated.every((c) => selectedIds.has(c.user_id));
+
   return (
     <div>
       {/* Sort bar */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
+        {bulkMode && onSelectAll && (
+          <button
+            onClick={onSelectAll}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+              allSelected
+                ? "bg-primary text-primary-foreground"
+                : "bg-card border border-border/50 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {allSelected ? <CheckSquare className="w-3.5 h-3.5" /> : <Square className="w-3.5 h-3.5" />}
+            Todos
+          </button>
+        )}
         <span className="text-[11px] text-muted-foreground font-medium uppercase tracking-wide mr-1">Ordenar:</span>
         {sortOptions.map((opt) => {
           const isActive = sortKey === opt.key;
@@ -151,50 +169,69 @@ export default function CRMClientList({ clients, loading, onSelect }: Props) {
             ? client.full_name.split(" ").map((n) => n[0]).join("").slice(0, 2).toUpperCase()
             : "?";
           const st = statusLabels[client.status] || statusLabels.lead;
+          const isSelected = selectedIds?.has(client.user_id);
           return (
-            <motion.button
+            <motion.div
               key={client.id}
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.015 }}
-              onClick={() => onSelect(client)}
-              className="w-full flex items-center gap-4 p-4 bg-card border border-border/50 rounded-2xl hover:shadow-md hover:border-primary/20 transition-all text-left group"
+              className={`w-full flex items-center gap-4 p-4 bg-card border rounded-2xl hover:shadow-md hover:border-primary/20 transition-all text-left group ${
+                isSelected ? "border-primary/40 bg-primary/5" : "border-border/50"
+              }`}
             >
-              {client.avatar_url ? (
-                <img src={client.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
-              ) : (
-                <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
-                  {initials}
-                </div>
+              {bulkMode && onToggleSelect && (
+                <button
+                  onClick={(e) => { e.stopPropagation(); onToggleSelect(client.user_id); }}
+                  className="flex-shrink-0"
+                >
+                  {isSelected
+                    ? <CheckSquare className="w-5 h-5 text-primary" />
+                    : <Square className="w-5 h-5 text-muted-foreground hover:text-primary" />
+                  }
+                </button>
               )}
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <p className="text-sm font-bold text-foreground truncate">{client.full_name || "Sem nome"}</p>
-                  {client.status === "vip" && <Crown className="w-3.5 h-3.5 text-violet-500" />}
-                </div>
-                <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                  <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${st.class}`}>{st.label}</span>
-                  {client.tags.slice(0, 3).map((tag) => (
-                    <span key={tag.id} className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: tag.color + "22", color: tag.color }}>
-                      {tag.name}
-                    </span>
-                  ))}
-                  {client.tags.length > 3 && (
-                    <span className="text-[10px] text-muted-foreground">+{client.tags.length - 3}</span>
-                  )}
-                </div>
-              </div>
+              <button
+                onClick={() => onSelect(client)}
+                className="flex items-center gap-4 flex-1 min-w-0"
+              >
+                {client.avatar_url ? (
+                  <img src={client.avatar_url} alt="" className="w-10 h-10 rounded-full object-cover border-2 border-primary/20 flex-shrink-0" />
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-sm font-bold text-primary flex-shrink-0">
+                    {initials}
+                  </div>
+                )}
 
-              <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground flex-shrink-0">
-                <span className="flex items-center gap-1">
-                  <ShoppingBag className="w-3 h-3" /> {client.orderCount}
-                </span>
-                <span className="font-semibold text-foreground">R$ {client.totalSpent.toFixed(2)}</span>
-              </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <p className="text-sm font-bold text-foreground truncate">{client.full_name || "Sem nome"}</p>
+                    {client.status === "vip" && <Crown className="w-3.5 h-3.5 text-violet-500" />}
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${st.class}`}>{st.label}</span>
+                    {client.tags.slice(0, 3).map((tag) => (
+                      <span key={tag.id} className="text-[10px] font-medium px-2 py-0.5 rounded-full" style={{ backgroundColor: tag.color + "22", color: tag.color }}>
+                        {tag.name}
+                      </span>
+                    ))}
+                    {client.tags.length > 3 && (
+                      <span className="text-[10px] text-muted-foreground">+{client.tags.length - 3}</span>
+                    )}
+                  </div>
+                </div>
 
-              <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
-            </motion.button>
+                <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground flex-shrink-0">
+                  <span className="flex items-center gap-1">
+                    <ShoppingBag className="w-3 h-3" /> {client.orderCount}
+                  </span>
+                  <span className="font-semibold text-foreground">R$ {client.totalSpent.toFixed(2)}</span>
+                </div>
+
+                <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0" />
+              </button>
+            </motion.div>
           );
         })}
       </div>
@@ -202,21 +239,12 @@ export default function CRMClientList({ clients, loading, onSelect }: Props) {
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-6">
-          <button
-            onClick={() => setPage(0)}
-            disabled={safePage === 0}
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          >
+          <button onClick={() => setPage(0)} disabled={safePage === 0} className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors">
             <ChevronsLeft className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => setPage((p) => Math.max(0, p - 1))}
-            disabled={safePage === 0}
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          >
+          <button onClick={() => setPage((p) => Math.max(0, p - 1))} disabled={safePage === 0} className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors">
             <ChevronLeft className="w-4 h-4" />
           </button>
-
           {Array.from({ length: totalPages }, (_, i) => i)
             .filter((i) => Math.abs(i - safePage) <= 2 || i === 0 || i === totalPages - 1)
             .reduce<(number | "...")[]>((acc, i, idx, arr) => {
@@ -228,32 +256,15 @@ export default function CRMClientList({ clients, loading, onSelect }: Props) {
               item === "..." ? (
                 <span key={`dots-${idx}`} className="text-muted-foreground text-xs px-1">…</span>
               ) : (
-                <button
-                  key={item}
-                  onClick={() => setPage(item as number)}
-                  className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all ${
-                    safePage === item
-                      ? "bg-primary text-primary-foreground shadow-sm"
-                      : "bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30"
-                  }`}
-                >
+                <button key={item} onClick={() => setPage(item as number)} className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all ${safePage === item ? "bg-primary text-primary-foreground shadow-sm" : "bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30"}`}>
                   {(item as number) + 1}
                 </button>
               )
             )}
-
-          <button
-            onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
-            disabled={safePage >= totalPages - 1}
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          >
+          <button onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))} disabled={safePage >= totalPages - 1} className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors">
             <ChevronRight className="w-4 h-4" />
           </button>
-          <button
-            onClick={() => setPage(totalPages - 1)}
-            disabled={safePage >= totalPages - 1}
-            className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors"
-          >
+          <button onClick={() => setPage(totalPages - 1)} disabled={safePage >= totalPages - 1} className="w-8 h-8 rounded-xl flex items-center justify-center bg-card border border-border/50 text-muted-foreground hover:text-foreground hover:border-primary/30 disabled:opacity-30 disabled:pointer-events-none transition-colors">
             <ChevronsRight className="w-4 h-4" />
           </button>
         </div>
