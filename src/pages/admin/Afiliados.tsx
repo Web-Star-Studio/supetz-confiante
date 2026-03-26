@@ -135,7 +135,7 @@ export default function Afiliados() {
       toast.error("Erro ao marcar como pago");
     } else {
       toast.success("Saque marcado como pago!");
-      logAction("payout_paid", "affiliate_payout", payout.id, { amount: payout.amount });
+      log({ action: "update", entity_type: "affiliate_payout", entity_id: payout.id, details: { amount: payout.amount } });
       loadData();
     }
   };

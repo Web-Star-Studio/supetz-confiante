@@ -18,6 +18,7 @@ const navItems = [
   { label: "Clientes", path: "/admin/crm", icon: Users },
   { label: "Fidelização", path: "/admin/fidelizacao", icon: Gift },
   { label: "Blog", path: "/admin/blog", icon: FileText },
+  { label: "Afiliados", path: "/admin/afiliados", icon: Handshake },
   { label: "Marketing", path: "/admin/marketing", icon: Megaphone },
   { label: "Financeiro", path: "/admin/financeiro", icon: Wallet },
   { label: "Auditoria", path: "/admin/auditoria", icon: ScrollText },

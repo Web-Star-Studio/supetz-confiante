@@ -81,10 +81,12 @@ export default function AnimatedRoutes() {
         <Route path="/admin/ia" element={<AdminRoute><AdminGerenciarIA /></AdminRoute>} />
         <Route path="/admin/blog" element={<AdminRoute><AdminBlog /></AdminRoute>} />
         <Route path="/admin/base-conhecimento" element={<AdminRoute><AdminBaseConhecimento /></AdminRoute>} />
+        <Route path="/admin/afiliados" element={<AdminRoute><AdminAfiliados /></AdminRoute>} />
         <Route path="/admin/clientes" element={<Navigate to="/admin/crm" replace />} />
 
         <Route path="*" element={<PageTransition><NotFound /></PageTransition>} />
-      </Routes>
-    </AnimatePresence>
+        </Routes>
+      </AnimatePresence>
+    </>
   );
 }
