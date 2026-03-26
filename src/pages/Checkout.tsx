@@ -195,12 +195,72 @@ export default function Checkout() {
     setFormData(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      toast.error("Você precisa estar logado para finalizar a compra.");
+      return;
+    }
     setIsProcessing(true);
-    setTimeout(() => {
+
+    try {
+      // Build items payload with affiliate metadata
+      const affiliateRef = localStorage.getItem("supet_ref") || null;
+      const affiliateCoupon = appliedCoupon ? appliedCoupon.code : null;
+
+      const orderItems = items.map((item, idx) => ({
+        title: item.product.title,
+        price: item.product.price,
+        quantity: item.quantity,
+        ...(idx === 0 ? { coupon_code: affiliateCoupon, affiliate_ref: affiliateRef } : {}),
+      }));
+
+      const { error: orderError } = await supabase.from("orders").insert({
+        user_id: user.id,
+        total: finalPrice,
+        items: orderItems,
+        customer_name: formData.name,
+        customer_email: formData.email,
+        customer_phone: "",
+        shipping_address: {
+          street: formData.address,
+          number: formData.number,
+          complement: formData.complement,
+          city: formData.city,
+          state: formData.state,
+          zip: formData.zipCode,
+        },
+      });
+
+      if (orderError) {
+        toast.error("Erro ao criar pedido. Tente novamente.");
+        setIsProcessing(false);
+        return;
+      }
+
+      // Mark coupon as used
+      if (appliedCoupon) {
+        await supabase.from("user_coupons").update({ used: true }).eq("id", appliedCoupon.id);
+      }
+
+      // Deduct points used
+      if (pointsToUse > 0) {
+        await supabase.from("loyalty_points").insert({
+          user_id: user.id,
+          points: -pointsToUse,
+          source: "redeem",
+          description: "Resgate no checkout",
+        });
+      }
+
+      // Clear affiliate ref after purchase
+      localStorage.removeItem("supet_ref");
+
       navigate("/success");
-    }, 2000);
+    } catch {
+      toast.error("Erro inesperado. Tente novamente.");
+      setIsProcessing(false);
+    }
   };
 
   const containerVariants = {
