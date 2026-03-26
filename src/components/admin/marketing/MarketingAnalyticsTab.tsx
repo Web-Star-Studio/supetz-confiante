@@ -6,6 +6,7 @@ import {
   Send, Eye, Percent, Activity, ArrowUpRight, ArrowDownRight,
   Megaphone, Calendar, UserPlus, Loader2,
 } from "lucide-react";
+import EmailAnalyticsPanel from "./EmailAnalyticsPanel";
 
 interface AnalyticsData {
   campaigns: any[];
@@ -398,6 +399,9 @@ export default function MarketingAnalyticsTab() {
           </div>
         </div>
       </div>
+
+      {/* Email Analytics Panel */}
+      <EmailAnalyticsPanel />
     </div>
   );
 }
