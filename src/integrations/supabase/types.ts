@@ -441,6 +441,7 @@ export type Database = {
           message: string | null
           name: string
           recipients_count: number | null
+          scheduled_for: string | null
           segment_filter: Json | null
           sent_at: string | null
           status: string
@@ -457,6 +458,7 @@ export type Database = {
           message?: string | null
           name: string
           recipients_count?: number | null
+          scheduled_for?: string | null
           segment_filter?: Json | null
           sent_at?: string | null
           status?: string
@@ -473,6 +475,7 @@ export type Database = {
           message?: string | null
           name?: string
           recipients_count?: number | null
+          scheduled_for?: string | null
           segment_filter?: Json | null
           sent_at?: string | null
           status?: string

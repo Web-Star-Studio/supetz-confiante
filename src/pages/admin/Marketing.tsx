@@ -5,11 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Megaphone, Plus, Send, Eye, Users, Tag, Percent,
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
-  Mail,
+  Mail, Copy, Trash2, Search, CalendarIcon,
 } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import { toast } from "sonner";
 import NewsletterTab from "@/components/admin/NewsletterTab";
+import { Progress } from "@/components/ui/progress";
+import { format } from "date-fns";
+import { Calendar } from "@/components/ui/calendar";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
 interface Campaign {
   id: string;
@@ -26,15 +31,35 @@ interface Campaign {
   created_at: string;
   sent_at: string | null;
   completed_at: string | null;
+  scheduled_for: string | null;
 }
 
 interface CampaignWithMetrics extends Campaign {
   opened: number;
   total: number;
+  couponsUsed: number;
+  couponsTotal: number;
 }
+
+const defaultForm = {
+  name: "",
+  type: "notification" as "notification" | "coupon" | "both",
+  message: "",
+  coupon_discount_type: "percentage" as "percentage" | "fixed",
+  coupon_discount_value: 10,
+  coupon_min_order: 50,
+  coupon_expires_days: 30,
+  segment_status: "" as string,
+  segment_tag: "" as string,
+  segment_min_spent: "",
+  segment_days_inactive: "",
+  segment_newsletter: "" as "" | "all" | "leads" | "registered",
+  scheduled_for: null as Date | null,
+};
 
 const statusConfig: Record<string, { label: string; icon: typeof Clock; class: string }> = {
   draft: { label: "Rascunho", icon: Clock, class: "bg-muted text-muted-foreground" },
+  scheduled: { label: "Agendada", icon: CalendarIcon, class: "bg-amber-500/15 text-amber-700" },
   active: { label: "Enviada", icon: Send, class: "bg-emerald-500/15 text-emerald-700" },
   completed: { label: "Concluída", icon: CheckCircle, class: "bg-blue-500/15 text-blue-700" },
   cancelled: { label: "Cancelada", icon: XCircle, class: "bg-destructive/15 text-destructive" },
@@ -47,23 +72,10 @@ export default function AdminMarketing() {
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter">("campaigns");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
-  // Form state
-  const [form, setForm] = useState({
-    name: "",
-    type: "notification" as "notification" | "coupon" | "both",
-    message: "",
-    coupon_discount_type: "percentage" as "percentage" | "fixed",
-    coupon_discount_value: 10,
-    coupon_min_order: 50,
-    coupon_expires_days: 30,
-    segment_status: "" as string,
-    segment_tag: "" as string,
-    segment_min_spent: "",
-    segment_days_inactive: "",
-    segment_newsletter: "" as "" | "all" | "leads" | "registered",
-  });
-
+  const [form, setForm] = useState(defaultForm);
   const [allTags, setAllTags] = useState<{ id: string; name: string; color: string }[]>([]);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
@@ -72,7 +84,7 @@ export default function AdminMarketing() {
     setLoading(true);
     const [campRes, recipRes, tagsRes] = await Promise.all([
       supabase.from("campaigns").select("*").order("created_at", { ascending: false }),
-      supabase.from("campaign_recipients").select("campaign_id, opened"),
+      supabase.from("campaign_recipients").select("campaign_id, opened, coupon_id"),
       supabase.from("customer_tags").select("*").order("name"),
     ]);
 
@@ -80,9 +92,24 @@ export default function AdminMarketing() {
     const recipients = recipRes.data || [];
     setAllTags((tagsRes.data || []) as any[]);
 
+    // Get coupon usage data
+    const couponIds = recipients.map((r: any) => r.coupon_id).filter(Boolean);
+    let usedCouponIds = new Set<string>();
+    if (couponIds.length > 0) {
+      const { data: usedCoupons } = await supabase.from("user_coupons").select("id").eq("used", true).in("id", couponIds);
+      usedCouponIds = new Set((usedCoupons || []).map((c: any) => c.id));
+    }
+
     const enriched: CampaignWithMetrics[] = camps.map((c) => {
       const recs = recipients.filter((r: any) => r.campaign_id === c.id);
-      return { ...c, total: recs.length, opened: recs.filter((r: any) => r.opened).length };
+      const recsWithCoupon = recs.filter((r: any) => r.coupon_id);
+      return {
+        ...c,
+        total: recs.length,
+        opened: recs.filter((r: any) => r.opened).length,
+        couponsTotal: recsWithCoupon.length,
+        couponsUsed: recsWithCoupon.filter((r: any) => usedCouponIds.has(r.coupon_id)).length,
+      };
     });
 
     setCampaigns(enriched);
@@ -101,25 +128,49 @@ export default function AdminMarketing() {
   }
 
   async function previewSegment() {
-    // Count matching clients
     let query = supabase.from("profiles").select("user_id", { count: "exact", head: true });
-
     if (form.segment_status) {
       const { data: statusData } = await supabase.from("customer_status").select("user_id").eq("status", form.segment_status);
       const ids = (statusData || []).map((s: any) => s.user_id);
       if (ids.length === 0) { setPreviewCount(0); return; }
       query = query.in("user_id", ids);
     }
-
     if (form.segment_tag) {
       const { data: tagData } = await supabase.from("customer_tag_assignments").select("user_id").eq("tag_id", form.segment_tag);
       const ids = (tagData || []).map((t: any) => t.user_id);
       if (ids.length === 0) { setPreviewCount(0); return; }
       query = query.in("user_id", ids);
     }
-
     const { count } = await query;
     setPreviewCount(count || 0);
+  }
+
+  function handleDuplicate(camp: CampaignWithMetrics) {
+    setForm({
+      name: camp.name + " (cópia)",
+      type: (camp.type as any) || "notification",
+      message: camp.message || "",
+      coupon_discount_type: (camp.coupon_discount_type as any) || "percentage",
+      coupon_discount_value: camp.coupon_discount_value || 10,
+      coupon_min_order: camp.coupon_min_order || 50,
+      coupon_expires_days: camp.coupon_expires_days || 30,
+      segment_status: camp.segment_filter?.status || "",
+      segment_tag: camp.segment_filter?.tag_id || "",
+      segment_min_spent: camp.segment_filter?.min_spent?.toString() || "",
+      segment_days_inactive: camp.segment_filter?.days_inactive?.toString() || "",
+      segment_newsletter: "",
+      scheduled_for: null,
+    });
+    setShowCreate(true);
+    toast.success("Campanha duplicada — edite e envie!");
+  }
+
+  async function handleDelete(campId: string) {
+    const { error } = await supabase.from("campaigns").delete().eq("id", campId);
+    if (error) { toast.error("Erro ao excluir campanha"); return; }
+    log({ action: "delete", entity_type: "campaign", entity_id: campId });
+    toast.success("Campanha excluída");
+    fetchCampaigns();
   }
 
   async function handleSendCampaign() {
@@ -127,8 +178,6 @@ export default function AdminMarketing() {
     setSending(true);
 
     const segmentFilter = await buildSegmentFilter();
-
-    // Get target user_ids
     let userIds: string[] = [];
     let query = supabase.from("profiles").select("user_id");
 
@@ -160,14 +209,16 @@ export default function AdminMarketing() {
 
     if (userIds.length === 0) { toast.warning("Nenhum cliente encontrado para este segmento"); setSending(false); return; }
 
-    // Create campaign
+    const isScheduled = !!form.scheduled_for;
+
     const { data: campData } = await supabase.from("campaigns").insert({
       name: form.name,
       type: form.type,
       message: form.message,
       segment_filter: segmentFilter,
-      status: "active",
-      sent_at: new Date().toISOString(),
+      status: isScheduled ? "scheduled" : "active",
+      sent_at: isScheduled ? null : new Date().toISOString(),
+      scheduled_for: isScheduled ? form.scheduled_for!.toISOString() : null,
       recipients_count: userIds.length,
       ...(form.type !== "notification" ? {
         coupon_discount_type: form.coupon_discount_type,
@@ -175,55 +226,56 @@ export default function AdminMarketing() {
         coupon_min_order: form.coupon_min_order,
         coupon_expires_days: form.coupon_expires_days,
       } : {}),
-    }).select().single();
+    } as any).select().single();
 
     if (!campData) { setSending(false); return; }
-    log({ action: "create", entity_type: "campaign", entity_id: campData.id, details: { name: form.name, type: form.type, recipients: userIds.length } });
+    log({ action: "create", entity_type: "campaign", entity_id: (campData as any).id, details: { name: form.name, type: form.type, recipients: userIds.length, scheduled: isScheduled } });
 
-    // Send notifications and/or coupons to each user
-    for (const uid of userIds) {
-      let couponId: string | null = null;
-
-      if (form.type === "coupon" || form.type === "both") {
-        const code = `CAMP-${form.name.replace(/\s+/g, "").slice(0, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
-        const { data: couponData } = await supabase.from("user_coupons").insert({
-          user_id: uid,
-          code,
-          discount_type: form.coupon_discount_type,
-          discount_value: form.coupon_discount_value,
-          min_order_value: form.coupon_min_order,
-          expires_at: new Date(Date.now() + form.coupon_expires_days * 86400000).toISOString(),
-        }).select().single();
-        couponId = couponData?.id || null;
-      }
-
-      if (form.type === "notification" || form.type === "both") {
-        await supabase.from("user_notifications").insert({
-          user_id: uid,
-          title: `📢 ${form.name}`,
-          message: form.message,
-          type: "campaign",
-          link: "/shop",
+    if (!isScheduled) {
+      for (const uid of userIds) {
+        let couponId: string | null = null;
+        if (form.type === "coupon" || form.type === "both") {
+          const code = `CAMP-${form.name.replace(/\s+/g, "").slice(0, 6).toUpperCase()}-${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+          const { data: couponData } = await supabase.from("user_coupons").insert({
+            user_id: uid, code, discount_type: form.coupon_discount_type,
+            discount_value: form.coupon_discount_value, min_order_value: form.coupon_min_order,
+            expires_at: new Date(Date.now() + form.coupon_expires_days * 86400000).toISOString(),
+          }).select().single();
+          couponId = couponData?.id || null;
+        }
+        if (form.type === "notification" || form.type === "both") {
+          await supabase.from("user_notifications").insert({
+            user_id: uid, title: `📢 ${form.name}`, message: form.message, type: "campaign", link: "/shop",
+          });
+        }
+        await supabase.from("campaign_recipients").insert({
+          campaign_id: (campData as any).id, user_id: uid, coupon_id: couponId,
         });
       }
-
-      await supabase.from("campaign_recipients").insert({
-        campaign_id: (campData as any).id,
-        user_id: uid,
-        coupon_id: couponId,
-      });
+      toast.success(`Campanha enviada para ${userIds.length} clientes!`);
+    } else {
+      toast.success(`Campanha agendada para ${format(form.scheduled_for!, "dd/MM/yyyy 'às' HH:mm")}`);
     }
 
-    // Reset
-    setForm({ name: "", type: "notification", message: "", coupon_discount_type: "percentage", coupon_discount_value: 10, coupon_min_order: 50, coupon_expires_days: 30, segment_status: "", segment_tag: "", segment_min_spent: "", segment_days_inactive: "", segment_newsletter: "" });
+    setForm({ ...defaultForm });
     setShowCreate(false);
     setPreviewCount(null);
     setSending(false);
     fetchCampaigns();
   }
 
-  const totalSent = campaigns.filter((c) => c.status !== "draft").reduce((s, c) => s + c.total, 0);
+  // Filtered campaigns
+  const filteredCampaigns = campaigns.filter((c) => {
+    if (statusFilter && c.status !== statusFilter) return false;
+    if (searchQuery && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
+
+  const totalSent = campaigns.filter((c) => c.status !== "draft" && c.status !== "scheduled").reduce((s, c) => s + c.total, 0);
   const totalOpened = campaigns.reduce((s, c) => s + c.opened, 0);
+  const totalCoupons = campaigns.reduce((s, c) => s + c.couponsTotal, 0);
+  const totalCouponsUsed = campaigns.reduce((s, c) => s + c.couponsUsed, 0);
+  const conversionRate = totalCoupons > 0 ? ((totalCouponsUsed / totalCoupons) * 100).toFixed(0) : "0";
 
   return (
     <AdminLayout>
@@ -234,7 +286,7 @@ export default function AdminMarketing() {
         </div>
         {activeTab === "campaigns" && (
           <button
-            onClick={() => setShowCreate(!showCreate)}
+            onClick={() => { setForm({ ...defaultForm }); setShowCreate(!showCreate); }}
             className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all"
           >
             <Plus className="w-4 h-4" /> Nova Campanha
@@ -266,300 +318,387 @@ export default function AdminMarketing() {
         <NewsletterTab />
       ) : (
         <>
-
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center">
-            <Megaphone className="w-5 h-5 text-primary" />
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground font-medium">Campanhas</p>
-            <p className="text-xl font-extrabold text-foreground">{campaigns.length}</p>
-          </div>
-        </div>
-        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 flex items-center justify-center">
-            <Users className="w-5 h-5 text-emerald-600" />
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground font-medium">Total enviados</p>
-            <p className="text-xl font-extrabold text-foreground">{totalSent}</p>
-          </div>
-        </div>
-        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-2xl bg-violet-500/15 flex items-center justify-center">
-            <Eye className="w-5 h-5 text-violet-600" />
-          </div>
-          <div>
-            <p className="text-xs text-muted-foreground font-medium">Taxa de abertura</p>
-            <p className="text-xl font-extrabold text-foreground">
-              {totalSent > 0 ? ((totalOpened / totalSent) * 100).toFixed(0) : 0}%
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Create Campaign Form */}
-      <AnimatePresence>
-        {showCreate && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
-            className="overflow-hidden mb-6"
-          >
-            <div className="bg-card rounded-3xl p-6 space-y-5">
-              <h3 className="text-lg font-extrabold text-foreground">Criar Campanha</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Nome</label>
-                  <input
-                    value={form.name}
-                    onChange={(e) => setForm({ ...form, name: e.target.value })}
-                    placeholder="Ex: Black Friday 2026"
-                    className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                  />
+          {/* Stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+            {[
+              { label: "Campanhas", value: campaigns.length, icon: Megaphone, color: "bg-primary/15 text-primary" },
+              { label: "Total enviados", value: totalSent, icon: Users, color: "bg-emerald-500/15 text-emerald-600" },
+              { label: "Taxa de abertura", value: `${totalSent > 0 ? ((totalOpened / totalSent) * 100).toFixed(0) : 0}%`, icon: Eye, color: "bg-violet-500/15 text-violet-600" },
+              { label: "Conversão cupons", value: `${conversionRate}%`, icon: Percent, color: "bg-amber-500/15 text-amber-600" },
+            ].map((s) => (
+              <div key={s.label} className="bg-card rounded-3xl p-5 flex items-center gap-3">
+                <div className={`w-10 h-10 rounded-2xl flex items-center justify-center ${s.color}`}>
+                  <s.icon className="w-5 h-5" />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo</label>
-                  <div className="flex gap-2">
-                    {[
-                      { key: "notification", label: "Notificação", icon: Send },
-                      { key: "coupon", label: "Cupom", icon: Percent },
-                      { key: "both", label: "Ambos", icon: Megaphone },
-                    ].map((t) => (
-                      <button
-                        key={t.key}
-                        onClick={() => setForm({ ...form, type: t.key as any })}
-                        className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-2xl text-xs font-semibold transition-all ${
-                          form.type === t.key ? "bg-primary text-primary-foreground shadow-md" : "bg-muted text-muted-foreground hover:bg-primary/10"
-                        }`}
-                      >
-                        <t.icon className="w-3.5 h-3.5" />
-                        {t.label}
-                      </button>
-                    ))}
-                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">{s.label}</p>
+                  <p className="text-xl font-extrabold text-foreground">{s.value}</p>
                 </div>
               </div>
+            ))}
+          </div>
 
-              <div>
-                <label className="text-xs font-semibold text-muted-foreground mb-1 block">Mensagem</label>
-                <textarea
-                  value={form.message}
-                  onChange={(e) => setForm({ ...form, message: e.target.value })}
-                  placeholder="Mensagem da campanha..."
-                  rows={3}
-                  className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
-                />
-              </div>
+          {/* Search & Filter Bar */}
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+              <input
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Buscar campanha..."
+                className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-card border border-border/50 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+              />
+            </div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-4 py-2.5 rounded-xl bg-card border border-border/50 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/30"
+            >
+              <option value="">Todos os status</option>
+              <option value="draft">Rascunho</option>
+              <option value="scheduled">Agendada</option>
+              <option value="active">Enviada</option>
+              <option value="completed">Concluída</option>
+              <option value="cancelled">Cancelada</option>
+            </select>
+          </div>
 
-              {(form.type === "coupon" || form.type === "both") && (
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo desconto</label>
-                    <select
-                      value={form.coupon_discount_type}
-                      onChange={(e) => setForm({ ...form, coupon_discount_type: e.target.value as any })}
-                      className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
-                    >
-                      <option value="percentage">%</option>
-                      <option value="fixed">R$</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Valor</label>
-                    <input type="number" value={form.coupon_discount_value} onChange={(e) => setForm({ ...form, coupon_discount_value: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Pedido mín.</label>
-                    <input type="number" value={form.coupon_min_order} onChange={(e) => setForm({ ...form, coupon_min_order: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Validade (dias)</label>
-                    <input type="number" value={form.coupon_expires_days} onChange={(e) => setForm({ ...form, coupon_expires_days: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
-                  </div>
-                </div>
-              )}
+          {/* Create Campaign Form */}
+          <AnimatePresence>
+            {showCreate && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mb-6"
+              >
+                <div className="bg-card rounded-3xl p-6 space-y-5">
+                  <h3 className="text-lg font-extrabold text-foreground">Criar Campanha</h3>
 
-              {/* Segmentation */}
-              <div>
-                <p className="text-sm font-bold text-foreground mb-3">Segmentação</p>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Status</label>
-                    <select value={form.segment_status} onChange={(e) => setForm({ ...form, segment_status: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
-                      <option value="">Todos</option>
-                      <option value="lead">Lead</option>
-                      <option value="active">Ativo</option>
-                      <option value="inactive">Inativo</option>
-                      <option value="vip">VIP</option>
-                    </select>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Nome</label>
+                      <input
+                        value={form.name}
+                        onChange={(e) => setForm({ ...form, name: e.target.value })}
+                        placeholder="Ex: Black Friday 2026"
+                        className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo</label>
+                      <div className="flex gap-2">
+                        {[
+                          { key: "notification", label: "Notificação", icon: Send },
+                          { key: "coupon", label: "Cupom", icon: Percent },
+                          { key: "both", label: "Ambos", icon: Megaphone },
+                        ].map((t) => (
+                          <button
+                            key={t.key}
+                            onClick={() => setForm({ ...form, type: t.key as any })}
+                            className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-2xl text-xs font-semibold transition-all ${
+                              form.type === t.key ? "bg-primary text-primary-foreground shadow-md" : "bg-muted text-muted-foreground hover:bg-primary/10"
+                            }`}
+                          >
+                            <t.icon className="w-3.5 h-3.5" />
+                            {t.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
                   </div>
+
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tag</label>
-                    <select value={form.segment_tag} onChange={(e) => setForm({ ...form, segment_tag: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
-                      <option value="">Todas</option>
-                      {allTags.map((t) => (
-                        <option key={t.id} value={t.id}>{t.name}</option>
-                      ))}
-                    </select>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Mensagem</label>
+                    <textarea
+                      value={form.message}
+                      onChange={(e) => setForm({ ...form, message: e.target.value })}
+                      placeholder="Mensagem da campanha..."
+                      rows={3}
+                      className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                    />
                   </div>
+
+                  {(form.type === "coupon" || form.type === "both") && (
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tipo desconto</label>
+                        <select value={form.coupon_discount_type} onChange={(e) => setForm({ ...form, coupon_discount_type: e.target.value as any })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                          <option value="percentage">%</option>
+                          <option value="fixed">R$</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Valor</label>
+                        <input type="number" value={form.coupon_discount_value} onChange={(e) => setForm({ ...form, coupon_discount_value: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Pedido mín.</label>
+                        <input type="number" value={form.coupon_min_order} onChange={(e) => setForm({ ...form, coupon_min_order: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Validade (dias)</label>
+                        <input type="number" value={form.coupon_expires_days} onChange={(e) => setForm({ ...form, coupon_expires_days: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Scheduling */}
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Newsletter</label>
-                    <select value={form.segment_newsletter} onChange={(e) => setForm({ ...form, segment_newsletter: e.target.value as any })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
-                      <option value="">Ignorar</option>
-                      <option value="all">Todos inscritos</option>
-                      <option value="leads">Apenas leads</option>
-                      <option value="registered">Apenas registrados</option>
-                    </select>
+                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Agendamento (opcional)</label>
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className={cn(
+                          "flex items-center gap-2 px-4 py-3 rounded-2xl bg-muted text-sm w-full sm:w-auto text-left",
+                          !form.scheduled_for && "text-muted-foreground"
+                        )}>
+                          <CalendarIcon className="w-4 h-4" />
+                          {form.scheduled_for ? format(form.scheduled_for, "dd/MM/yyyy") : "Enviar imediatamente"}
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-0" align="start">
+                        <Calendar
+                          mode="single"
+                          selected={form.scheduled_for || undefined}
+                          onSelect={(d) => setForm({ ...form, scheduled_for: d || null })}
+                          disabled={(date) => date < new Date()}
+                          initialFocus
+                          className={cn("p-3 pointer-events-auto")}
+                        />
+                        {form.scheduled_for && (
+                          <div className="px-3 pb-3">
+                            <button onClick={() => setForm({ ...form, scheduled_for: null })} className="text-xs text-destructive hover:underline">
+                              Remover agendamento
+                            </button>
+                          </div>
+                        )}
+                      </PopoverContent>
+                    </Popover>
                   </div>
+
+                  {/* Segmentation */}
                   <div>
-                    <label className="text-xs font-semibold text-muted-foreground mb-1 block">Gasto mín. (R$)</label>
-                    <input type="number" value={form.segment_min_spent} onChange={(e) => setForm({ ...form, segment_min_spent: e.target.value })} placeholder="0" className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <p className="text-sm font-bold text-foreground mb-3">Segmentação</p>
+                    <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Status</label>
+                        <select value={form.segment_status} onChange={(e) => setForm({ ...form, segment_status: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                          <option value="">Todos</option>
+                          <option value="lead">Lead</option>
+                          <option value="active">Ativo</option>
+                          <option value="inactive">Inativo</option>
+                          <option value="vip">VIP</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tag</label>
+                        <select value={form.segment_tag} onChange={(e) => setForm({ ...form, segment_tag: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                          <option value="">Todas</option>
+                          {allTags.map((t) => (
+                            <option key={t.id} value={t.id}>{t.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Newsletter</label>
+                        <select value={form.segment_newsletter} onChange={(e) => setForm({ ...form, segment_newsletter: e.target.value as any })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                          <option value="">Ignorar</option>
+                          <option value="all">Todos inscritos</option>
+                          <option value="leads">Apenas leads</option>
+                          <option value="registered">Apenas registrados</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="text-xs font-semibold text-muted-foreground mb-1 block">Gasto mín. (R$)</label>
+                        <input type="number" value={form.segment_min_spent} onChange={(e) => setForm({ ...form, segment_min_spent: e.target.value })} placeholder="0" className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                      </div>
+                      <div className="flex items-end">
+                        <button onClick={previewSegment} className="w-full px-4 py-2.5 rounded-2xl bg-muted text-primary font-semibold text-sm hover:bg-primary/10 transition-colors">
+                          <Eye className="w-4 h-4 inline mr-1" />
+                          Preview {previewCount !== null && `(${previewCount})`}
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="flex items-end">
+
+                  <div className="flex items-center justify-end gap-3">
+                    <button onClick={() => setShowCreate(false)} className="px-5 py-2.5 rounded-2xl text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">
+                      Cancelar
+                    </button>
                     <button
-                      onClick={previewSegment}
-                      className="w-full px-4 py-2.5 rounded-2xl bg-muted text-primary font-semibold text-sm hover:bg-primary/10 transition-colors"
+                      onClick={handleSendCampaign}
+                      disabled={sending || !form.name.trim() || !form.message.trim()}
+                      className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 disabled:opacity-50"
                     >
-                      <Eye className="w-4 h-4 inline mr-1" />
-                      Preview {previewCount !== null && `(${previewCount})`}
+                      {form.scheduled_for ? <CalendarIcon className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+                      {sending ? "Processando..." : form.scheduled_for ? "Agendar Campanha" : "Enviar Campanha"}
                     </button>
                   </div>
                 </div>
-              </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-              <div className="flex items-center justify-end gap-3">
-                <button onClick={() => setShowCreate(false)} className="px-5 py-2.5 rounded-2xl text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors">
-                  Cancelar
-                </button>
-                <button
-                  onClick={handleSendCampaign}
-                  disabled={sending || !form.name.trim() || !form.message.trim()}
-                  className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 disabled:opacity-50"
-                >
-                  <Send className="w-4 h-4" />
-                  {sending ? "Enviando..." : "Enviar Campanha"}
-                </button>
-              </div>
+          {/* Campaign List */}
+          {loading ? (
+            <div className="space-y-3">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="bg-card rounded-3xl p-5 animate-pulse flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-border" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-4 w-40 rounded-full bg-border" />
+                    <div className="h-3 w-24 rounded-full bg-border" />
+                  </div>
+                </div>
+              ))}
             </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Campaign List */}
-      {loading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-card rounded-3xl p-5 animate-pulse flex items-center gap-4">
-              <div className="w-10 h-10 rounded-2xl bg-border" />
-              <div className="flex-1 space-y-2">
-                <div className="h-4 w-40 rounded-full bg-border" />
-                <div className="h-3 w-24 rounded-full bg-border" />
-              </div>
+          ) : filteredCampaigns.length === 0 ? (
+            <div className="bg-card rounded-3xl p-10 text-center text-muted-foreground text-sm">
+              {campaigns.length === 0 ? "Nenhuma campanha criada ainda." : "Nenhuma campanha encontrada com estes filtros."}
             </div>
-          ))}
-        </div>
-      ) : campaigns.length === 0 ? (
-        <div className="bg-card rounded-3xl p-10 text-center text-muted-foreground text-sm">
-          Nenhuma campanha criada ainda.
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {campaigns.map((camp, i) => {
-            const isExpanded = expandedId === camp.id;
-            const st = statusConfig[camp.status] || statusConfig.draft;
-            const StIcon = st.icon;
-            const openRate = camp.total > 0 ? ((camp.opened / camp.total) * 100).toFixed(0) : "0";
-            return (
-              <motion.div
-                key={camp.id}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.03 }}
-                className="bg-card rounded-3xl overflow-hidden"
-              >
-                <button
-                  onClick={() => setExpandedId(isExpanded ? null : camp.id)}
-                  className="w-full flex items-center gap-4 p-5 text-left hover:bg-primary/5 transition-colors"
-                >
-                  <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center flex-shrink-0">
-                    <Megaphone className="w-5 h-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground truncate">{camp.name}</p>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${st.class}`}>
-                        <StIcon className="w-3 h-3" />{st.label}
-                      </span>
-                      <span className="text-[10px] text-muted-foreground">
-                        {new Date(camp.created_at).toLocaleDateString("pt-BR")}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground flex-shrink-0">
-                    <span className="flex items-center gap-1"><Users className="w-3 h-3" />{camp.total}</span>
-                    <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{openRate}%</span>
-                  </div>
-                  {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
-                </button>
+          ) : (
+            <div className="space-y-3">
+              {filteredCampaigns.map((camp, i) => {
+                const isExpanded = expandedId === camp.id;
+                const st = statusConfig[camp.status] || statusConfig.draft;
+                const StIcon = st.icon;
+                const openRate = camp.total > 0 ? ((camp.opened / camp.total) * 100) : 0;
+                const couponRate = camp.couponsTotal > 0 ? ((camp.couponsUsed / camp.couponsTotal) * 100) : 0;
+                const canDelete = camp.status === "draft" || camp.status === "scheduled";
 
-                <AnimatePresence>
-                  {isExpanded && (
-                    <motion.div
-                      initial={{ height: 0, opacity: 0 }}
-                      animate={{ height: "auto", opacity: 1 }}
-                      exit={{ height: 0, opacity: 0 }}
-                      transition={{ duration: 0.2 }}
-                      className="overflow-hidden"
-                    >
-                      <div className="px-5 pb-5 pt-0 border-t border-border/50 space-y-3">
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-                          <div>
-                            <p className="text-xs text-muted-foreground">Destinatários</p>
-                            <p className="text-lg font-bold text-foreground">{camp.total}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Abertos</p>
-                            <p className="text-lg font-bold text-emerald-600">{camp.opened}</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Taxa de abertura</p>
-                            <p className="text-lg font-bold text-foreground">{openRate}%</p>
-                          </div>
-                          <div>
-                            <p className="text-xs text-muted-foreground">Tipo</p>
-                            <p className="text-sm font-semibold text-foreground capitalize">{camp.type}</p>
+                return (
+                  <motion.div
+                    key={camp.id}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: i * 0.03 }}
+                    className="bg-card rounded-3xl overflow-hidden"
+                  >
+                    <div className="flex items-center">
+                      <button
+                        onClick={() => setExpandedId(isExpanded ? null : camp.id)}
+                        className="flex-1 flex items-center gap-4 p-5 text-left hover:bg-primary/5 transition-colors"
+                      >
+                        <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center flex-shrink-0">
+                          <Megaphone className="w-5 h-5 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-foreground truncate">{camp.name}</p>
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full inline-flex items-center gap-1 ${st.class}`}>
+                              <StIcon className="w-3 h-3" />{st.label}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground">
+                              {new Date(camp.created_at).toLocaleDateString("pt-BR")}
+                            </span>
+                            {camp.scheduled_for && camp.status === "scheduled" && (
+                              <span className="text-[10px] text-amber-600 font-medium">
+                                📅 {new Date(camp.scheduled_for).toLocaleDateString("pt-BR")}
+                              </span>
+                            )}
                           </div>
                         </div>
-                        {camp.message && (
-                          <div className="bg-muted rounded-2xl p-3">
-                            <p className="text-xs text-muted-foreground mb-1">Mensagem</p>
-                            <p className="text-sm text-foreground">{camp.message}</p>
-                          </div>
-                        )}
-                        {camp.coupon_discount_value && (
-                          <div className="bg-muted rounded-2xl p-3 flex items-center gap-2">
-                            <Percent className="w-4 h-4 text-primary" />
-                            <span className="text-sm text-foreground">
-                              {camp.coupon_discount_type === "percentage" ? `${camp.coupon_discount_value}%` : `R$${camp.coupon_discount_value}`} de desconto
-                              {camp.coupon_min_order ? ` (mín. R$${camp.coupon_min_order})` : ""}
-                            </span>
-                          </div>
+                        <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground flex-shrink-0">
+                          <span className="flex items-center gap-1"><Users className="w-3 h-3" />{camp.total}</span>
+                          <span className="flex items-center gap-1"><Eye className="w-3 h-3" />{openRate.toFixed(0)}%</span>
+                        </div>
+                        {isExpanded ? <ChevronUp className="w-4 h-4 text-muted-foreground" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                      </button>
+
+                      {/* Action buttons */}
+                      <div className="flex items-center gap-1 pr-4 flex-shrink-0">
+                        <button
+                          onClick={() => handleDuplicate(camp)}
+                          className="p-2 rounded-xl text-muted-foreground hover:text-primary hover:bg-primary/10 transition-colors"
+                          title="Duplicar campanha"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </button>
+                        {canDelete && (
+                          <button
+                            onClick={() => handleDelete(camp.id)}
+                            className="p-2 rounded-xl text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-colors"
+                            title="Excluir campanha"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         )}
                       </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </motion.div>
-            );
-          })}
-        </div>
-      )}
-      </>
+                    </div>
+
+                    <AnimatePresence>
+                      {isExpanded && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: "auto", opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: 0.2 }}
+                          className="overflow-hidden"
+                        >
+                          <div className="px-5 pb-5 pt-0 border-t border-border/50 space-y-3">
+                            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+                              <div>
+                                <p className="text-xs text-muted-foreground">Destinatários</p>
+                                <p className="text-lg font-bold text-foreground">{camp.total}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">Abertos</p>
+                                <p className="text-lg font-bold text-emerald-600">{camp.opened}</p>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground mb-1">Taxa de abertura</p>
+                                <div className="flex items-center gap-2">
+                                  <Progress value={openRate} className="h-2 flex-1" />
+                                  <span className="text-sm font-bold text-foreground">{openRate.toFixed(0)}%</span>
+                                </div>
+                              </div>
+                              <div>
+                                <p className="text-xs text-muted-foreground">Tipo</p>
+                                <p className="text-sm font-semibold text-foreground capitalize">{camp.type}</p>
+                              </div>
+                            </div>
+
+                            {camp.couponsTotal > 0 && (
+                              <div className="bg-muted rounded-2xl p-3">
+                                <div className="flex items-center justify-between mb-1">
+                                  <p className="text-xs text-muted-foreground">Cupons resgatados</p>
+                                  <span className="text-xs font-bold text-foreground">{camp.couponsUsed}/{camp.couponsTotal}</span>
+                                </div>
+                                <Progress value={couponRate} className="h-2" />
+                              </div>
+                            )}
+
+                            {camp.message && (
+                              <div className="bg-muted rounded-2xl p-3">
+                                <p className="text-xs text-muted-foreground mb-1">Mensagem</p>
+                                <p className="text-sm text-foreground">{camp.message}</p>
+                              </div>
+                            )}
+                            {camp.coupon_discount_value && (
+                              <div className="bg-muted rounded-2xl p-3 flex items-center gap-2">
+                                <Percent className="w-4 h-4 text-primary" />
+                                <span className="text-sm text-foreground">
+                                  {camp.coupon_discount_type === "percentage" ? `${camp.coupon_discount_value}%` : `R$${camp.coupon_discount_value}`} de desconto
+                                  {camp.coupon_min_order ? ` (mín. R$${camp.coupon_min_order})` : ""}
+                                </span>
+                              </div>
+                            )}
+
+                            {camp.sent_at && (
+                              <p className="text-[10px] text-muted-foreground">
+                                Enviada em {new Date(camp.sent_at).toLocaleString("pt-BR")}
+                              </p>
+                            )}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                );
+              })}
+            </div>
+          )}
+        </>
       )}
     </AdminLayout>
   );
