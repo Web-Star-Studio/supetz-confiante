@@ -21,6 +21,9 @@ export default function AdminConfiguracoes() {
   const [savingStore, setSavingStore] = useState(false);
   const [storeSuccess, setStoreSuccess] = useState(false);
 
+  // Feedback threshold
+  const [feedbackThreshold, setFeedbackThreshold] = useState(70);
+
   useEffect(() => {
     async function loadSettings() {
       const { data } = await supabase.from("store_settings").select("*");
@@ -29,6 +32,7 @@ export default function AdminConfiguracoes() {
           if (s.key === "store_name") setStoreName((s.value as any)?.value || "");
           if (s.key === "store_phone") setStorePhone((s.value as any)?.value || "");
           if (s.key === "store_address") setStoreAddress((s.value as any)?.value || "");
+          if (s.key === "feedback_satisfaction_threshold") setFeedbackThreshold(Number((s.value as any)?.value) || 70);
         });
       }
     }
