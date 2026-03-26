@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Megaphone, Plus, Send, Eye, Users, Tag, Percent,
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
-  Mail, Copy, Trash2, Search, CalendarIcon, FileText,
+  Mail, Copy, Trash2, Search, CalendarIcon, FileText, Zap,
 } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import { toast } from "sonner";
 import NewsletterTab from "@/components/admin/NewsletterTab";
 import CampaignTemplatesTab from "@/components/admin/marketing/CampaignTemplatesTab";
+import AutomationsTab from "@/components/admin/marketing/AutomationsTab";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -72,7 +73,7 @@ export default function AdminMarketing() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates">("campaigns");
+  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates" | "automations">("campaigns");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -299,6 +300,7 @@ export default function AdminMarketing() {
       <div className="flex gap-2 mb-6">
         {([
           { key: "campaigns" as const, label: "Campanhas", icon: Megaphone },
+          { key: "automations" as const, label: "Automações", icon: Zap },
           { key: "templates" as const, label: "Templates", icon: FileText },
           { key: "newsletter" as const, label: "Newsletter", icon: Mail },
         ]).map((tab) => (
@@ -320,6 +322,8 @@ export default function AdminMarketing() {
         <NewsletterTab />
       ) : activeTab === "templates" ? (
         <CampaignTemplatesTab />
+      ) : activeTab === "automations" ? (
+        <AutomationsTab />
       ) : (
         <>
           {/* Stats */}

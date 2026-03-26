@@ -330,6 +330,41 @@ export type Database = {
         }
         Relationships: []
       }
+      automation_executions: {
+        Row: {
+          action_taken: string
+          automation_id: string
+          created_at: string
+          id: string
+          metadata: Json | null
+          user_id: string
+        }
+        Insert: {
+          action_taken?: string
+          automation_id: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id: string
+        }
+        Update: {
+          action_taken?: string
+          automation_id?: string
+          created_at?: string
+          id?: string
+          metadata?: Json | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "automation_executions_automation_id_fkey"
+            columns: ["automation_id"]
+            isOneToOne: false
+            referencedRelation: "marketing_automations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       blog_posts: {
         Row: {
           author_name: string
@@ -911,6 +946,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      marketing_automations: {
+        Row: {
+          action_config: Json
+          action_type: string
+          created_at: string
+          description: string
+          enabled: boolean
+          id: string
+          last_run_at: string | null
+          name: string
+          trigger_config: Json
+          trigger_type: string
+          updated_at: string
+        }
+        Insert: {
+          action_config?: Json
+          action_type?: string
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          name: string
+          trigger_config?: Json
+          trigger_type: string
+          updated_at?: string
+        }
+        Update: {
+          action_config?: Json
+          action_type?: string
+          created_at?: string
+          description?: string
+          enabled?: boolean
+          id?: string
+          last_run_at?: string | null
+          name?: string
+          trigger_config?: Json
+          trigger_type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       newsletter_subscribers: {
         Row: {
