@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail,
   PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, ChevronLeft, Store, Menu, X,
-  Sparkles, Trophy, LayoutDashboard, PanelLeftClose, PanelLeftOpen,
+  Sparkles, Trophy, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Handshake,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
@@ -126,6 +126,7 @@ export default function Perfil() {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [isAffiliate, setIsAffiliate] = useState(false);
 
   const formatPhone = (value: string) => {
     const digits = value.replace(/\D/g, "").slice(0, 11);
@@ -139,7 +140,12 @@ export default function Perfil() {
   }, [authLoading, user, navigate]);
 
   useEffect(() => {
-    if (user) loadProfile();
+    if (user) {
+      loadProfile();
+      // Check if user is an affiliate
+      supabase.from("affiliates").select("id").eq("user_id", user.id).eq("status", "active").maybeSingle()
+        .then(({ data }) => setIsAffiliate(!!data));
+    }
   }, [user]);
 
   const loadProfile = async () => {
@@ -303,6 +309,20 @@ export default function Perfil() {
         })}
       </nav>
 
+      {isAffiliate && (
+        <div className="px-1.5 lg:px-2 xl:px-3">
+          <Link
+            to="/parceiros/painel"
+            title={sidebarCollapsed ? "Painel de Parceiro" : undefined}
+            className={`flex items-center gap-2 w-full rounded-2xl text-xs lg:text-sm font-semibold text-primary hover:bg-primary/10 transition-colors ${
+              sidebarCollapsed ? "justify-center px-2 py-2 lg:py-2.5" : "px-3 lg:px-4 py-2 lg:py-2.5"
+            }`}
+          >
+            <Handshake className="w-4 h-4" />
+            {!sidebarCollapsed && "Painel de Parceiro"}
+          </Link>
+        </div>
+      )}
       <div className="p-1.5 lg:p-2 xl:p-3">
         <button
           onClick={handleSignOut}
