@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Megaphone, Plus, Send, Eye, Users, Tag, Percent,
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
-  Mail, Copy, Trash2, Search, CalendarIcon, FileText, Zap,
+  Mail, Copy, Trash2, Search, CalendarIcon, FileText, Zap, BarChart3,
 } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import { toast } from "sonner";
 import NewsletterTab from "@/components/admin/NewsletterTab";
 import CampaignTemplatesTab from "@/components/admin/marketing/CampaignTemplatesTab";
 import AutomationsTab from "@/components/admin/marketing/AutomationsTab";
+import MarketingAnalyticsTab from "@/components/admin/marketing/MarketingAnalyticsTab";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -83,7 +84,7 @@ export default function AdminMarketing() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates" | "automations">("campaigns");
+  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates" | "automations" | "analytics">("campaigns");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -336,6 +337,7 @@ export default function AdminMarketing() {
           { key: "automations" as const, label: "Automações", icon: Zap },
           { key: "templates" as const, label: "Templates", icon: FileText },
           { key: "newsletter" as const, label: "Newsletter", icon: Mail },
+          { key: "analytics" as const, label: "Analytics", icon: BarChart3 },
         ]).map((tab) => (
           <button
             key={tab.key}
@@ -357,6 +359,8 @@ export default function AdminMarketing() {
         <CampaignTemplatesTab />
       ) : activeTab === "automations" ? (
         <AutomationsTab />
+      ) : activeTab === "analytics" ? (
+        <MarketingAnalyticsTab />
       ) : (
         <>
           {/* Stats */}
