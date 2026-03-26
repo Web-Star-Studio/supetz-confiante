@@ -300,6 +300,7 @@ export default function AdminMarketing() {
       <div className="flex gap-2 mb-6">
         {([
           { key: "campaigns" as const, label: "Campanhas", icon: Megaphone },
+          { key: "automations" as const, label: "Automações", icon: Zap },
           { key: "templates" as const, label: "Templates", icon: FileText },
           { key: "newsletter" as const, label: "Newsletter", icon: Mail },
         ]).map((tab) => (
