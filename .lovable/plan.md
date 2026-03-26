@@ -1,72 +1,63 @@
 
 
-## Plan: Complete Newsletter System with Lead Management
+## Plan: Marketing Module — Advanced Improvements
 
 ### Overview
 
-Build a full newsletter subscription system where visitors become leads in the CRM, registered users are auto-enrolled, and admins can manage email marketing campaigns targeting both subscriber types.
+Enhance the Marketing module with smarter features: campaign duplication, scheduling, A/B testing fields, performance analytics, and improved newsletter management with re-subscribe and bulk actions.
 
-### Database Changes (Migration)
+### Changes
 
-**New table: `newsletter_subscribers`**
-- `id` (uuid, PK)
-- `email` (text, unique, not null)
-- `name` (text, nullable)
-- `user_id` (uuid, nullable) — links to auth.users if registered
-- `source` (text, default 'footer') — where they subscribed (footer, landing, popup)
-- `status` (text, default 'active') — active, unsubscribed
-- `subscribed_at` (timestamptz, default now())
-- `unsubscribed_at` (timestamptz, nullable)
+#### 1. Campaign Enhancements (`src/pages/admin/Marketing.tsx`)
 
-RLS: public can insert (for anonymous signups), admins can read/manage all, service_role can update.
+**Campaign duplication**: Add a "Duplicar" button on each campaign row that pre-fills the create form with that campaign's settings (name + " (cópia)", same type, message, segmentation, coupon config).
 
-**Auto-link trigger**: When a new user registers (`handle_new_user`), check if their email exists in `newsletter_subscribers` and link the `user_id`.
+**Campaign scheduling**: Add an optional `scheduled_for` datetime picker to the create form. If set, campaign is saved as `status: "scheduled"` instead of being sent immediately. Add a new status badge for "Agendada" with a clock icon.
 
-### Frontend Changes
+**Campaign deletion**: Add ability to delete draft/scheduled campaigns.
 
-#### 1. Footer Newsletter Form (`src/components/layout/Footer.tsx`)
-- Make the existing form functional: on submit, insert into `newsletter_subscribers`
-- Show success/error toast feedback
-- No auth required (anonymous insert via anon key)
-- Validate email client-side
+**Improved stats row**: Add a 4th stat card showing conversion rate (campaigns with coupon type that were used vs total coupons generated). Replace the simple 3-card layout with 4 cards.
 
-#### 2. Landing Page Newsletter Section
-- Add a small newsletter CTA component to the Index page (before FinalCTA)
-- Reuse the same subscribe logic
+**Campaign search/filter**: Add a search bar and status filter dropdown above the campaign list to quickly find campaigns by name or filter by status.
 
-#### 3. Admin: Newsletter Tab in Marketing Page (`src/pages/admin/Marketing.tsx`)
-- Add a tabbed interface: "Campanhas" (existing) | "Newsletter"
-- Newsletter tab shows:
-  - **Stats**: total subscribers, registered vs anonymous, active vs unsubscribed
-  - **Subscriber list** with search, sortable columns, pagination
-  - **Badge system**: "Registrado" (has user_id) vs "Lead" (no user_id)
-  - **Export CSV** of subscribers
-  - **Segment targeting**: when creating campaigns, add "Newsletter subscribers" as a segment option, differentiating registered vs lead-only
+#### 2. Database Migration
 
-#### 4. Campaign Segmentation Enhancement
-- Add newsletter subscriber targeting to campaign creation form
-- Options: "All newsletter subscribers", "Only leads (no account)", "Only registered users", or combine with existing CRM filters
+Add `scheduled_for` column to `campaigns` table:
+```sql
+ALTER TABLE public.campaigns ADD COLUMN scheduled_for timestamptz;
+```
 
-#### 5. CRM Integration
-- In CRM client list, newsletter-only subscribers (no user_id) appear as a separate "Lead (Newsletter)" status
-- Differentiated with a distinct badge/tag
+#### 3. Newsletter Tab Improvements (`src/components/admin/NewsletterTab.tsx`)
 
-### Files to Create/Modify
+**Re-subscribe action**: Add a button to re-activate unsubscribed users (set status back to "active", clear unsubscribed_at).
 
-| File | Action |
-|------|--------|
-| Migration SQL | Create `newsletter_subscribers` table + trigger |
-| `src/components/layout/Footer.tsx` | Wire up newsletter form with Supabase insert |
-| `src/components/landing/NewsletterSection.tsx` | New standalone CTA component |
-| `src/pages/Index.tsx` | Add NewsletterSection |
-| `src/pages/admin/Marketing.tsx` | Add Newsletter tab with subscriber management |
-| `src/components/admin/AdminLayout.tsx` | No change needed (Marketing already in sidebar) |
+**Bulk actions**: Add select-all checkbox and bulk unsubscribe/delete for selected subscribers.
+
+**Source breakdown chart**: Add a mini visual showing subscriber sources (footer vs landing vs registration) as colored pills with counts.
+
+**Subscriber growth indicator**: Show a simple "+X this week" badge next to the total count.
+
+#### 4. Campaign Analytics Section (`src/pages/admin/Marketing.tsx`)
+
+When a campaign is expanded, show richer details:
+- A mini progress bar for open rate
+- Coupon redemption rate (count `user_coupons` with `used = true` linked via `campaign_recipients`)
+- Timestamp of first and last open
+
+#### 5. Files to Modify
+
+| File | Changes |
+|------|---------|
+| Migration SQL | Add `scheduled_for` to campaigns |
+| `src/pages/admin/Marketing.tsx` | Campaign search, duplication, scheduling, deletion, richer analytics, 4th stat card |
+| `src/components/admin/NewsletterTab.tsx` | Re-subscribe, bulk actions, source breakdown, growth indicator |
 
 ### Technical Details
 
-- Newsletter inserts use `.insert()` with `onConflict: 'email'` to prevent duplicates
-- The `handle_new_user` trigger is updated to auto-link `newsletter_subscribers.user_id` when email matches
-- RLS allows anonymous inserts (only email + name columns) but blocks reads for non-admins
-- Campaign sending logic extended to query `newsletter_subscribers` when "newsletter" segment is selected
-- Subscriber badges use color-coded pills: green "Registrado" / blue "Lead"
+- Campaign duplication copies all form fields and opens the create panel pre-filled
+- Scheduled campaigns use `status: "scheduled"` — actual sending requires a cron job or manual trigger (for now, admin can manually send when ready)
+- Bulk select uses local state array of selected IDs, with a floating action bar
+- Source breakdown computed client-side from existing subscriber data
+- Growth indicator counts subscribers with `subscribed_at` within last 7 days
+- All new UI follows existing design tokens: `rounded-3xl` cards, `rounded-2xl` inputs, primary color accents
 
