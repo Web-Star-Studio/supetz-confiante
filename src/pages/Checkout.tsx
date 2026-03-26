@@ -80,6 +80,24 @@ export default function Checkout() {
   const totalDiscount = couponDiscount + pointsValue;
   const finalPrice = Math.max(0, totalPrice - totalDiscount);
 
+  // Load affiliate referral data
+  useEffect(() => {
+    const ref = getActiveRef();
+    if (ref) {
+      supabase
+        .from("affiliates")
+        .select("name, coupon_code, ref_slug")
+        .eq("ref_slug", ref.slug)
+        .eq("status", "active")
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            setAffiliateInfo(data as { name: string; coupon_code: string | null; ref_slug: string });
+          }
+        });
+    }
+  }, []);
+
   useEffect(() => {
     if (user) {
       loadCoupons();
