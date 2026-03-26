@@ -1,12 +1,15 @@
 import { motion } from "framer-motion";
-import { products } from "@/services/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
 import { motionTokens } from "@/lib/motion";
 
+const EXTRA_CATEGORIES = ["extra", "acessorio", "higiene", "brinquedo", "alimentacao"];
+
 export default function ExtrasSection() {
     const { addItem } = useCart();
-    const extras = products.filter(p => p.category === "extra");
+    const { products: extras, loading } = useProducts({ categories: EXTRA_CATEGORIES });
 
+    if (loading) return null;
     if (extras.length === 0) return null;
 
     return (

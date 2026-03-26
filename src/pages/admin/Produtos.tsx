@@ -8,16 +8,32 @@ import { useAuditLog } from "@/hooks/useAuditLog";
 interface ProductForm {
   title: string;
   subtitle: string;
+  description: string;
   price: string;
   original_price: string;
+  price_per_unit: string;
   quantity: string;
   badge: string;
   category: string;
   active: boolean;
+  highlighted: boolean;
   image_url: string;
 }
 
-const emptyForm: ProductForm = { title: "", subtitle: "", price: "", original_price: "", quantity: "1", badge: "", category: "combo", active: true, image_url: "" };
+const CATEGORIES = [
+  { value: "combo", label: "Combo" },
+  { value: "extra", label: "Extra" },
+  { value: "acessorio", label: "Acessório" },
+  { value: "higiene", label: "Higiene" },
+  { value: "brinquedo", label: "Brinquedo" },
+  { value: "alimentacao", label: "Alimentação" },
+];
+
+const emptyForm: ProductForm = {
+  title: "", subtitle: "", description: "", price: "", original_price: "",
+  price_per_unit: "", quantity: "1", badge: "", category: "combo",
+  active: true, highlighted: false, image_url: "",
+};
 
 function ProductsSkeleton() {
   return (
@@ -76,8 +92,11 @@ export default function AdminProdutos() {
   const openEdit = (p: any) => {
     setEditing(p.id);
     setForm({
-      title: p.title, subtitle: p.subtitle || "", price: String(p.price), original_price: String(p.original_price || ""),
-      quantity: String(p.quantity), badge: p.badge || "", category: p.category || "combo", active: p.active ?? true,
+      title: p.title, subtitle: p.subtitle || "", description: p.description || "",
+      price: String(p.price), original_price: String(p.original_price || ""),
+      price_per_unit: p.price_per_unit || "", quantity: String(p.quantity),
+      badge: p.badge || "", category: p.category || "combo",
+      active: p.active ?? true, highlighted: p.highlighted ?? false,
       image_url: p.image_url || "",
     });
     setShowModal(true);
@@ -100,8 +119,17 @@ export default function AdminProdutos() {
   const handleSave = async () => {
     setSaving(true);
     const payload = {
-      title: form.title, subtitle: form.subtitle || null, price: Number(form.price), original_price: form.original_price ? Number(form.original_price) : null,
-      quantity: Number(form.quantity), badge: form.badge || null, category: form.category, active: form.active,
+      title: form.title,
+      subtitle: form.subtitle || null,
+      description: form.description || null,
+      price: Number(form.price),
+      original_price: form.original_price ? Number(form.original_price) : null,
+      price_per_unit: form.price_per_unit || null,
+      quantity: Number(form.quantity),
+      badge: form.badge || null,
+      category: form.category,
+      active: form.active,
+      highlighted: form.highlighted,
       image_url: form.image_url || null,
     };
     if (editing) {
@@ -126,6 +154,7 @@ export default function AdminProdutos() {
 
   const activeCount = products.filter(p => p.active).length;
   const inactiveCount = products.filter(p => !p.active).length;
+  const categoryLabel = (cat: string) => CATEGORIES.find(c => c.value === cat)?.label || cat;
 
   return (
     <AdminLayout>
@@ -160,35 +189,39 @@ export default function AdminProdutos() {
                 </div>
                 {p.badge && <span className="text-xs font-bold bg-primary/15 text-primary px-2 py-0.5 rounded-full">{p.badge}</span>}
               </div>
-              <div className="flex items-baseline gap-2 mb-4">
+              <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-xl font-extrabold text-foreground">R$ {Number(p.price).toFixed(2)}</span>
                 {p.original_price && <span className="text-sm text-muted-foreground line-through">R$ {Number(p.original_price).toFixed(2)}</span>}
               </div>
-              <div className="flex items-center gap-2 mt-auto">
+              <div className="flex items-center gap-2 flex-wrap mb-4">
                 <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${p.active ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
                   {p.active ? "Ativo" : "Inativo"}
                 </span>
+                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
+                  {categoryLabel(p.category)}
+                </span>
+                {p.highlighted && (
+                  <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700">Destaque</span>
+                )}
                 <span className="text-xs text-muted-foreground">Qtd: {p.quantity}</span>
-                <div className="ml-auto flex gap-1">
-                  <button onClick={() => openEdit(p)} className="p-2 rounded-xl hover:bg-primary/10 transition-colors text-muted-foreground hover:text-primary">
-                    <Pencil className="w-4 h-4" />
-                  </button>
-                  <button onClick={() => setDeleteTarget({ id: p.id, name: p.title })} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive">
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+              </div>
+              <div className="flex gap-1 mt-auto">
+                <button onClick={() => openEdit(p)} className="p-2 rounded-xl hover:bg-primary/10 transition-colors text-muted-foreground hover:text-primary">
+                  <Pencil className="w-4 h-4" />
+                </button>
+                <button onClick={() => setDeleteTarget({ id: p.id, name: p.title })} className="p-2 rounded-xl hover:bg-destructive/10 transition-colors text-muted-foreground hover:text-destructive">
+                  <Trash2 className="w-4 h-4" />
+                </button>
               </div>
             </motion.div>
           ))}
         </div>
       )}
 
-      {/* Delete Confirmation */}
       <AnimatePresence>
         {deleteTarget && <DeleteConfirmation name={deleteTarget.name} onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />}
       </AnimatePresence>
 
-      {/* Product Modal */}
       <AnimatePresence>
         {showModal && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
@@ -201,6 +234,7 @@ export default function AdminProdutos() {
                 <button onClick={() => setShowModal(false)} className="text-muted-foreground hover:text-foreground"><X className="w-5 h-5" /></button>
               </div>
               <div className="space-y-4">
+                {/* Image */}
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Imagem</label>
                   {form.image_url ? (
@@ -222,16 +256,26 @@ export default function AdminProdutos() {
                     </label>
                   )}
                 </div>
+                {/* Title */}
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Título *</label>
                   <input value={form.title} onChange={e => setForm({ ...form, title: e.target.value })}
                     className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
+                {/* Subtitle */}
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Subtítulo</label>
                   <input value={form.subtitle} onChange={e => setForm({ ...form, subtitle: e.target.value })}
                     className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
+                {/* Description */}
+                <div>
+                  <label className="text-sm font-semibold text-foreground mb-1 block">Descrição</label>
+                  <textarea value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} rows={3}
+                    placeholder="Descrição detalhada do produto..."
+                    className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none" />
+                </div>
+                {/* Price row */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="text-sm font-semibold text-foreground mb-1 block">Preço *</label>
@@ -244,9 +288,17 @@ export default function AdminProdutos() {
                       className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                 </div>
+                {/* Price per unit */}
+                <div>
+                  <label className="text-sm font-semibold text-foreground mb-1 block">Preço por Unidade</label>
+                  <input value={form.price_per_unit} onChange={e => setForm({ ...form, price_per_unit: e.target.value })}
+                    placeholder="Ex: R$ 149,90/pote"
+                    className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                </div>
+                {/* Quantity + Category */}
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <label className="text-sm font-semibold text-foreground mb-1 block">Quantidade</label>
+                    <label className="text-sm font-semibold text-foreground mb-1 block">Estoque</label>
                     <input type="number" value={form.quantity} onChange={e => setForm({ ...form, quantity: e.target.value })}
                       className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
@@ -254,22 +306,32 @@ export default function AdminProdutos() {
                     <label className="text-sm font-semibold text-foreground mb-1 block">Categoria</label>
                     <select value={form.category} onChange={e => setForm({ ...form, category: e.target.value })}
                       className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer">
-                      <option value="combo">Combo</option>
-                      <option value="extra">Extra</option>
+                      {CATEGORIES.map(c => <option key={c.value} value={c.value}>{c.label}</option>)}
                     </select>
                   </div>
                 </div>
+                {/* Badge */}
                 <div>
                   <label className="text-sm font-semibold text-foreground mb-1 block">Badge</label>
                   <input value={form.badge} onChange={e => setForm({ ...form, badge: e.target.value })} placeholder="Ex: Mais Vendido"
                     className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                 </div>
-                <div className="flex items-center gap-3">
-                  <button type="button" onClick={() => setForm({ ...form, active: !form.active })}
-                    className={`w-12 h-7 rounded-full transition-colors relative ${form.active ? "bg-primary" : "bg-muted"}`}>
-                    <div className={`w-5 h-5 rounded-full bg-primary-foreground absolute top-1 transition-transform ${form.active ? "translate-x-6" : "translate-x-1"}`} />
-                  </button>
-                  <span className="text-sm font-medium text-foreground">{form.active ? "Ativo" : "Inativo"}</span>
+                {/* Toggles */}
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-3">
+                    <button type="button" onClick={() => setForm({ ...form, active: !form.active })}
+                      className={`w-12 h-7 rounded-full transition-colors relative ${form.active ? "bg-primary" : "bg-muted"}`}>
+                      <div className={`w-5 h-5 rounded-full bg-primary-foreground absolute top-1 transition-transform ${form.active ? "translate-x-6" : "translate-x-1"}`} />
+                    </button>
+                    <span className="text-sm font-medium text-foreground">{form.active ? "Ativo" : "Inativo"}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <button type="button" onClick={() => setForm({ ...form, highlighted: !form.highlighted })}
+                      className={`w-12 h-7 rounded-full transition-colors relative ${form.highlighted ? "bg-amber-500" : "bg-muted"}`}>
+                      <div className={`w-5 h-5 rounded-full bg-primary-foreground absolute top-1 transition-transform ${form.highlighted ? "translate-x-6" : "translate-x-1"}`} />
+                    </button>
+                    <span className="text-sm font-medium text-foreground">Destaque</span>
+                  </div>
                 </div>
               </div>
               <div className="flex gap-3 mt-8">

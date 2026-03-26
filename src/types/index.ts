@@ -10,6 +10,7 @@ export interface Product {
   highlighted?: boolean;
   category?: "combo" | "extra";
   image?: string;
+  description?: string;
   variants?: ProductVariant[];
 }
 

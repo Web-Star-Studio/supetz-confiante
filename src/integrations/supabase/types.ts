@@ -946,6 +946,7 @@ export type Database = {
           badge: string | null
           category: string | null
           created_at: string
+          description: string | null
           highlighted: boolean | null
           id: string
           image_url: string | null
@@ -963,6 +964,7 @@ export type Database = {
           badge?: string | null
           category?: string | null
           created_at?: string
+          description?: string | null
           highlighted?: boolean | null
           id?: string
           image_url?: string | null
@@ -980,6 +982,7 @@ export type Database = {
           badge?: string | null
           category?: string | null
           created_at?: string
+          description?: string | null
           highlighted?: boolean | null
           id?: string
           image_url?: string | null
