@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import SEOHead from "@/components/SEOHead";
 import ProductReviews from "@/components/product/ProductReviews";
+import Layout from "@/components/layout/Layout";
 
 export default function Produto() {
   const { id } = useParams<{ id: string }>();
