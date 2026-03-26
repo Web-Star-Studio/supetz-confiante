@@ -642,19 +642,28 @@ export default function Checkout() {
                     <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
                       <div className="md:col-span-4">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">CEP</label>
-                        <input required type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="00000-000" />
+                        <div className="relative">
+                          <input required type="text" name="zipCode" value={formData.zipCode} onChange={handleChange} maxLength={9} className={`w-full bg-supet-bg-alt border rounded-xl px-4 py-3 pr-10 focus:outline-none focus:ring-1 transition-all duration-300 font-medium text-supet-text ${formErrors.zipCode ? "border-red-400 focus:border-red-400 focus:ring-red-300" : "border-supet-text/10 focus:border-supet-orange focus:ring-supet-orange"}`} placeholder="00000-000" />
+                          {cepLoading && <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-supet-orange animate-spin" />}
+                          {!cepLoading && formData.city && !formErrors.zipCode && <Check className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-green-500" />}
+                        </div>
+                        {formErrors.zipCode && <p className="text-xs text-red-500 mt-1 font-semibold">{formErrors.zipCode}</p>}
                       </div>
                       <div className="md:col-span-8">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Endereço</label>
                         <input required type="text" name="address" value={formData.address} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Nome da rua, avenida..." />
                       </div>
-                      <div className="md:col-span-4">
+                      <div className="md:col-span-3">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Número</label>
                         <input required type="text" name="number" value={formData.number} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="123" />
                       </div>
-                      <div className="md:col-span-8">
+                      <div className="md:col-span-5">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Complemento</label>
-                        <input type="text" name="complement" value={formData.complement} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Apto, Bloco, etc. (opcional)" />
+                        <input type="text" name="complement" value={formData.complement} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Apto, Bloco (opcional)" />
+                      </div>
+                      <div className="md:col-span-4">
+                        <label className="block text-sm font-bold text-supet-text/60 mb-2">Bairro</label>
+                        <input required type="text" name="neighborhood" value={formData.neighborhood} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="Bairro" />
                       </div>
                       <div className="md:col-span-8">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Cidade</label>
@@ -662,7 +671,7 @@ export default function Checkout() {
                       </div>
                       <div className="md:col-span-4">
                         <label className="block text-sm font-bold text-supet-text/60 mb-2">Estado</label>
-                        <input required type="text" name="state" value={formData.state} onChange={handleChange} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text" placeholder="UF" />
+                        <input required type="text" name="state" value={formData.state} onChange={handleChange} maxLength={2} className="w-full bg-supet-bg-alt border border-supet-text/10 rounded-xl px-4 py-3 focus:outline-none focus:border-supet-orange focus:ring-1 focus:ring-supet-orange transition-all duration-300 font-medium text-supet-text uppercase" placeholder="UF" />
                       </div>
                     </div>
                   </motion.div>
