@@ -31,6 +31,33 @@ export default function WeeklySummaryPanel() {
   const [summaries, setSummaries] = useState<WeeklySummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [generating, setGenerating] = useState(false);
+
+  const generateManualSummary = async () => {
+    setGenerating(true);
+    try {
+      const res = await supabase.functions.invoke("weekly-marketing-summary", { body: {} });
+      if (res.error) throw res.error;
+      const result = res.data;
+      if (result?.skipped) {
+        toast.info("Resumo desta semana já foi gerado anteriormente.");
+      } else {
+        toast.success(`Resumo da semana ${result?.week} gerado com sucesso!`);
+        // Refresh list
+        const { data } = await supabase
+          .from("weekly_marketing_summaries")
+          .select("*")
+          .order("week_start", { ascending: false })
+          .limit(12);
+        if (data) setSummaries(data as WeeklySummary[]);
+      }
+    } catch (err) {
+      toast.error("Erro ao gerar resumo. Tente novamente.");
+      console.error(err);
+    } finally {
+      setGenerating(false);
+    }
+  };
 
   useEffect(() => {
     (async () => {
