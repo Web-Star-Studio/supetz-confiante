@@ -22,13 +22,14 @@ export default function AdminCRM() {
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
-    const [profilesRes, ordersRes, pointsRes, statusRes, tagsRes, assignmentsRes] = await Promise.all([
+    const [profilesRes, ordersRes, pointsRes, statusRes, tagsRes, assignmentsRes, newsletterRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("user_id, total, created_at"),
       supabase.from("loyalty_points").select("user_id, points"),
       supabase.from("customer_status").select("user_id, status"),
       supabase.from("customer_tags").select("*").order("name"),
       supabase.from("customer_tag_assignments").select("user_id, tag_id"),
+      supabase.from("newsletter_subscribers" as any).select("*").is("user_id", null).eq("status", "active"),
     ]);
 
     if (profilesRes.error || ordersRes.error || pointsRes.error || statusRes.error || tagsRes.error || assignmentsRes.error) {
@@ -41,6 +42,7 @@ export default function AdminCRM() {
     const statuses = statusRes.data || [];
     const tags = (tagsRes.data || []) as { id: string; name: string; color: string }[];
     const assignments = assignmentsRes.data || [];
+    const nlLeads = (newsletterRes.data || []) as any[];
 
     setAllTags(tags);
 
@@ -74,7 +76,23 @@ export default function AdminCRM() {
       };
     });
 
-    setClients(enriched);
+    // Add newsletter-only leads (no user account)
+    const nlClients: EnrichedClient[] = nlLeads.map((nl: any) => ({
+      id: nl.id,
+      user_id: "",
+      full_name: nl.name || nl.email,
+      phone: null,
+      avatar_url: null,
+      created_at: nl.subscribed_at,
+      orderCount: 0,
+      totalSpent: 0,
+      totalPoints: 0,
+      lastOrderDate: null,
+      status: "newsletter_lead",
+      tags: [],
+    }));
+
+    setClients([...enriched, ...nlClients]);
     } catch (err) {
       toast.error("Erro ao carregar dados de clientes");
     } finally {

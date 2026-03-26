@@ -215,7 +215,7 @@ export default function AdminMarketing() {
     }
 
     // Reset
-    setForm({ name: "", type: "notification", message: "", coupon_discount_type: "percentage", coupon_discount_value: 10, coupon_min_order: 50, coupon_expires_days: 30, segment_status: "", segment_tag: "", segment_min_spent: "", segment_days_inactive: "" });
+    setForm({ name: "", type: "notification", message: "", coupon_discount_type: "percentage", coupon_discount_value: 10, coupon_min_order: 50, coupon_expires_days: 30, segment_status: "", segment_tag: "", segment_min_spent: "", segment_days_inactive: "", segment_newsletter: "" });
     setShowCreate(false);
     setPreviewCount(null);
     setSending(false);
