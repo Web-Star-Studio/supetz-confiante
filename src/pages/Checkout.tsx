@@ -98,6 +98,39 @@ export default function Checkout() {
     }
   }, []);
 
+  // Auto-apply affiliate coupon when affiliateInfo loads
+  useEffect(() => {
+    if (!affiliateInfo?.coupon_code || appliedCoupon || affiliateCouponApplied) return;
+    if (!user) {
+      // Even without login, mark as applied so the coupon code is used at order time
+      setCouponCode(affiliateInfo.coupon_code);
+      setAffiliateCouponApplied(true);
+      return;
+    }
+    // Try to find in user_coupons first
+    (async () => {
+      setCouponLoading(true);
+      const { data } = await supabase
+        .from("user_coupons")
+        .select("*")
+        .eq("user_id", user.id)
+        .eq("code", affiliateInfo.coupon_code!.toUpperCase())
+        .eq("used", false)
+        .maybeSingle();
+      const coupon = data as Coupon | null;
+      if (coupon && (!coupon.expires_at || new Date(coupon.expires_at) >= new Date()) && (!coupon.min_order_value || totalPrice >= coupon.min_order_value)) {
+        setAppliedCoupon(coupon);
+        setCouponCode(coupon.code);
+        toast.success("Cupom de indicação aplicado automaticamente!");
+      } else {
+        // Set the code anyway so it's sent as metadata
+        setCouponCode(affiliateInfo.coupon_code!);
+      }
+      setAffiliateCouponApplied(true);
+      setCouponLoading(false);
+    })();
+  }, [affiliateInfo, user]);
+
   useEffect(() => {
     if (user) {
       loadCoupons();
@@ -618,29 +651,13 @@ export default function Checkout() {
                       <Sparkles className="w-5 h-5 text-supet-orange flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm font-bold text-supet-text">Indicação de {affiliateInfo.name}</p>
-                        {affiliateInfo.coupon_code && (
+                        {affiliateInfo.coupon_code && affiliateCouponApplied && (
                           <p className="text-xs text-supet-text/60 mt-0.5">
-                            Cupom <span className="font-mono font-bold text-supet-orange">{affiliateInfo.coupon_code}</span> disponível para aplicar
+                            Cupom <span className="font-mono font-bold text-supet-orange">{affiliateInfo.coupon_code}</span> aplicado automaticamente
                           </p>
                         )}
                       </div>
-                      {affiliateInfo.coupon_code && !appliedCoupon && !affiliateCouponApplied && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCouponCode(affiliateInfo.coupon_code!);
-                            setAffiliateCouponApplied(true);
-                            // Auto-apply: search in user_coupons or just set as manual code
-                            handleApplyCoupon();
-                          }}
-                          className="bg-supet-orange text-white rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-supet-orange-dark transition-colors flex-shrink-0"
-                        >
-                          Aplicar
-                        </button>
-                      )}
-                      {(appliedCoupon || affiliateCouponApplied) && (
-                        <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                      )}
+                      <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
                     </div>
                   </div>
                 )}
