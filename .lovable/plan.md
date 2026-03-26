@@ -1,63 +1,86 @@
 
 
-## Auditoria Completa do Painel Admin — Problemas Encontrados
+## Programa de Afiliados e Influenciadores — Plano Completo
 
 ### Resumo
-Após análise detalhada de todos os arquivos do painel administrativo, identifiquei **7 problemas** entre bugs funcionais, inconsistências de UI e melhorias de robustez.
+Criar um sistema completo de afiliados onde influenciadores, parceiros e creators recebem um cupom exclusivo e um link rastreável. Quando alguém compra usando o cupom ou link, o afiliado ganha uma comissão. Inclui painel público para o afiliado acompanhar ganhos e um módulo admin para gerenciar o programa.
+
+### Arquitetura
+
+```text
+┌─────────────────────────────────────────────────────┐
+│  FLUXO DO AFILIADO                                  │
+│                                                     │
+│  1. Afiliado se cadastra via /parceiros              │
+│  2. Admin aprova → cupom + link gerados             │
+│  3. Afiliado compartilha link (supet.com/?ref=CODE) │
+│  4. Cliente compra com cupom ou via link             │
+│  5. Comissão registrada automaticamente             │
+│  6. Afiliado acompanha ganhos em /parceiros/painel  │
+└─────────────────────────────────────────────────────┘
+```
 
 ---
 
-### Problemas Encontrados
+### 1. Banco de Dados (4 tabelas novas)
 
-**1. Dashboard: Pedidos sem paginação (limite de 1000 rows)**
-- `Dashboard.tsx` e `Pedidos.tsx` buscam todos os pedidos sem paginação
-- O Supabase tem limite padrão de 1000 rows por query
-- Se houver mais de 1000 pedidos, os KPIs de receita e contagem ficarão incorretos
-- **Correção**: Usar queries com `.count("exact")` para totais e limitar os dados do gráfico com filtro de data
+**`affiliates`** — Cadastro do afiliado
+- `id`, `user_id` (ref profiles), `name`, `email`, `instagram`, `channel_type` (influencer/partner/creator), `status` (pending/active/suspended), `commission_percent` (default 10), `coupon_code` (unique), `ref_slug` (unique, para URL), `total_earned`, `created_at`, `approved_at`
 
-**2. Pedidos/Produtos/Estoque: uso de classes `bg-supet-bg-alt` e `bg-supet-bg` (hardcoded theme colors)**
-- Essas classes funcionam, mas criam inconsistência visual com as páginas que usam `bg-card` e `bg-muted` (como Dashboard, Auditoria, GerenciarIA)
-- Não é um bug, mas cria disparidade visual entre módulos
-- **Correção**: Padronizar todas as páginas admin para usar tokens semânticos (`bg-card`, `bg-muted`) em vez de cores hardcoded do tema
+**`affiliate_sales`** — Vendas atribuídas
+- `id`, `affiliate_id`, `order_id`, `order_total`, `commission_amount`, `status` (pending/confirmed/paid), `created_at`
 
-**3. Marketing: envio de campanha sem feedback de erro quando `userIds` é vazio**
-- Em `Marketing.tsx` linha ~156, se nenhum usuário corresponde ao segmento, a função retorna silenciosamente sem feedback ao admin
-- **Correção**: Adicionar `toast.warning("Nenhum cliente encontrado para este segmento")` antes de retornar
+**`affiliate_payouts`** — Pagamentos realizados
+- `id`, `affiliate_id`, `amount`, `method` (pix/bank), `pix_key`, `status` (pending/paid), `paid_at`, `created_at`, `notes`
 
-**4. Fidelização: formulários de pontos e cupons pedem `userId` como texto livre**
-- O admin precisa digitar o UUID do usuário manualmente, o que é propenso a erros
-- **Correção**: Substituir por um select/combobox que lista os perfis existentes com nome e email
+**`affiliate_clicks`** — Rastreamento de cliques no link
+- `id`, `affiliate_id`, `ip_hash`, `user_agent`, `created_at`
 
-**5. CRM: fetch de dados pode ser lento com muitas tabelas paralelas**
-- `CRM.tsx` faz 6 queries paralelas sem tratamento de erro
-- Se uma falhar silenciosamente, os dados ficam parciais sem feedback
-- **Correção**: Adicionar tratamento de erro e toast em caso de falha
+RLS: Afiliados veem apenas seus próprios dados. Admins veem tudo.
 
-**6. Auditoria: cast `as unknown as AuditLog[]` indica tipagem fraca**
-- O uso de `as any` e `as unknown` em vários pontos da Auditoria pode esconder erros em runtime
-- Não é um bug funcional, mas reduz a segurança de tipos
-- **Correção**: Usar os tipos gerados do Supabase corretamente
+### 2. Fluxo do Checkout (modificação)
 
-**7. NotificationCenter: tipo de filtro limitado**
-- O `TypeFilter` só suporta `"order" | "restock"` mas a tabela `admin_notifications` pode ter tipo `"stock"` (gerado pelo trigger de estoque baixo)
-- Notificações de estoque ficam ocultas no filtro por tipo
-- **Correção**: Adicionar `"stock"` ao filtro de tipo
+- Ao acessar o site via `?ref=CODE`, salvar o código em `localStorage`
+- No checkout, ao aplicar cupom, verificar se é cupom de afiliado (buscar em `affiliates.coupon_code`)
+- Se for cupom de afiliado OU se há `ref` no localStorage, registrar a venda em `affiliate_sales` via trigger/função no banco
+- O cupom de afiliado dá desconto ao cliente (configurável) E gera comissão ao afiliado
+
+### 3. Páginas Novas
+
+**`/parceiros`** — Landing page pública
+- Explicação do programa, benefícios, formulário de cadastro
+- Campos: nome, email, Instagram, tipo de canal, por que quer ser parceiro
+- Após envio: "Candidatura enviada! Entraremos em contato."
+
+**`/parceiros/painel`** — Dashboard do afiliado (autenticado)
+- KPIs: total ganho, vendas este mês, comissão pendente, cliques no link
+- Tabela de vendas com status (pendente/confirmado/pago)
+- Copiar link e cupom com um clique
+- Solicitar saque (cria entrada em `affiliate_payouts`)
+- Histórico de pagamentos
+
+### 4. Painel Admin (`/admin/afiliados`)
+
+- Lista de afiliados com filtro por status
+- Aprovar/suspender afiliados
+- Ver vendas e comissões de cada afiliado
+- Ajustar % de comissão individual
+- Gerenciar saques (marcar como pago)
+- KPIs globais: total de afiliados ativos, receita gerada, comissões pagas
+
+### 5. Integração no Admin Layout
+
+- Adicionar item "Afiliados" no menu lateral (ícone `Handshake`)
+- Rota `/admin/afiliados` protegida por `AdminRoute`
 
 ---
-
-### Plano de Implementação
-
-1. **Marketing.tsx** — Adicionar toast de aviso quando nenhum cliente é encontrado no segmento (3 pontos de retorno silencioso)
-2. **NotificationCenter.tsx** — Adicionar `"stock"` ao TypeFilter e seu label
-3. **Fidelização.tsx** — Substituir campos de userId por select com lista de perfis
-4. **Padronizar UI** — Substituir `bg-supet-bg-alt`/`bg-supet-bg` por `bg-card`/`bg-muted` nas páginas Pedidos, Produtos, Estoque, Financeiro, Fidelização e Marketing
-5. **Dashboard.tsx** — Usar contagem com `.count("exact")` para métricas que podem exceder 1000 rows
-6. **CRM.tsx** — Adicionar catch/toast para falhas de fetch
-7. **Auditoria.tsx** — Melhorar tipagem removendo casts desnecessários
 
 ### Detalhes Técnicos
-- Arquivos afetados: ~10 arquivos no painel admin
-- Nenhuma alteração de banco de dados necessária
-- Todas as correções são client-side
-- Prioridade: itens 1-3 são bugs funcionais, itens 4-7 são melhorias de qualidade
+
+- **Tabelas**: 4 migrações SQL com RLS policies
+- **Trigger**: Função `register_affiliate_sale()` que ao inserir um pedido verifica se o cupom usado pertence a um afiliado e cria o registro em `affiliate_sales`
+- **Ref tracking**: Componente wrapper que lê `?ref=` da URL e persiste no localStorage
+- **Arquivos novos**: ~6 (página parceiros, painel afiliado, admin afiliados, componentes auxiliares)
+- **Arquivos modificados**: AnimatedRoutes (rotas), AdminLayout (menu), Checkout (integração cupom afiliado)
+- **Sem dependências externas** novas necessárias
 
