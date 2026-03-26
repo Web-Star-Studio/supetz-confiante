@@ -54,6 +54,13 @@ export default function EmailAnalyticsPanel() {
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
   const [period, setPeriod] = useState<"7d" | "30d" | "90d">("30d");
 
+  // Alert threshold config
+  const [showAlertConfig, setShowAlertConfig] = useState(false);
+  const [alertThreshold, setAlertThreshold] = useState(10);
+  const [alertWindowHours, setAlertWindowHours] = useState(24);
+  const [alertEnabled, setAlertEnabled] = useState(true);
+  const [savingAlert, setSavingAlert] = useState(false);
+
   useEffect(() => {
     (async () => {
       setLoading(true);
