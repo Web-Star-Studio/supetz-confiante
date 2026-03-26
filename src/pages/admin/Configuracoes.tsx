@@ -98,6 +98,28 @@ export default function AdminConfiguracoes() {
               <label className="text-sm font-semibold text-foreground mb-1 block">Endereço</label>
               <input value={storeAddress} onChange={e => setStoreAddress(e.target.value)} placeholder="Rua..." className={inputClass} />
             </div>
+
+            {/* Feedback Threshold */}
+            <div className="pt-3 border-t border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <BrainCircuit className="w-4 h-4 text-primary" />
+                <label className="text-sm font-semibold text-foreground">Limiar de Satisfação da Super IA</label>
+              </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Notificação automática quando a taxa de satisfação dos últimos 7 dias cair abaixo deste valor.
+              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min={10}
+                  max={100}
+                  value={feedbackThreshold}
+                  onChange={e => setFeedbackThreshold(Math.min(100, Math.max(10, Number(e.target.value))))}
+                  className={`${inputClass} w-24 text-center`}
+                />
+                <span className="text-sm text-muted-foreground font-medium">%</span>
+              </div>
+            </div>
             {storeSuccess && (
               <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 rounded-2xl p-3 text-sm font-medium">
                 <CheckCircle className="w-4 h-4" /> Configurações salvas!
