@@ -2,8 +2,10 @@ import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { motion, AnimatePresence } from "framer-motion";
-import { Plus, Pencil, Trash2, X, Loader2, ImageIcon } from "lucide-react";
+import { Plus, Pencil, Trash2, X, Loader2, ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
+
+const PAGE_SIZE = 12;
 
 interface ProductForm {
   title: string;
@@ -78,15 +80,22 @@ export default function AdminProdutos() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<{ id: string; name: string } | null>(null);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
 
   const fetchProducts = async () => {
     setLoading(true);
-    const { data } = await supabase.from("products").select("*").order("created_at", { ascending: false });
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    const { data, count } = await supabase.from("products").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
     setProducts(data || []);
+    setTotalCount(count || 0);
     setLoading(false);
   };
 
-  useEffect(() => { fetchProducts(); }, []);
+  useEffect(() => { fetchProducts(); }, [page]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   const openNew = () => { setEditing(null); setForm(emptyForm); setShowModal(true); };
   const openEdit = (p: any) => {
@@ -156,6 +165,8 @@ export default function AdminProdutos() {
   const inactiveCount = products.filter(p => !p.active).length;
   const categoryLabel = (cat: string) => CATEGORIES.find(c => c.value === cat)?.label || cat;
 
+  const showingLabel = totalCount > 0 ? ` (${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, totalCount)} de ${totalCount})` : "";
+
   return (
     <AdminLayout>
       <div className="flex items-center justify-between mb-8">
@@ -215,6 +226,21 @@ export default function AdminProdutos() {
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-6">
+          <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+            <ChevronLeft className="w-4 h-4" /> Anterior
+          </button>
+          <span className="text-sm text-muted-foreground">{page + 1} de {totalPages}</span>
+          <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+            Próximo <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       )}
 

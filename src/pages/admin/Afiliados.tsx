@@ -5,10 +5,12 @@ import { toast } from "sonner";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import {
   Handshake, Users, DollarSign, TrendingUp, CheckCircle, XCircle,
-  Clock, Eye, Loader2, Search, Wallet, Plus, Trash2,
+  Clock, Eye, Loader2, Search, Wallet, Plus, Trash2, ChevronLeft, ChevronRight,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+
+const AFF_PAGE_SIZE = 10;
 
 interface Affiliate {
   id: string;
@@ -62,23 +64,37 @@ export default function Afiliados() {
     name: "", email: "", instagram: "", channel_type: "influencer",
     commission_percent: 10, pix_key: "", autoApprove: false,
   });
+  const [affPage, setAffPage] = useState(0);
+  const [affTotalCount, setAffTotalCount] = useState(0);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [affPage, statusFilter, search]);
+
+  useEffect(() => { setAffPage(0); }, [statusFilter, search]);
 
   const loadData = async () => {
     setLoading(true);
+    const from = affPage * AFF_PAGE_SIZE;
+    const to = from + AFF_PAGE_SIZE - 1;
+
+    let affQuery = supabase.from("affiliates").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
+    if (statusFilter !== "all") affQuery = affQuery.eq("status", statusFilter);
+    if (search.trim()) affQuery = affQuery.or(`name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`);
+
     const [affRes, salesRes, payoutsRes] = await Promise.all([
-      supabase.from("affiliates").select("*").order("created_at", { ascending: false }),
+      affQuery,
       supabase.from("affiliate_sales").select("*").order("created_at", { ascending: false }),
       supabase.from("affiliate_payouts").select("*").order("created_at", { ascending: false }),
     ]);
     setAffiliates((affRes.data as Affiliate[]) || []);
+    setAffTotalCount(affRes.count || 0);
     setSales((salesRes.data as Sale[]) || []);
     setPayouts((payoutsRes.data as Payout[]) || []);
     setLoading(false);
   };
+
+  const affTotalPages = Math.ceil(affTotalCount / AFF_PAGE_SIZE);
 
   const handleApprove = async (aff: Affiliate) => {
     const couponCode = `SUPET-${aff.name.split(" ")[0].toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`;
@@ -274,11 +290,7 @@ export default function Afiliados() {
     }
   };
 
-  const filtered = affiliates.filter((a) => {
-    if (statusFilter !== "all" && a.status !== statusFilter) return false;
-    if (search && !a.name.toLowerCase().includes(search.toLowerCase()) && !a.email.toLowerCase().includes(search.toLowerCase())) return false;
-    return true;
-  });
+  const filtered = affiliates;
 
   const activeCount = affiliates.filter((a) => a.status === "active").length;
   const pendingCount = affiliates.filter((a) => a.status === "pending").length;
@@ -474,6 +486,21 @@ export default function Afiliados() {
             </table>
           </div>
         </div>
+
+        {/* Pagination */}
+        {affTotalPages > 1 && (
+          <div className="flex items-center justify-center gap-3">
+            <button onClick={() => setAffPage(p => Math.max(0, p - 1))} disabled={affPage === 0}
+              className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+              <ChevronLeft className="w-4 h-4" /> Anterior
+            </button>
+            <span className="text-sm text-muted-foreground">{affPage + 1} de {affTotalPages}</span>
+            <button onClick={() => setAffPage(p => Math.min(affTotalPages - 1, p + 1))} disabled={affPage >= affTotalPages - 1}
+              className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+              Próximo <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Detail dialog */}

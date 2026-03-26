@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck } from "lucide-react";
+import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuditLog } from "@/hooks/useAuditLog";
+
+const PAGE_SIZE = 10;
 
 function PedidosSkeleton() {
   return (
@@ -29,18 +31,27 @@ export default function AdminPedidos() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const { log } = useAuditLog();
 
   const fetchOrders = async () => {
     setLoading(true);
-    let query = supabase.from("orders").select("*").order("created_at", { ascending: false });
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    let query = supabase.from("orders").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
     if (statusFilter !== "all") query = query.eq("status", statusFilter);
-    const { data } = await query;
+    if (search.trim()) query = query.or(`customer_name.ilike.%${search.trim()}%,id.ilike.%${search.trim()}%`);
+    const { data, count } = await query;
     setOrders(data || []);
+    setTotalCount(count || 0);
     setLoading(false);
   };
 
-  useEffect(() => { fetchOrders(); }, [statusFilter]);
+  useEffect(() => { fetchOrders(); }, [statusFilter, page, search]);
+  useEffect(() => { setPage(0); }, [statusFilter, search]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   const statusMessages: Record<string, string> = {
     confirmed: "Seu pedido foi confirmado e está sendo preparado! ✅",
@@ -90,13 +101,7 @@ export default function AdminPedidos() {
     cancelled: { label: "Cancelado", className: "bg-rose-100 text-rose-700" },
   };
 
-  const filtered = orders.filter(o =>
-    !search || (o.customer_name || "").toLowerCase().includes(search.toLowerCase()) || o.id.includes(search)
-  );
-
-  // Summary counts
-  const pendingCount = orders.filter(o => o.status === "pending").length;
-  const shippedCount = orders.filter(o => o.status === "shipped").length;
+  const filtered = orders;
 
   const formatAddress = (addr: any) => {
     if (!addr || typeof addr !== "object") return null;
@@ -116,23 +121,9 @@ export default function AdminPedidos() {
         <div className="flex gap-3 mb-6 flex-wrap">
           <div className="flex items-center gap-2 rounded-2xl bg-card px-4 py-2.5">
             <ShoppingCart className="w-4 h-4 text-primary" />
-            <span className="text-sm font-bold text-foreground">{orders.length}</span>
+            <span className="text-sm font-bold text-foreground">{totalCount}</span>
             <span className="text-xs text-muted-foreground">total</span>
           </div>
-          {pendingCount > 0 && (
-            <div className="flex items-center gap-2 rounded-2xl bg-amber-500/10 px-4 py-2.5">
-              <Clock className="w-4 h-4 text-amber-600" />
-              <span className="text-sm font-bold text-amber-700">{pendingCount}</span>
-              <span className="text-xs text-amber-600">pendentes</span>
-            </div>
-          )}
-          {shippedCount > 0 && (
-            <div className="flex items-center gap-2 rounded-2xl bg-violet-500/10 px-4 py-2.5">
-              <Truck className="w-4 h-4 text-violet-600" />
-              <span className="text-sm font-bold text-violet-700">{shippedCount}</span>
-              <span className="text-xs text-violet-600">em trânsito</span>
-            </div>
-          )}
         </div>
       )}
 
@@ -206,6 +197,21 @@ export default function AdminPedidos() {
               </table>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex items-center justify-center gap-3 mt-6">
+          <button onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+            <ChevronLeft className="w-4 h-4" /> Anterior
+          </button>
+          <span className="text-sm text-muted-foreground">{page + 1} de {totalPages}</span>
+          <button onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}
+            className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+            Próximo <ChevronRight className="w-4 h-4" />
+          </button>
         </div>
       )}
 
