@@ -228,6 +228,7 @@ export default function Checkout() {
       address: addr.street,
       number: addr.number,
       complement: addr.complement || "",
+      neighborhood: addr.neighborhood || "",
       city: addr.city,
       state: addr.state,
     }));
