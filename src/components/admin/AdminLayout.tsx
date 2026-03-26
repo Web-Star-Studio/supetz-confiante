@@ -184,6 +184,14 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             </button>
 
             {/* Breadcrumb */}
+            {/* Collapse toggle (desktop) */}
+            <button
+              onClick={() => setCollapsed((c) => !c)}
+              className="hidden lg:flex w-8 h-8 rounded-xl items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            >
+              {collapsed ? <PanelLeft className="w-4 h-4" /> : <PanelLeftClose className="w-4 h-4" />}
+            </button>
+
             <div className="hidden lg:flex items-center gap-2 text-sm">
               <Link to="/admin" className="text-muted-foreground hover:text-foreground transition-colors">
                 Admin
