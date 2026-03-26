@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { products } from "@/services/mockData";
+import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
-import { motionTokens } from "@/lib/motion";
 import { Check } from "lucide-react";
 
 export default function PricingSection() {
   const { addItem } = useCart();
+  const { products, loading } = useProducts({ category: "combo" });
   const [addedId, setAddedId] = useState<string | null>(null);
 
   const handleAdd = (product: any) => {
@@ -14,6 +14,22 @@ export default function PricingSection() {
     setAddedId(product.id);
     setTimeout(() => setAddedId(null), 2000);
   };
+
+  if (loading) {
+    return (
+      <section id="precos" className="relative py-20 md:py-28">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {[1, 2, 3].map(i => (
+              <div key={i} className="rounded-[2rem] p-8 bg-muted animate-pulse h-72" />
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (products.length === 0) return null;
 
   return (
     <section id="precos" className="relative py-20 md:py-28">
@@ -28,7 +44,7 @@ export default function PricingSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 items-stretch">
-          {products.filter(p => p.category === "combo" || !p.category).map((product, i) => (
+          {products.map((product, i) => (
             <motion.div
               key={product.id}
               initial={{ opacity: 0, y: 30 }}
