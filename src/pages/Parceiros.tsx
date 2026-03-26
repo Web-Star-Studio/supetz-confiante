@@ -13,6 +13,7 @@ import ParceirosBenefits from "@/components/parceiros/ParceirosBenefits";
 import ParceirosTimeline from "@/components/parceiros/ParceirosTimeline";
 import ParceirosForm from "@/components/parceiros/ParceirosForm";
 import ParceirosCTA from "@/components/parceiros/ParceirosCTA";
+import ParceirosTestimonials from "@/components/parceiros/ParceirosTestimonials";
 
 export default function Parceiros() {
   const { user } = useAuth();
@@ -73,6 +74,7 @@ export default function Parceiros() {
         <ParceirosHero />
         <ParceirosStats />
         <ParceirosBenefits />
+        <ParceirosTestimonials />
         <ParceirosTimeline />
         <ParceirosForm
           user={user}
