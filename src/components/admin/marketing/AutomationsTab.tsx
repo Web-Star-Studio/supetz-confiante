@@ -980,7 +980,8 @@ export default function AutomationsTab() {
         <div>
           <p className="text-sm font-bold text-foreground">Execução automática</p>
           <p className="text-xs text-muted-foreground mt-1">
-            As automações ativas são verificadas diariamente às 9h. Cada usuário recebe no máximo uma ação por automação por dia.
+            As automações ativas são verificadas diariamente no horário configurado (padrão: 09:00). Cada automação pode ter seu próprio horário de execução.
+            Cada usuário recebe no máximo uma ação por automação por dia.
             Use o botão "Nova Automação" para criar gatilhos personalizados ou "Executar agora" para rodar manualmente.
           </p>
         </div>
