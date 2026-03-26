@@ -152,16 +152,28 @@ export default function WeeklySummaryPanel() {
       <div className="flex items-center gap-2 mb-4">
         <FileBarChart className="w-4 h-4 text-primary" />
         <p className="text-sm font-bold text-foreground">Resumos Semanais</p>
-        {summaries.length > 0 && (
-          <button
-            onClick={exportPDF}
-            className="ml-auto flex items-center gap-1.5 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
-            title="Exportar PDF"
+        <div className="ml-auto flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={generateManualSummary}
+            disabled={generating}
+            className="h-7 text-[11px] rounded-xl gap-1.5"
           >
-            <Download className="w-3.5 h-3.5" />
-            PDF
-          </button>
-        )}
+            <RefreshCw className={`w-3 h-3 ${generating ? "animate-spin" : ""}`} />
+            {generating ? "Gerando..." : "Gerar agora"}
+          </Button>
+          {summaries.length > 0 && (
+            <button
+              onClick={exportPDF}
+              className="flex items-center gap-1.5 text-[11px] font-medium text-primary hover:text-primary/80 transition-colors"
+              title="Exportar PDF"
+            >
+              <Download className="w-3.5 h-3.5" />
+              PDF
+            </button>
+          )}
+        </div>
         <span className={`text-[10px] text-muted-foreground bg-muted px-2 py-0.5 rounded-full ${summaries.length > 0 ? "" : "ml-auto"}`}>
           {summaries.length} semana{summaries.length !== 1 ? "s" : ""}
         </span>
