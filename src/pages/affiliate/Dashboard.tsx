@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import {
   DollarSign, MousePointerClick, ShoppingCart, Clock, Copy, CheckCircle,
-  Loader2, Wallet, TrendingUp, ArrowRight, Handshake, ExternalLink,
+  Loader2, Wallet, TrendingUp, ArrowRight, Handshake, ExternalLink, User,
 } from "lucide-react";
 import { format } from "date-fns";
 
