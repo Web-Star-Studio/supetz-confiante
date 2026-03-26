@@ -270,6 +270,23 @@ export default function AdminMarketing() {
           campaign_id: (campData as any).id, user_id: uid, coupon_id: couponId,
         });
       }
+
+      // Send emails via edge function
+      if (form.template_id || form.message.trim()) {
+        const { data: emailResult, error: emailError } = await supabase.functions.invoke("send-campaign-emails", {
+          body: { campaign_id: (campData as any).id },
+        });
+        if (emailError) {
+          console.error("Campaign email error:", emailError);
+          toast.warning("Campanha criada, mas houve erro ao enviar e-mails.");
+        } else {
+          const enqueued = emailResult?.enqueued || 0;
+          const suppressed = emailResult?.suppressed || 0;
+          if (enqueued > 0) {
+            toast.success(`📧 ${enqueued} e-mails enfileirados para envio!${suppressed > 0 ? ` (${suppressed} suprimidos)` : ""}`);
+          }
+        }
+      }
       toast.success(`Campanha enviada para ${userIds.length} clientes!`);
     } else {
       toast.success(`Campanha agendada para ${format(form.scheduled_for!, "dd/MM/yyyy 'às' HH:mm")}`);
