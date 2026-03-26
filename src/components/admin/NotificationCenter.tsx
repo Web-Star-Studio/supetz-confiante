@@ -104,6 +104,8 @@ export default function NotificationCenter() {
       case "order": return <ShoppingCart className="w-4 h-4 text-primary" />;
       case "restock": return <Clock className="w-4 h-4 text-amber-600" />;
       case "stock": return <Bell className="w-4 h-4 text-red-500" />;
+      case "marketing_summary": return <BarChart3 className="w-4 h-4 text-violet-600" />;
+      case "email_alert": return <Bell className="w-4 h-4 text-destructive" />;
       default: return <Bell className="w-4 h-4 text-primary" />;
     }
   };
