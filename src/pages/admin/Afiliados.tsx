@@ -242,7 +242,13 @@ export default function Afiliados() {
       ? `SUPET-${addForm.name.split(" ")[0].toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
       : null;
 
-    // Use a placeholder user_id for admin-created affiliates (will be linked later if they register)
+    // Try to find existing user by email using DB function
+    let userId = "00000000-0000-0000-0000-000000000000";
+    const { data: foundUserId } = await supabase.rpc("find_user_id_by_email", { lookup_email: addForm.email });
+    if (foundUserId) {
+      userId = foundUserId;
+    }
+
     const { error } = await supabase.from("affiliates").insert({
       name: addForm.name,
       email: addForm.email,
@@ -254,7 +260,7 @@ export default function Afiliados() {
       coupon_code: couponCode,
       status: addForm.autoApprove ? "active" : "pending",
       approved_at: addForm.autoApprove ? new Date().toISOString() : null,
-      user_id: "00000000-0000-0000-0000-000000000000",
+      user_id: userId,
     });
 
     if (error) {
