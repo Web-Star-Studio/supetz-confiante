@@ -29,7 +29,7 @@ const Index = () => {
             "name": "Supet",
             "url": "https://supetz-playful-trust.lovable.app",
             "logo": "https://supetz-playful-trust.lovable.app/favicon.png",
-            "description": "Gomas 100% naturais para a saúde do seu pet.",
+            "description": "Gomas 100% naturais para a saúde do seu pet. Acabam com coceiras, alergias e queda de pelo em até 30 dias.",
             "sameAs": []
           },
           {
@@ -37,11 +37,21 @@ const Index = () => {
             "@type": "WebSite",
             "name": "Supet",
             "url": "https://supetz-playful-trust.lovable.app",
+            "inLanguage": "pt-BR",
             "potentialAction": {
               "@type": "SearchAction",
               "target": "https://supetz-playful-trust.lovable.app/shop?q={search_term_string}",
               "query-input": "required name=search_term_string"
             }
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "VideoObject",
+            "name": "Depoimentos Supet — Resultados Reais",
+            "description": "Tutores mostram a transformação de seus cães após o uso das gomas naturais Supet.",
+            "thumbnailUrl": "https://supetz-playful-trust.lovable.app/images/og-image.jpg",
+            "uploadDate": "2025-01-01",
+            "inLanguage": "pt-BR"
           }
         ]}
       />
