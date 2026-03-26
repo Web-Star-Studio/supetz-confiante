@@ -21,6 +21,7 @@ export default function AdminCRM() {
 
   const fetchData = useCallback(async () => {
     setLoading(true);
+    try {
     const [profilesRes, ordersRes, pointsRes, statusRes, tagsRes, assignmentsRes] = await Promise.all([
       supabase.from("profiles").select("*").order("created_at", { ascending: false }),
       supabase.from("orders").select("user_id, total, created_at"),
@@ -29,6 +30,10 @@ export default function AdminCRM() {
       supabase.from("customer_tags").select("*").order("name"),
       supabase.from("customer_tag_assignments").select("user_id, tag_id"),
     ]);
+
+    if (profilesRes.error || ordersRes.error || pointsRes.error || statusRes.error || tagsRes.error || assignmentsRes.error) {
+      toast.error("Erro ao carregar dados de clientes");
+    }
 
     const profiles = profilesRes.data || [];
     const orders = ordersRes.data || [];
