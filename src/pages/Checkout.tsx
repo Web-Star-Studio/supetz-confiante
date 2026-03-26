@@ -622,7 +622,7 @@ export default function Checkout() {
                             type="button"
                             onClick={() => {
                               setSelectedAddressId(null);
-                              setFormData((prev) => ({ ...prev, zipCode: "", address: "", number: "", complement: "", city: "", state: "" }));
+                              setFormData((prev) => ({ ...prev, zipCode: "", address: "", number: "", complement: "", neighborhood: "", city: "", state: "" }));
                             }}
                             className={`text-left border-2 border-dashed rounded-xl p-4 transition-all duration-300 ${
                               selectedAddressId === null
