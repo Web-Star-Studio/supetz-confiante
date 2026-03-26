@@ -432,6 +432,88 @@ export default function AdminMarketing() {
                     </div>
                   </div>
 
+                  {/* Template selector */}
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-2 block">Template de e-mail (opcional)</label>
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {/* No template option */}
+                      <button
+                        onClick={() => setForm({ ...form, template_id: "" })}
+                        className={`flex-shrink-0 w-36 rounded-2xl border-2 transition-all p-3 text-center ${
+                          !form.template_id ? "border-primary bg-primary/5 shadow-md" : "border-border/50 bg-card hover:border-primary/30"
+                        }`}
+                      >
+                        <Mail className="w-6 h-6 mx-auto mb-1.5 text-muted-foreground" />
+                        <p className="text-xs font-semibold text-foreground">Sem template</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Apenas notificação</p>
+                      </button>
+                      {allTemplates.map((tpl) => (
+                        <button
+                          key={tpl.id}
+                          onClick={() => setForm({ ...form, template_id: tpl.id })}
+                          className={`flex-shrink-0 w-36 rounded-2xl border-2 transition-all overflow-hidden ${
+                            form.template_id === tpl.id ? "border-primary shadow-md" : "border-border/50 bg-card hover:border-primary/30"
+                          }`}
+                        >
+                          <div
+                            className="h-20 overflow-hidden relative"
+                            style={{ background: `${tpl.accent_color}10` }}
+                          >
+                            <div
+                              className="transform scale-[0.2] origin-top-left w-[500%]"
+                              dangerouslySetInnerHTML={{ __html: `<div style="font-family:Arial,sans-serif">${tpl.html_content}</div>` }}
+                            />
+                          </div>
+                          <div className="p-2">
+                            <p className="text-xs font-semibold text-foreground truncate">{tpl.name}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">{tpl.subject}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    {form.template_id && (() => {
+                      const selected = allTemplates.find((t) => t.id === form.template_id);
+                      if (!selected) return null;
+                      return (
+                        <div className="mt-3 flex items-center gap-3">
+                          <span className="text-xs text-muted-foreground">
+                            Template selecionado: <span className="font-bold text-foreground">{selected.name}</span>
+                          </span>
+                          <button
+                            onClick={() => setShowTemplatePreview(!showTemplatePreview)}
+                            className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            {showTemplatePreview ? "Ocultar" : "Ver preview"}
+                          </button>
+                        </div>
+                      );
+                    })()}
+                    <AnimatePresence>
+                      {showTemplatePreview && form.template_id && (() => {
+                        const selected = allTemplates.find((t) => t.id === form.template_id);
+                        if (!selected) return null;
+                        return (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden mt-3"
+                          >
+                            <div className="bg-muted/50 rounded-2xl p-4">
+                              <div
+                                className="bg-white rounded-xl shadow-sm max-w-[500px] mx-auto overflow-hidden"
+                                dangerouslySetInnerHTML={{
+                                  __html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">${selected.html_content}</div>`,
+                                }}
+                              />
+                            </div>
+                          </motion.div>
+                        );
+                      })()}
+                    </AnimatePresence>
+                  </div>
+
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Mensagem</label>
                     <textarea
