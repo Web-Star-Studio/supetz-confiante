@@ -413,6 +413,26 @@ export default function Checkout() {
         link: "/perfil",
       });
 
+      // Send order confirmation email
+      if (formData.email && orderId) {
+        const formatAddr = [formData.address, formData.number && `nº ${formData.number}`, formData.complement, formData.neighborhood, formData.city && formData.state && `${formData.city}/${formData.state}`, formData.zipCode].filter(Boolean).join(", ");
+        supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "order-confirmation",
+            recipientEmail: formData.email,
+            idempotencyKey: `order-confirm-${orderId}`,
+            templateData: {
+              customerName: formData.name,
+              orderId,
+              total: finalPrice.toFixed(2).replace(".", ","),
+              orderDate: new Date().toLocaleDateString("pt-BR"),
+              items: orderItems,
+              shippingAddress: formatAddr,
+            },
+          },
+        });
+      }
+
       // Mark coupon as used
       if (appliedCoupon) {
         await supabase.from("user_coupons").update({ used: true }).eq("id", appliedCoupon.id);
