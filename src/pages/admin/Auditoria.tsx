@@ -219,9 +219,9 @@ export default function Auditoria() {
                           </span>
                         )}
                       </div>
-                      {log.details && Object.keys(log.details).length > 0 && (
+                      {log.details && typeof log.details === "object" && !Array.isArray(log.details) && Object.keys(log.details as Record<string, unknown>).length > 0 && (
                         <p className="text-xs text-muted-foreground mt-1 truncate max-w-md">
-                          {Object.entries(log.details)
+                          {Object.entries(log.details as Record<string, unknown>)
                             .map(([k, v]) => `${k}: ${typeof v === "string" ? v : JSON.stringify(v)}`)
                             .join(" · ")}
                         </p>

@@ -54,16 +54,7 @@ export default function AdminPedidos() {
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     log({ action: "update", entity_type: "order", entity_id: orderId, details: { status: newStatus } });
 
-    // Send in-app notification to the customer
-    if (order?.user_id && statusMessages[newStatus]) {
-      await supabase.from("user_notifications").insert({
-        user_id: order.user_id,
-        title: `Pedido #${orderId.slice(0, 8)} — ${statusLabels[newStatus]?.label || newStatus}`,
-        message: statusMessages[newStatus],
-        type: "order",
-        link: "/perfil",
-      });
-    }
+    // In-app notification is handled automatically by the notify_user_order_update trigger
 
     // Send status update email
     if (order?.customer_email && newStatus !== "pending") {
@@ -129,14 +120,14 @@ export default function AdminPedidos() {
             <span className="text-xs text-muted-foreground">total</span>
           </div>
           {pendingCount > 0 && (
-            <div className="flex items-center gap-2 rounded-2xl bg-amber-50 px-4 py-2.5">
+            <div className="flex items-center gap-2 rounded-2xl bg-amber-500/10 px-4 py-2.5">
               <Clock className="w-4 h-4 text-amber-600" />
               <span className="text-sm font-bold text-amber-700">{pendingCount}</span>
               <span className="text-xs text-amber-600">pendentes</span>
             </div>
           )}
           {shippedCount > 0 && (
-            <div className="flex items-center gap-2 rounded-2xl bg-violet-50 px-4 py-2.5">
+            <div className="flex items-center gap-2 rounded-2xl bg-violet-500/10 px-4 py-2.5">
               <Truck className="w-4 h-4 text-violet-600" />
               <span className="text-sm font-bold text-violet-700">{shippedCount}</span>
               <span className="text-xs text-violet-600">em trânsito</span>
