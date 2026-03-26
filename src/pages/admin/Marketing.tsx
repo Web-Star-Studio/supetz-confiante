@@ -5,11 +5,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Megaphone, Plus, Send, Eye, Users, Tag, Percent,
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
-  Mail, Copy, Trash2, Search, CalendarIcon,
+  Mail, Copy, Trash2, Search, CalendarIcon, FileText,
 } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import { toast } from "sonner";
 import NewsletterTab from "@/components/admin/NewsletterTab";
+import CampaignTemplatesTab from "@/components/admin/marketing/CampaignTemplatesTab";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -71,7 +72,7 @@ export default function AdminMarketing() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter">("campaigns");
+  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates">("campaigns");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -282,7 +283,7 @@ export default function AdminMarketing() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-extrabold text-foreground font-display">Marketing</h1>
-          <p className="text-muted-foreground mt-1">Campanhas segmentadas e newsletter</p>
+          <p className="text-muted-foreground mt-1">Campanhas, templates de e-mail e newsletter</p>
         </div>
         {activeTab === "campaigns" && (
           <button
@@ -298,6 +299,7 @@ export default function AdminMarketing() {
       <div className="flex gap-2 mb-6">
         {([
           { key: "campaigns" as const, label: "Campanhas", icon: Megaphone },
+          { key: "templates" as const, label: "Templates", icon: FileText },
           { key: "newsletter" as const, label: "Newsletter", icon: Mail },
         ]).map((tab) => (
           <button
@@ -316,6 +318,8 @@ export default function AdminMarketing() {
 
       {activeTab === "newsletter" ? (
         <NewsletterTab />
+      ) : activeTab === "templates" ? (
+        <CampaignTemplatesTab />
       ) : (
         <>
           {/* Stats */}

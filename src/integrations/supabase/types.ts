@@ -429,6 +429,42 @@ export type Database = {
           },
         ]
       }
+      campaign_templates: {
+        Row: {
+          accent_color: string
+          category: string
+          created_at: string
+          html_content: string
+          id: string
+          name: string
+          preview_text: string
+          subject: string
+          updated_at: string
+        }
+        Insert: {
+          accent_color?: string
+          category?: string
+          created_at?: string
+          html_content?: string
+          id?: string
+          name: string
+          preview_text?: string
+          subject?: string
+          updated_at?: string
+        }
+        Update: {
+          accent_color?: string
+          category?: string
+          created_at?: string
+          html_content?: string
+          id?: string
+          name?: string
+          preview_text?: string
+          subject?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       campaigns: {
         Row: {
           completed_at: string | null
@@ -445,6 +481,7 @@ export type Database = {
           segment_filter: Json | null
           sent_at: string | null
           status: string
+          template_id: string | null
           type: string
         }
         Insert: {
@@ -462,6 +499,7 @@ export type Database = {
           segment_filter?: Json | null
           sent_at?: string | null
           status?: string
+          template_id?: string | null
           type?: string
         }
         Update: {
@@ -479,9 +517,18 @@ export type Database = {
           segment_filter?: Json | null
           sent_at?: string | null
           status?: string
+          template_id?: string | null
           type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "campaign_templates"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       chat_messages: {
         Row: {
