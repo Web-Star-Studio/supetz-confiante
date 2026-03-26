@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck } from "lucide-react";
+import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuditLog } from "@/hooks/useAuditLog";
+
+const PAGE_SIZE = 10;
 
 function PedidosSkeleton() {
   return (
