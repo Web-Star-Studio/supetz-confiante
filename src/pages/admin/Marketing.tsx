@@ -238,7 +238,7 @@ export default function AdminMarketing() {
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center">
             <Megaphone className="w-5 h-5 text-primary" />
           </div>
@@ -247,7 +247,7 @@ export default function AdminMarketing() {
             <p className="text-xl font-extrabold text-foreground">{campaigns.length}</p>
           </div>
         </div>
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 flex items-center justify-center">
             <Users className="w-5 h-5 text-emerald-600" />
           </div>
@@ -256,7 +256,7 @@ export default function AdminMarketing() {
             <p className="text-xl font-extrabold text-foreground">{totalSent}</p>
           </div>
         </div>
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-violet-500/15 flex items-center justify-center">
             <Eye className="w-5 h-5 text-violet-600" />
           </div>
@@ -278,7 +278,7 @@ export default function AdminMarketing() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden mb-6"
           >
-            <div className="bg-supet-bg-alt rounded-3xl p-6 space-y-5">
+            <div className="bg-card rounded-3xl p-6 space-y-5">
               <h3 className="text-lg font-extrabold text-foreground">Criar Campanha</h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -288,7 +288,7 @@ export default function AdminMarketing() {
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
                     placeholder="Ex: Black Friday 2026"
-                    className="w-full px-4 py-3 rounded-2xl bg-supet-bg text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                    className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                   />
                 </div>
                 <div>
@@ -303,7 +303,7 @@ export default function AdminMarketing() {
                         key={t.key}
                         onClick={() => setForm({ ...form, type: t.key as any })}
                         className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-3 rounded-2xl text-xs font-semibold transition-all ${
-                          form.type === t.key ? "bg-primary text-primary-foreground shadow-md" : "bg-supet-bg text-muted-foreground hover:bg-primary/10"
+                          form.type === t.key ? "bg-primary text-primary-foreground shadow-md" : "bg-muted text-muted-foreground hover:bg-primary/10"
                         }`}
                       >
                         <t.icon className="w-3.5 h-3.5" />
@@ -321,7 +321,7 @@ export default function AdminMarketing() {
                   onChange={(e) => setForm({ ...form, message: e.target.value })}
                   placeholder="Mensagem da campanha..."
                   rows={3}
-                  className="w-full px-4 py-3 rounded-2xl bg-supet-bg text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
+                  className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 resize-none"
                 />
               </div>
 
@@ -332,7 +332,7 @@ export default function AdminMarketing() {
                     <select
                       value={form.coupon_discount_type}
                       onChange={(e) => setForm({ ...form, coupon_discount_type: e.target.value as any })}
-                      className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                     >
                       <option value="percentage">%</option>
                       <option value="fixed">R$</option>
@@ -340,15 +340,15 @@ export default function AdminMarketing() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Valor</label>
-                    <input type="number" value={form.coupon_discount_value} onChange={(e) => setForm({ ...form, coupon_discount_value: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <input type="number" value={form.coupon_discount_value} onChange={(e) => setForm({ ...form, coupon_discount_value: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Pedido mín.</label>
-                    <input type="number" value={form.coupon_min_order} onChange={(e) => setForm({ ...form, coupon_min_order: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <input type="number" value={form.coupon_min_order} onChange={(e) => setForm({ ...form, coupon_min_order: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Validade (dias)</label>
-                    <input type="number" value={form.coupon_expires_days} onChange={(e) => setForm({ ...form, coupon_expires_days: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <input type="number" value={form.coupon_expires_days} onChange={(e) => setForm({ ...form, coupon_expires_days: Number(e.target.value) })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                 </div>
               )}
@@ -359,7 +359,7 @@ export default function AdminMarketing() {
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Status</label>
-                    <select value={form.segment_status} onChange={(e) => setForm({ ...form, segment_status: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <select value={form.segment_status} onChange={(e) => setForm({ ...form, segment_status: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
                       <option value="">Todos</option>
                       <option value="lead">Lead</option>
                       <option value="active">Ativo</option>
@@ -369,7 +369,7 @@ export default function AdminMarketing() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Tag</label>
-                    <select value={form.segment_tag} onChange={(e) => setForm({ ...form, segment_tag: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
+                    <select value={form.segment_tag} onChange={(e) => setForm({ ...form, segment_tag: e.target.value })} className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30">
                       <option value="">Todas</option>
                       {allTags.map((t) => (
                         <option key={t.id} value={t.id}>{t.name}</option>
@@ -378,12 +378,12 @@ export default function AdminMarketing() {
                   </div>
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Gasto mín. (R$)</label>
-                    <input type="number" value={form.segment_min_spent} onChange={(e) => setForm({ ...form, segment_min_spent: e.target.value })} placeholder="0" className="w-full px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                    <input type="number" value={form.segment_min_spent} onChange={(e) => setForm({ ...form, segment_min_spent: e.target.value })} placeholder="0" className="w-full px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                   </div>
                   <div className="flex items-end">
                     <button
                       onClick={previewSegment}
-                      className="w-full px-4 py-2.5 rounded-2xl bg-supet-bg text-primary font-semibold text-sm hover:bg-primary/10 transition-colors"
+                      className="w-full px-4 py-2.5 rounded-2xl bg-muted text-primary font-semibold text-sm hover:bg-primary/10 transition-colors"
                     >
                       <Eye className="w-4 h-4 inline mr-1" />
                       Preview {previewCount !== null && `(${previewCount})`}
@@ -414,7 +414,7 @@ export default function AdminMarketing() {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="bg-supet-bg-alt rounded-3xl p-5 animate-pulse flex items-center gap-4">
+            <div key={i} className="bg-card rounded-3xl p-5 animate-pulse flex items-center gap-4">
               <div className="w-10 h-10 rounded-2xl bg-border" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-40 rounded-full bg-border" />
@@ -424,7 +424,7 @@ export default function AdminMarketing() {
           ))}
         </div>
       ) : campaigns.length === 0 ? (
-        <div className="bg-supet-bg-alt rounded-3xl p-10 text-center text-muted-foreground text-sm">
+        <div className="bg-card rounded-3xl p-10 text-center text-muted-foreground text-sm">
           Nenhuma campanha criada ainda.
         </div>
       ) : (
@@ -440,7 +440,7 @@ export default function AdminMarketing() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03 }}
-                className="bg-supet-bg-alt rounded-3xl overflow-hidden"
+                className="bg-card rounded-3xl overflow-hidden"
               >
                 <button
                   onClick={() => setExpandedId(isExpanded ? null : camp.id)}
@@ -496,13 +496,13 @@ export default function AdminMarketing() {
                           </div>
                         </div>
                         {camp.message && (
-                          <div className="bg-supet-bg rounded-2xl p-3">
+                          <div className="bg-muted rounded-2xl p-3">
                             <p className="text-xs text-muted-foreground mb-1">Mensagem</p>
                             <p className="text-sm text-foreground">{camp.message}</p>
                           </div>
                         )}
                         {camp.coupon_discount_value && (
-                          <div className="bg-supet-bg rounded-2xl p-3 flex items-center gap-2">
+                          <div className="bg-muted rounded-2xl p-3 flex items-center gap-2">
                             <Percent className="w-4 h-4 text-primary" />
                             <span className="text-sm text-foreground">
                               {camp.coupon_discount_type === "percentage" ? `${camp.coupon_discount_value}%` : `R$${camp.coupon_discount_value}`} de desconto

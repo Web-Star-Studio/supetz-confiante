@@ -124,7 +124,7 @@ export default function AdminEstoque() {
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
         <button
           onClick={() => setFilter("all")}
-          className={`bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3 transition-all text-left ${filter === "all" ? "ring-2 ring-primary shadow-lg shadow-primary/10" : ""}`}
+          className={`bg-card rounded-3xl p-5 flex items-center gap-3 transition-all text-left ${filter === "all" ? "ring-2 ring-primary shadow-lg shadow-primary/10" : ""}`}
         >
           <div className="w-10 h-10 rounded-2xl bg-primary/15 flex items-center justify-center">
             <Boxes className="w-5 h-5 text-primary" />
@@ -134,7 +134,7 @@ export default function AdminEstoque() {
             <p className="text-xl font-extrabold text-foreground">{totalStock}</p>
           </div>
         </button>
-        <div className="bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3">
+        <div className="bg-card rounded-3xl p-5 flex items-center gap-3">
           <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 flex items-center justify-center">
             <Package className="w-5 h-5 text-emerald-600" />
           </div>
@@ -145,7 +145,7 @@ export default function AdminEstoque() {
         </div>
         <button
           onClick={() => setFilter("low")}
-          className={`bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3 transition-all text-left ${filter === "low" ? "ring-2 ring-amber-500 shadow-lg shadow-amber-500/10" : ""}`}
+          className={`bg-card rounded-3xl p-5 flex items-center gap-3 transition-all text-left ${filter === "low" ? "ring-2 ring-amber-500 shadow-lg shadow-amber-500/10" : ""}`}
         >
           <div className="w-10 h-10 rounded-2xl bg-amber-500/15 flex items-center justify-center">
             <AlertTriangle className="w-5 h-5 text-amber-600" />
@@ -157,7 +157,7 @@ export default function AdminEstoque() {
         </button>
         <button
           onClick={() => setFilter("out")}
-          className={`bg-supet-bg-alt rounded-3xl p-5 flex items-center gap-3 transition-all text-left ${filter === "out" ? "ring-2 ring-destructive shadow-lg shadow-destructive/10" : ""}`}
+          className={`bg-card rounded-3xl p-5 flex items-center gap-3 transition-all text-left ${filter === "out" ? "ring-2 ring-destructive shadow-lg shadow-destructive/10" : ""}`}
         >
           <div className="w-10 h-10 rounded-2xl bg-destructive/15 flex items-center justify-center">
             <Package className="w-5 h-5 text-destructive" />
@@ -176,7 +176,7 @@ export default function AdminEstoque() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar produto..."
-          className="w-full pl-11 pr-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
+          className="w-full pl-11 pr-4 py-3 rounded-2xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
         />
       </div>
 
@@ -189,7 +189,7 @@ export default function AdminEstoque() {
             exit={{ opacity: 0, height: 0 }}
             className="overflow-hidden mb-6"
           >
-            <div className="bg-supet-bg-alt rounded-3xl p-6 space-y-4">
+            <div className="bg-card rounded-3xl p-6 space-y-4">
               <h3 className="text-sm font-extrabold text-foreground">
                 Ajustar estoque: {products.find((p) => p.id === adjustProduct)?.title}
               </h3>
@@ -202,7 +202,7 @@ export default function AdminEstoque() {
                         key={t}
                         onClick={() => setAdjustType(t)}
                         className={`flex items-center gap-1.5 px-4 py-2.5 rounded-2xl text-xs font-semibold transition-all ${
-                          adjustType === t ? "bg-primary text-primary-foreground shadow-md" : "bg-supet-bg text-muted-foreground"
+                          adjustType === t ? "bg-primary text-primary-foreground shadow-md" : "bg-muted text-muted-foreground"
                         }`}
                       >
                         <cfg.icon className="w-3.5 h-3.5" />
@@ -216,13 +216,13 @@ export default function AdminEstoque() {
                   min={1}
                   value={adjustQty}
                   onChange={(e) => setAdjustQty(Number(e.target.value))}
-                  className="w-20 px-3 py-2.5 rounded-2xl bg-supet-bg text-foreground text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="w-20 px-3 py-2.5 rounded-2xl bg-muted text-foreground text-sm text-center focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <input
                   value={adjustReason}
                   onChange={(e) => setAdjustReason(e.target.value)}
                   placeholder="Motivo (opcional)"
-                  className="flex-1 min-w-[150px] px-4 py-2.5 rounded-2xl bg-supet-bg text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                  className="flex-1 min-w-[150px] px-4 py-2.5 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                 />
                 <button
                   onClick={handleAdjust}
@@ -244,7 +244,7 @@ export default function AdminEstoque() {
       {loading ? (
         <div className="space-y-3">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="bg-supet-bg-alt rounded-3xl p-5 animate-pulse flex items-center gap-4">
+            <div key={i} className="bg-card rounded-3xl p-5 animate-pulse flex items-center gap-4">
               <div className="w-12 h-12 rounded-2xl bg-border" />
               <div className="flex-1 space-y-2">
                 <div className="h-4 w-40 rounded-full bg-border" />
@@ -254,7 +254,7 @@ export default function AdminEstoque() {
           ))}
         </div>
       ) : filtered.length === 0 ? (
-        <div className="bg-supet-bg-alt rounded-3xl p-10 text-center text-muted-foreground text-sm">
+        <div className="bg-card rounded-3xl p-10 text-center text-muted-foreground text-sm">
           Nenhum produto encontrado.
         </div>
       ) : (
@@ -271,7 +271,7 @@ export default function AdminEstoque() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.02 }}
-                className="bg-supet-bg-alt rounded-3xl overflow-hidden"
+                className="bg-card rounded-3xl overflow-hidden"
               >
                 <div className="flex items-center gap-4 p-4">
                   {prod.image_url ? (
@@ -334,7 +334,7 @@ export default function AdminEstoque() {
                               const cfg = typeConfig[mov.type] || typeConfig.adjustment;
                               const MIcon = cfg.icon;
                               return (
-                                <div key={mov.id} className="flex items-center gap-3 p-2.5 bg-supet-bg rounded-2xl">
+                                <div key={mov.id} className="flex items-center gap-3 p-2.5 bg-muted rounded-2xl">
                                   <div className={`w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 ${cfg.class}`}>
                                     <MIcon className="w-3.5 h-3.5" />
                                   </div>

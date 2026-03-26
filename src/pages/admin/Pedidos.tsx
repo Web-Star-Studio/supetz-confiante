@@ -7,7 +7,7 @@ import { useAuditLog } from "@/hooks/useAuditLog";
 
 function PedidosSkeleton() {
   return (
-    <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
+    <div className="bg-card rounded-3xl overflow-hidden">
       <div className="p-6 space-y-0">
         {[1, 2, 3, 4].map((i) => (
           <div key={i} className="flex items-center gap-4 py-4 animate-pulse border-b border-border/30 last:border-0">
@@ -86,7 +86,7 @@ export default function AdminPedidos() {
       {/* Quick stats */}
       {!loading && (
         <div className="flex gap-3 mb-6 flex-wrap">
-          <div className="flex items-center gap-2 rounded-2xl bg-supet-bg-alt px-4 py-2.5">
+          <div className="flex items-center gap-2 rounded-2xl bg-card px-4 py-2.5">
             <ShoppingCart className="w-4 h-4 text-primary" />
             <span className="text-sm font-bold text-foreground">{orders.length}</span>
             <span className="text-xs text-muted-foreground">total</span>
@@ -112,12 +112,12 @@ export default function AdminPedidos() {
         <div className="relative flex-1">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <input type="text" value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar por nome ou ID..."
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm" />
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm" />
         </div>
         <div className="relative">
           <Filter className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}
-            className="pl-11 pr-8 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30">
+            className="pl-11 pr-8 py-3 rounded-2xl bg-card text-foreground text-sm appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30">
             <option value="all">Todos</option>
             <option value="pending">Pendente</option>
             <option value="confirmed">Confirmado</option>
@@ -129,14 +129,14 @@ export default function AdminPedidos() {
       </div>
 
       {loading ? <PedidosSkeleton /> : (
-        <div className="bg-supet-bg-alt rounded-3xl overflow-hidden">
+        <div className="bg-card rounded-3xl overflow-hidden">
           {filtered.length === 0 ? (
             <div className="p-10 text-center text-muted-foreground text-sm">Nenhum pedido encontrado.</div>
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-supet-bg/60">
+                  <tr className="bg-muted/60">
                     <th className="text-left px-6 py-3 font-semibold text-muted-foreground">ID</th>
                     <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Cliente</th>
                     <th className="text-left px-6 py-3 font-semibold text-muted-foreground">Status</th>
@@ -149,7 +149,7 @@ export default function AdminPedidos() {
                   {filtered.map((order, i) => {
                     const status = statusLabels[order.status] || { label: order.status, className: "bg-muted text-muted-foreground" };
                     return (
-                      <tr key={order.id} className={`transition-colors hover:bg-primary/5 cursor-pointer ${i % 2 === 1 ? "bg-supet-bg/30" : ""}`}
+                      <tr key={order.id} className={`transition-colors hover:bg-primary/5 cursor-pointer ${i % 2 === 1 ? "bg-muted/30" : ""}`}
                         onClick={() => setSelectedOrder(order)}>
                         <td className="px-6 py-4 font-mono text-xs text-muted-foreground">{order.id.slice(0, 8)}</td>
                         <td className="px-6 py-4 font-medium text-foreground">{order.customer_name || "—"}</td>
@@ -162,7 +162,7 @@ export default function AdminPedidos() {
                           <select
                             value={order.status}
                             onChange={e => updateStatus(order.id, e.target.value)}
-                            className="px-3 py-1.5 rounded-xl bg-supet-bg text-xs text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30"
+                            className="px-3 py-1.5 rounded-xl bg-muted text-xs text-foreground cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary/30"
                           >
                             <option value="pending">Pendente</option>
                             <option value="confirmed">Confirmado</option>
@@ -185,10 +185,10 @@ export default function AdminPedidos() {
       <AnimatePresence>
         {selectedOrder && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-supet-text/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            className="fixed inset-0 bg-foreground/20 backdrop-blur-sm z-50 flex items-center justify-center p-4"
             onClick={() => setSelectedOrder(null)}>
             <motion.div initial={{ scale: 0.95, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-supet-bg rounded-3xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto"
+              className="bg-muted rounded-3xl w-full max-w-lg p-8 max-h-[90vh] overflow-y-auto"
               onClick={e => e.stopPropagation()}>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-xl font-extrabold text-foreground font-display">Detalhes do Pedido</h2>
@@ -225,7 +225,7 @@ export default function AdminPedidos() {
                 {/* Items */}
                 <div>
                   <label className="text-xs text-muted-foreground font-medium mb-2 block">Itens</label>
-                  <div className="bg-supet-bg-alt rounded-2xl p-4 space-y-2">
+                  <div className="bg-card rounded-2xl p-4 space-y-2">
                     {Array.isArray(selectedOrder.items) && selectedOrder.items.length > 0 ? (
                       (selectedOrder.items as any[]).map((item: any, idx: number) => (
                         <div key={idx} className="flex justify-between text-sm">
@@ -243,7 +243,7 @@ export default function AdminPedidos() {
                 {selectedOrder.shipping_address && (
                   <div>
                     <label className="text-xs text-muted-foreground font-medium mb-2 block">Endereço de Entrega</label>
-                    <div className="bg-supet-bg-alt rounded-2xl p-4 text-sm text-foreground flex items-start gap-3">
+                    <div className="bg-card rounded-2xl p-4 text-sm text-foreground flex items-start gap-3">
                       <MapPin className="w-4 h-4 text-primary flex-shrink-0 mt-0.5" />
                       <div>
                         {(() => {
@@ -266,7 +266,7 @@ export default function AdminPedidos() {
                       updateStatus(selectedOrder.id, e.target.value);
                       setSelectedOrder({ ...selectedOrder, status: e.target.value });
                     }}
-                    className="w-full px-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer"
+                    className="w-full px-4 py-3 rounded-2xl bg-card text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 appearance-none cursor-pointer"
                   >
                     <option value="pending">Pendente</option>
                     <option value="confirmed">Confirmado</option>

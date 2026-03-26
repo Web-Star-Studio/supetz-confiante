@@ -204,7 +204,7 @@ export default function AdminCRM() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar por nome ou telefone..."
-            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-supet-bg-alt text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
+            className="w-full pl-11 pr-4 py-3 rounded-2xl bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 text-sm"
           />
         </div>
 
@@ -224,7 +224,7 @@ export default function AdminCRM() {
             </button>
           ))}
           {!showNewTag ? (
-            <button onClick={() => setShowNewTag(true)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-supet-bg-alt text-muted-foreground hover:text-primary transition-colors">
+            <button onClick={() => setShowNewTag(true)} className="px-3 py-1.5 rounded-full text-xs font-semibold bg-card text-muted-foreground hover:text-primary transition-colors">
               <Plus className="w-3 h-3 inline mr-1" />Nova tag
             </button>
           ) : (
@@ -234,7 +234,7 @@ export default function AdminCRM() {
                 onChange={(e) => setNewTagName(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleCreateTag()}
                 placeholder="Nome da tag"
-                className="px-3 py-1.5 rounded-full text-xs bg-supet-bg-alt text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 w-28"
+                className="px-3 py-1.5 rounded-full text-xs bg-card text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/30 w-28"
                 autoFocus
               />
               <input type="color" value={newTagColor} onChange={(e) => setNewTagColor(e.target.value)} className="w-6 h-6 rounded-full border-0 cursor-pointer" />
