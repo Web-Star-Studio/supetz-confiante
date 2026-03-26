@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { lovable } from "@/integrations/lovable/index";
 import { motion } from "framer-motion";
@@ -9,6 +9,7 @@ import supetLogo from "@/assets/supet-logo-header.png";
 export default function Cadastro() {
   const { signUp } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -45,7 +46,7 @@ export default function Cadastro() {
             </div>
             <h2 className="text-2xl font-extrabold text-foreground mb-3 font-display">Conta criada!</h2>
             <p className="text-muted-foreground text-sm">Sua conta foi criada com sucesso. Você já pode fazer login.</p>
-            <Link to="/login" className="inline-block mt-8 text-primary font-semibold hover:underline text-sm">Ir para login</Link>
+            <Link to={`/login${searchParams.get("redirect") ? `?redirect=${searchParams.get("redirect")}` : ""}`} className="inline-block mt-8 text-primary font-semibold hover:underline text-sm">Ir para login</Link>
           </div>
         </motion.div>
       </div>
