@@ -441,9 +441,16 @@ export default function Afiliados() {
                           <button
                             onClick={() => openAffiliateDetail(aff)}
                             className="text-muted-foreground hover:bg-muted p-1.5 rounded-lg"
-                            title="Detalhes"
+                            title="Editar"
                           >
                             <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(aff)}
+                            className="text-destructive hover:bg-destructive/10 p-1.5 rounded-lg"
+                            title="Excluir"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
