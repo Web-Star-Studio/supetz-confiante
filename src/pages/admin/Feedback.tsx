@@ -116,14 +116,26 @@ export default function AdminFeedback() {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between flex-wrap gap-3">
           <div>
             <h1 className="text-2xl font-bold text-foreground">Feedback da Super IA</h1>
             <p className="text-sm text-muted-foreground">Monitore a satisfação e melhore as respostas automaticamente</p>
           </div>
-          <Button variant="outline" size="sm" onClick={exportCSV} className="gap-2">
-            <Download className="h-4 w-4" /> Exportar CSV
-          </Button>
+          <div className="flex items-center gap-2">
+            <Select value={period} onValueChange={setPeriod}>
+              <SelectTrigger className="w-[130px] rounded-xl">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="7">7 dias</SelectItem>
+                <SelectItem value="30">30 dias</SelectItem>
+                <SelectItem value="all">Todos</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button variant="outline" size="sm" onClick={exportCSV} className="gap-2">
+              <Download className="h-4 w-4" /> Exportar CSV
+            </Button>
+          </div>
         </div>
 
         {/* KPIs */}
