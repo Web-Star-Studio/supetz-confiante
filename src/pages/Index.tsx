@@ -12,6 +12,7 @@ import TestimonialsShowcaseSection from "@/components/landing/TestimonialsShowca
 import TreatmentPlansSection from "@/components/landing/TreatmentPlansSection";
 import PurchaseSecuritySection from "@/components/landing/PurchaseSecuritySection";
 import FAQStandaloneSection from "@/components/landing/FAQStandaloneSection";
+import NewsletterSection from "@/components/landing/NewsletterSection";
 import FinalCTASection from "@/components/landing/FinalCTASection";
 
 const Index = () => {
@@ -57,6 +58,7 @@ const Index = () => {
         <TreatmentPlansSection />
         <PurchaseSecuritySection />
         <FAQStandaloneSection />
+        <NewsletterSection />
         <FinalCTASection />
       </div>
     </Layout>

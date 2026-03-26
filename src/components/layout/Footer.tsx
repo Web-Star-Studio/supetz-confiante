@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Youtube, Music2, ArrowRight } from "lucide-react";
+import { Facebook, Instagram, Youtube, Music2, ArrowRight, CheckCircle } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { socialLinks } from "@/services/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const iconByPlatform = {
   facebook: Facebook,
@@ -12,6 +15,34 @@ const iconByPlatform = {
 
 export default function Footer() {
   const reduceMotion = useReducedMotion();
+  const [nlEmail, setNlEmail] = useState("");
+  const [nlLoading, setNlLoading] = useState(false);
+  const [nlDone, setNlDone] = useState(false);
+
+  async function handleNewsletter(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = nlEmail.trim().toLowerCase();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      toast.error("Insira um e-mail válido.");
+      return;
+    }
+    setNlLoading(true);
+    const { error } = await supabase
+      .from("newsletter_subscribers" as any)
+      .insert({ email: trimmed, source: "footer" } as any);
+    if (error) {
+      if (error.code === "23505") {
+        toast.info("Você já está inscrito! 🎉");
+        setNlDone(true);
+      } else {
+        toast.error("Erro ao se inscrever.");
+      }
+    } else {
+      toast.success("Inscrição confirmada! 🎉");
+      setNlDone(true);
+    }
+    setNlLoading(false);
+  }
 
   return (
     <footer className="relative overflow-hidden bg-gradient-to-b from-[#FE6D00] to-[#E56200] pt-20 pb-10 text-white hidden md:block">
@@ -123,24 +154,33 @@ export default function Footer() {
             <p className="text-sm text-white/80 font-medium mb-4">
               Receba dicas de saúde pet e ofertas exclusivas direto no seu e-mail.
             </p>
-            <form className="mt-2 flex max-w-md gap-x-2" onSubmit={(e) => e.preventDefault()}>
-              <label htmlFor="email-address" className="sr-only">Endereço de e-mail</label>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                required
-                placeholder="Seu melhor e-mail"
-                className="min-w-0 flex-auto rounded-xl border-0 bg-white/10 px-4 py-3 text-white placeholder:text-white/50 focus:ring-2 focus:ring-inset focus:ring-white sm:text-sm sm:leading-6"
-              />
-              <button
-                type="submit"
-                className="flex flex-none items-center justify-center rounded-xl bg-white px-4 py-3 text-[#FE6D00] shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors"
-                aria-label="Inscrever-se na newsletter"
-              >
-                <ArrowRight className="h-5 w-5" />
-              </button>
-            </form>
+            {nlDone ? (
+              <div className="mt-2 flex items-center gap-2 text-white/90 font-semibold text-sm">
+                <CheckCircle className="w-5 h-5" /> Inscrito com sucesso!
+              </div>
+            ) : (
+              <form className="mt-2 flex max-w-md gap-x-2" onSubmit={handleNewsletter}>
+                <label htmlFor="email-address" className="sr-only">Endereço de e-mail</label>
+                <input
+                  id="email-address"
+                  name="email"
+                  type="email"
+                  required
+                  value={nlEmail}
+                  onChange={(e) => setNlEmail(e.target.value)}
+                  placeholder="Seu melhor e-mail"
+                  className="min-w-0 flex-auto rounded-xl border-0 bg-white/10 px-4 py-3 text-white placeholder:text-white/50 focus:ring-2 focus:ring-inset focus:ring-white sm:text-sm sm:leading-6"
+                />
+                <button
+                  type="submit"
+                  disabled={nlLoading}
+                  className="flex flex-none items-center justify-center rounded-xl bg-white px-4 py-3 text-[#FE6D00] shadow-sm hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white transition-colors disabled:opacity-50"
+                  aria-label="Inscrever-se na newsletter"
+                >
+                  <ArrowRight className="h-5 w-5" />
+                </button>
+              </form>
+            )}
           </div>
         </div>
 
