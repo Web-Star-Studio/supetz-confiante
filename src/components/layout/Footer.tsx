@@ -1,7 +1,10 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Facebook, Instagram, Youtube, Music2, ArrowRight } from "lucide-react";
+import { Facebook, Instagram, Youtube, Music2, ArrowRight, CheckCircle } from "lucide-react";
 import { motion, useReducedMotion } from "framer-motion";
 import { socialLinks } from "@/services/mockData";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 const iconByPlatform = {
   facebook: Facebook,
