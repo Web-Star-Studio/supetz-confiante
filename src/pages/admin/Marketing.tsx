@@ -43,10 +43,20 @@ interface CampaignWithMetrics extends Campaign {
   couponsTotal: number;
 }
 
+interface EmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  category: string;
+  html_content: string;
+  accent_color: string;
+}
+
 const defaultForm = {
   name: "",
   type: "notification" as "notification" | "coupon" | "both",
   message: "",
+  template_id: "" as string,
   coupon_discount_type: "percentage" as "percentage" | "fixed",
   coupon_discount_value: 10,
   coupon_min_order: 50,
@@ -79,20 +89,24 @@ export default function AdminMarketing() {
 
   const [form, setForm] = useState(defaultForm);
   const [allTags, setAllTags] = useState<{ id: string; name: string; color: string }[]>([]);
+  const [allTemplates, setAllTemplates] = useState<EmailTemplate[]>([]);
   const [previewCount, setPreviewCount] = useState<number | null>(null);
   const [sending, setSending] = useState(false);
+  const [showTemplatePreview, setShowTemplatePreview] = useState(false);
 
   const fetchCampaigns = useCallback(async () => {
     setLoading(true);
-    const [campRes, recipRes, tagsRes] = await Promise.all([
+    const [campRes, recipRes, tagsRes, tplRes] = await Promise.all([
       supabase.from("campaigns").select("*").order("created_at", { ascending: false }),
       supabase.from("campaign_recipients").select("campaign_id, opened, coupon_id"),
       supabase.from("customer_tags").select("*").order("name"),
+      supabase.from("campaign_templates").select("id, name, subject, category, html_content, accent_color").order("updated_at", { ascending: false }),
     ]);
 
     const camps = (campRes.data || []) as Campaign[];
     const recipients = recipRes.data || [];
     setAllTags((tagsRes.data || []) as any[]);
+    setAllTemplates((tplRes.data || []) as EmailTemplate[]);
 
     // Get coupon usage data
     const couponIds = recipients.map((r: any) => r.coupon_id).filter(Boolean);
@@ -152,6 +166,7 @@ export default function AdminMarketing() {
       name: camp.name + " (cópia)",
       type: (camp.type as any) || "notification",
       message: camp.message || "",
+      template_id: (camp as any).template_id || "",
       coupon_discount_type: (camp.coupon_discount_type as any) || "percentage",
       coupon_discount_value: camp.coupon_discount_value || 10,
       coupon_min_order: camp.coupon_min_order || 50,
@@ -217,6 +232,7 @@ export default function AdminMarketing() {
       name: form.name,
       type: form.type,
       message: form.message,
+      template_id: form.template_id || null,
       segment_filter: segmentFilter,
       status: isScheduled ? "scheduled" : "active",
       sent_at: isScheduled ? null : new Date().toISOString(),
@@ -416,6 +432,88 @@ export default function AdminMarketing() {
                     </div>
                   </div>
 
+                  {/* Template selector */}
+                  <div>
+                    <label className="text-xs font-semibold text-muted-foreground mb-2 block">Template de e-mail (opcional)</label>
+                    <div className="flex gap-3 overflow-x-auto pb-2">
+                      {/* No template option */}
+                      <button
+                        onClick={() => setForm({ ...form, template_id: "" })}
+                        className={`flex-shrink-0 w-36 rounded-2xl border-2 transition-all p-3 text-center ${
+                          !form.template_id ? "border-primary bg-primary/5 shadow-md" : "border-border/50 bg-card hover:border-primary/30"
+                        }`}
+                      >
+                        <Mail className="w-6 h-6 mx-auto mb-1.5 text-muted-foreground" />
+                        <p className="text-xs font-semibold text-foreground">Sem template</p>
+                        <p className="text-[10px] text-muted-foreground mt-0.5">Apenas notificação</p>
+                      </button>
+                      {allTemplates.map((tpl) => (
+                        <button
+                          key={tpl.id}
+                          onClick={() => setForm({ ...form, template_id: tpl.id })}
+                          className={`flex-shrink-0 w-36 rounded-2xl border-2 transition-all overflow-hidden ${
+                            form.template_id === tpl.id ? "border-primary shadow-md" : "border-border/50 bg-card hover:border-primary/30"
+                          }`}
+                        >
+                          <div
+                            className="h-20 overflow-hidden relative"
+                            style={{ background: `${tpl.accent_color}10` }}
+                          >
+                            <div
+                              className="transform scale-[0.2] origin-top-left w-[500%]"
+                              dangerouslySetInnerHTML={{ __html: `<div style="font-family:Arial,sans-serif">${tpl.html_content}</div>` }}
+                            />
+                          </div>
+                          <div className="p-2">
+                            <p className="text-xs font-semibold text-foreground truncate">{tpl.name}</p>
+                            <p className="text-[10px] text-muted-foreground truncate">{tpl.subject}</p>
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    {form.template_id && (() => {
+                      const selected = allTemplates.find((t) => t.id === form.template_id);
+                      if (!selected) return null;
+                      return (
+                        <div className="mt-3 flex items-center gap-3">
+                          <span className="text-xs text-muted-foreground">
+                            Template selecionado: <span className="font-bold text-foreground">{selected.name}</span>
+                          </span>
+                          <button
+                            onClick={() => setShowTemplatePreview(!showTemplatePreview)}
+                            className="text-xs text-primary font-semibold hover:underline flex items-center gap-1"
+                          >
+                            <Eye className="w-3.5 h-3.5" />
+                            {showTemplatePreview ? "Ocultar" : "Ver preview"}
+                          </button>
+                        </div>
+                      );
+                    })()}
+                    <AnimatePresence>
+                      {showTemplatePreview && form.template_id && (() => {
+                        const selected = allTemplates.find((t) => t.id === form.template_id);
+                        if (!selected) return null;
+                        return (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="overflow-hidden mt-3"
+                          >
+                            <div className="bg-muted/50 rounded-2xl p-4">
+                              <div
+                                className="bg-white rounded-xl shadow-sm max-w-[500px] mx-auto overflow-hidden"
+                                dangerouslySetInnerHTML={{
+                                  __html: `<div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto">${selected.html_content}</div>`,
+                                }}
+                              />
+                            </div>
+                          </motion.div>
+                        );
+                      })()}
+                    </AnimatePresence>
+                  </div>
+
                   <div>
                     <label className="text-xs font-semibold text-muted-foreground mb-1 block">Mensagem</label>
                     <textarea
@@ -604,6 +702,14 @@ export default function AdminMarketing() {
                                 📅 {new Date(camp.scheduled_for).toLocaleDateString("pt-BR")}
                               </span>
                             )}
+                            {(camp as any).template_id && (() => {
+                              const tpl = allTemplates.find((t) => t.id === (camp as any).template_id);
+                              return tpl ? (
+                                <span className="text-[10px] font-medium text-primary flex items-center gap-1">
+                                  <FileText className="w-3 h-3" />{tpl.name}
+                                </span>
+                              ) : null;
+                            })()}
                           </div>
                         </div>
                         <div className="hidden sm:flex items-center gap-4 text-xs text-muted-foreground flex-shrink-0">
