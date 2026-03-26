@@ -140,6 +140,39 @@ export default function AdminFeedback() {
         {/* Trend Charts */}
         <FeedbackTrendChart feedbacks={allFeedbacks} />
 
+        {/* Negative Reasons Ranking */}
+        {(() => {
+          const negatives = allFeedbacks.filter(f => f.rating === "negative" && f.reason);
+          const reasonCounts: Record<string, number> = {};
+          negatives.forEach(f => {
+            if (f.reason) reasonCounts[f.reason] = (reasonCounts[f.reason] || 0) + 1;
+          });
+          const sorted = Object.entries(reasonCounts).sort((a, b) => b[1] - a[1]);
+          const max = sorted[0]?.[1] || 1;
+          if (sorted.length === 0) return null;
+          return (
+            <div className="bg-card border border-border rounded-2xl p-4">
+              <h3 className="text-sm font-semibold text-foreground mb-3">Motivos Negativos Mais Frequentes</h3>
+              <div className="space-y-2.5">
+                {sorted.map(([reason, count], i) => (
+                  <div key={reason} className="flex items-center gap-3">
+                    <span className="text-xs font-bold text-muted-foreground w-5 text-right">{i + 1}.</span>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm text-foreground truncate">{reason}</span>
+                        <span className="text-xs font-semibold text-muted-foreground ml-2">{count}×</span>
+                      </div>
+                      <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-destructive/70 rounded-full transition-all" style={{ width: `${(count / max) * 100}%` }} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          );
+        })()}
+
         {/* Filters */}
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
