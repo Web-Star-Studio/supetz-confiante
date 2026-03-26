@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import {
   Handshake, Users, DollarSign, TrendingUp, CheckCircle, XCircle,
-  Clock, Eye, Loader2, Search, Wallet,
+  Clock, Eye, Loader2, Search, Wallet, Plus,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
