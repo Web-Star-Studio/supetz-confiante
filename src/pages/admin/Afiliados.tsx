@@ -70,10 +70,18 @@ export default function Afiliados() {
   });
   const [affPage, setAffPage] = useState(0);
   const [affTotalCount, setAffTotalCount] = useState(0);
+  const [affSortCol, setAffSortCol] = useState<AffSortCol>("created_at");
+  const [affSortDir, setAffSortDir] = useState<AffSortDir>("desc");
+
+  const toggleAffSort = (col: AffSortCol) => {
+    if (affSortCol === col) setAffSortDir(d => d === "asc" ? "desc" : "asc");
+    else { setAffSortCol(col); setAffSortDir("desc"); }
+    setAffPage(0);
+  };
 
   useEffect(() => {
     loadData();
-  }, [affPage, statusFilter, search]);
+  }, [affPage, statusFilter, search, affSortCol, affSortDir]);
 
   useEffect(() => { setAffPage(0); }, [statusFilter, search]);
 
@@ -82,7 +90,7 @@ export default function Afiliados() {
     const from = affPage * AFF_PAGE_SIZE;
     const to = from + AFF_PAGE_SIZE - 1;
 
-    let affQuery = supabase.from("affiliates").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
+    let affQuery = supabase.from("affiliates").select("*", { count: "exact" }).order(affSortCol, { ascending: affSortDir === "asc" }).range(from, to);
     if (statusFilter !== "all") affQuery = affQuery.eq("status", statusFilter);
     if (search.trim()) affQuery = affQuery.or(`name.ilike.%${search.trim()}%,email.ilike.%${search.trim()}%`);
 
