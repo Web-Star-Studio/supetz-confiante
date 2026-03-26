@@ -354,6 +354,9 @@ export default function Produto() {
               </div>
             </div>
           )}
+
+          {/* Reviews */}
+          <ProductReviews productId={id!} />
         </div>
       </div>
     </>
