@@ -1578,6 +1578,30 @@ export type Database = {
         }
         Relationships: []
       }
+      weekly_marketing_summaries: {
+        Row: {
+          created_at: string
+          id: string
+          summary: Json
+          week_end: string
+          week_start: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          summary?: Json
+          week_end: string
+          week_start: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          summary?: Json
+          week_end?: string
+          week_start?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

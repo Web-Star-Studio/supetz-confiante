@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Check, CheckCheck, ShoppingCart, X, Filter, Clock } from "lucide-react";
+import { Bell, Check, CheckCheck, ShoppingCart, X, Filter, Clock, BarChart3 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
@@ -17,7 +17,7 @@ interface Notification {
 }
 
 type StatusFilter = "all" | "unread" | "read";
-type TypeFilter = "all" | "order" | "restock" | "stock";
+type TypeFilter = "all" | "order" | "restock" | "stock" | "marketing_summary" | "email_alert";
 
 export default function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -104,6 +104,8 @@ export default function NotificationCenter() {
       case "order": return <ShoppingCart className="w-4 h-4 text-primary" />;
       case "restock": return <Clock className="w-4 h-4 text-amber-600" />;
       case "stock": return <Bell className="w-4 h-4 text-red-500" />;
+      case "marketing_summary": return <BarChart3 className="w-4 h-4 text-violet-600" />;
+      case "email_alert": return <Bell className="w-4 h-4 text-destructive" />;
       default: return <Bell className="w-4 h-4 text-primary" />;
     }
   };
@@ -168,6 +170,8 @@ export default function NotificationCenter() {
               <button className={chipClass(typeFilter === "order")} onClick={() => setTypeFilter("order")}>Pedidos</button>
               <button className={chipClass(typeFilter === "restock")} onClick={() => setTypeFilter("restock")}>Reposição</button>
               <button className={chipClass(typeFilter === "stock")} onClick={() => setTypeFilter("stock")}>Estoque</button>
+              <button className={chipClass(typeFilter === "marketing_summary")} onClick={() => setTypeFilter("marketing_summary")}>Marketing</button>
+              <button className={chipClass(typeFilter === "email_alert")} onClick={() => setTypeFilter("email_alert")}>E-mail</button>
             </div>
 
             {/* List */}

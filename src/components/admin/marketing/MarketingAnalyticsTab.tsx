@@ -7,6 +7,7 @@ import {
   Megaphone, Calendar, UserPlus, Loader2,
 } from "lucide-react";
 import EmailAnalyticsPanel from "./EmailAnalyticsPanel";
+import WeeklySummaryPanel from "./WeeklySummaryPanel";
 
 interface AnalyticsData {
   campaigns: any[];
@@ -399,6 +400,9 @@ export default function MarketingAnalyticsTab() {
           </div>
         </div>
       </div>
+
+      {/* Weekly Summary Panel */}
+      <WeeklySummaryPanel />
 
       {/* Email Analytics Panel */}
       <EmailAnalyticsPanel />
