@@ -159,11 +159,11 @@ export default function AdminFeedback() {
         </div>
 
         {/* Trend Charts */}
-        <FeedbackTrendChart feedbacks={allFeedbacks} />
+        <FeedbackTrendChart feedbacks={filteredByPeriod} />
 
         {/* Negative Reasons Ranking */}
         {(() => {
-          const negatives = allFeedbacks.filter(f => f.rating === "negative" && f.reason);
+          const negatives = filteredByPeriod.filter(f => f.rating === "negative" && f.reason);
           const reasonCounts: Record<string, number> = {};
           negatives.forEach(f => {
             if (f.reason) reasonCounts[f.reason] = (reasonCounts[f.reason] || 0) + 1;
