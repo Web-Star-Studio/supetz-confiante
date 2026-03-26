@@ -6,6 +6,7 @@ import {
   Send, Eye, Percent, Activity, ArrowUpRight, ArrowDownRight,
   Megaphone, Calendar, UserPlus, Loader2,
 } from "lucide-react";
+import EmailAnalyticsPanel from "./EmailAnalyticsPanel";
 
 interface AnalyticsData {
   campaigns: any[];
