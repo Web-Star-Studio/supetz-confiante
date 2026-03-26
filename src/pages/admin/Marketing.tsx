@@ -318,6 +318,8 @@ export default function AdminMarketing() {
 
       {activeTab === "newsletter" ? (
         <NewsletterTab />
+      ) : activeTab === "templates" ? (
+        <CampaignTemplatesTab />
       ) : (
         <>
           {/* Stats */}
