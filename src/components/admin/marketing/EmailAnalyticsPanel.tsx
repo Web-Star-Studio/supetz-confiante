@@ -67,7 +67,7 @@ export default function EmailAnalyticsPanel() {
       const cutoff = new Date();
       cutoff.setDate(cutoff.getDate() - (period === "7d" ? 7 : period === "30d" ? 30 : 90));
 
-      const [logRes, campRes, recipRes] = await Promise.all([
+      const [logRes, campRes, recipRes, alertRes] = await Promise.all([
         supabase
           .from("email_send_log")
           .select("id, message_id, template_name, recipient_email, status, error_message, created_at")
@@ -82,11 +82,24 @@ export default function EmailAnalyticsPanel() {
         supabase
           .from("campaign_recipients")
           .select("campaign_id, opened, sent_at"),
+        supabase
+          .from("store_settings")
+          .select("value")
+          .eq("key", "email_failure_alert_threshold")
+          .maybeSingle(),
       ]);
 
       setLogs((logRes.data || []) as EmailLog[]);
       setCampaigns((campRes.data || []) as Campaign[]);
       setRecipients((recipRes.data || []) as CampaignRecipient[]);
+
+      if (alertRes.data?.value) {
+        const v = alertRes.data.value as Record<string, unknown>;
+        setAlertThreshold((v.threshold as number) ?? 10);
+        setAlertWindowHours((v.window_hours as number) ?? 24);
+        setAlertEnabled(v.enabled !== false);
+      }
+
       setLoading(false);
     })();
   }, [period]);
