@@ -1,7 +1,9 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
+import { useProductRatings } from "@/hooks/useProductRatings";
 import { motionTokens } from "@/lib/motion";
 
 const EXTRA_CATEGORIES = ["extra", "acessorio", "higiene", "brinquedo", "alimentacao"];
@@ -9,6 +11,7 @@ const EXTRA_CATEGORIES = ["extra", "acessorio", "higiene", "brinquedo", "aliment
 export default function ExtrasSection() {
     const { addItem } = useCart();
     const { products: extras, loading } = useProducts({ categories: EXTRA_CATEGORIES });
+    const ratings = useProductRatings(extras.map(p => p.id));
 
     if (loading) return null;
     if (extras.length === 0) return null;
@@ -63,6 +66,18 @@ export default function ExtrasSection() {
                                     <p className="mt-2 text-base text-supet-text/60 font-medium">
                                         {product.subtitle}
                                     </p>
+                                    {ratings[product.id] && (
+                                        <div className="flex items-center gap-1.5 mt-1.5">
+                                            <div className="flex">
+                                                {[1, 2, 3, 4, 5].map(s => (
+                                                    <Star key={s} className={`w-3.5 h-3.5 ${s <= Math.round(ratings[product.id].avg) ? "fill-supet-orange text-supet-orange" : "text-supet-text/20"}`} />
+                                                ))}
+                                            </div>
+                                            <span className="text-xs font-bold text-supet-text/40">
+                                                {ratings[product.id].avg.toFixed(1)} ({ratings[product.id].count})
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="text-right flex flex-col items-end">
