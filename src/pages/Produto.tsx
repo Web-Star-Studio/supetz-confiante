@@ -295,7 +295,7 @@ export default function Produto() {
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
+              <h1 className="text-2xl md:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
                 {product.title}
               </h1>
               {product.subtitle && (
