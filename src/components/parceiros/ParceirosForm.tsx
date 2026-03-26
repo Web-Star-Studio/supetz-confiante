@@ -40,8 +40,8 @@ export default function ParceirosForm({ user, form, setForm, loading, submitted,
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-10"
             >
-              <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mx-auto mb-5">
-                <CheckCircle className="w-10 h-10 text-green-500" />
+              <div className="w-20 h-20 rounded-full bg-accent flex items-center justify-center mx-auto mb-5">
+                <CheckCircle className="w-10 h-10 text-primary" />
               </div>
               <h3 className="text-xl font-black text-foreground mb-2">Candidatura Enviada!</h3>
               <p className="text-sm text-muted-foreground mb-8 max-w-sm mx-auto">
