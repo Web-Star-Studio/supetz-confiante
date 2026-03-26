@@ -103,7 +103,7 @@ export default function AdminCRM() {
   useEffect(() => { fetchData(); }, [fetchData]);
 
   const funnelData = useMemo(() => {
-    const data = { lead: 0, active: 0, inactive: 0, vip: 0 };
+    const data = { lead: 0, active: 0, inactive: 0, vip: 0, newsletter_lead: 0 };
     clients.forEach((c) => {
       if (c.status in data) data[c.status as keyof typeof data]++;
     });
