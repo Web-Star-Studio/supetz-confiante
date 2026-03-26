@@ -149,6 +149,7 @@ export default function AutomationsTab() {
       name: auto.name,
       description: auto.description,
       action_type: auto.action_type,
+      scheduled_time: auto.scheduled_time || "09:00",
       trigger_config: { ...auto.trigger_config },
       action_config: { ...auto.action_config },
     });
