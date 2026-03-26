@@ -287,9 +287,57 @@ export default function Checkout() {
 
   const maxPointsForOrder = Math.min(totalPoints, Math.floor((totalPrice - couponDiscount) / 0.01));
 
+  // CEP auto-fill via ViaCEP
+  const fetchAddressByCEP = useCallback(async (cep: string) => {
+    const cleanCep = cep.replace(/\D/g, "");
+    if (cleanCep.length !== 8) return;
+    setCepLoading(true);
+    try {
+      const resp = await fetch(`https://viacep.com.br/ws/${cleanCep}/json/`);
+      const data = await resp.json();
+      if (!data.erro) {
+        setFormData((prev) => ({
+          ...prev,
+          address: data.logradouro || prev.address,
+          neighborhood: data.bairro || prev.neighborhood,
+          city: data.localidade || prev.city,
+          state: data.uf || prev.state,
+        }));
+        setFormErrors((prev) => ({ ...prev, zipCode: "" }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, zipCode: "CEP não encontrado" }));
+      }
+    } catch {
+      // silently fail — user can type manually
+    }
+    setCepLoading(false);
+  }, []);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    
+    if (name === "cpf") {
+      const masked = maskCPF(value);
+      setFormData((prev) => ({ ...prev, cpf: masked }));
+      if (masked.replace(/\D/g, "").length === 11) {
+        setFormErrors((prev) => ({ ...prev, cpf: validateCPF(masked) ? "" : "CPF inválido" }));
+      } else {
+        setFormErrors((prev) => ({ ...prev, cpf: "" }));
+      }
+      return;
+    }
+    
+    if (name === "zipCode") {
+      const masked = maskCEP(value);
+      setFormData((prev) => ({ ...prev, zipCode: masked }));
+      const clean = masked.replace(/\D/g, "");
+      if (clean.length === 8) {
+        fetchAddressByCEP(clean);
+      }
+      return;
+    }
+    
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
