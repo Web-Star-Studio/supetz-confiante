@@ -139,13 +139,13 @@ export default function AdminDashboard() {
         ordersRes, productsRes, profilesRes, statusRes,
         campaignsRes, recipientsRes, expensesRes,
       ] = await Promise.all([
-        supabase.from("orders").select("id, total, status, customer_name, created_at").order("created_at", { ascending: false }),
+        supabase.from("orders").select("id, total, status, customer_name, created_at", { count: "exact" }).order("created_at", { ascending: false }).limit(10000),
         supabase.from("products").select("id, title, quantity, low_stock_threshold, active"),
-        supabase.from("profiles").select("id", { count: "exact" }),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
         supabase.from("customer_status").select("status"),
         supabase.from("campaigns").select("id, status"),
-        supabase.from("campaign_recipients").select("id", { count: "exact" }),
-        supabase.from("expenses").select("amount, date, category"),
+        supabase.from("campaign_recipients").select("id", { count: "exact", head: true }),
+        supabase.from("expenses").select("amount, date, category").limit(10000),
       ]);
 
       const orders = ordersRes.data || [];
