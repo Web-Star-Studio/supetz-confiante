@@ -243,6 +243,8 @@ export default function AdminProdutos() {
           </button>
         </div>
       )}
+
+      <AnimatePresence>
         {deleteTarget && <DeleteConfirmation name={deleteTarget.name} onConfirm={confirmDelete} onCancel={() => setDeleteTarget(null)} />}
       </AnimatePresence>
 

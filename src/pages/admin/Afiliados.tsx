@@ -486,6 +486,21 @@ export default function Afiliados() {
             </table>
           </div>
         </div>
+
+        {/* Pagination */}
+        {affTotalPages > 1 && (
+          <div className="flex items-center justify-center gap-3">
+            <button onClick={() => setAffPage(p => Math.max(0, p - 1))} disabled={affPage === 0}
+              className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+              <ChevronLeft className="w-4 h-4" /> Anterior
+            </button>
+            <span className="text-sm text-muted-foreground">{affPage + 1} de {affTotalPages}</span>
+            <button onClick={() => setAffPage(p => Math.min(affTotalPages - 1, p + 1))} disabled={affPage >= affTotalPages - 1}
+              className="flex items-center gap-1 px-4 py-2 rounded-xl bg-card text-sm font-semibold text-foreground disabled:opacity-40 hover:bg-primary/10 transition-colors">
+              Próximo <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Detail dialog */}
