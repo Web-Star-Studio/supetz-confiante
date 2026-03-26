@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import EmailAnalyticsPanel from "./EmailAnalyticsPanel";
 import WeeklySummaryPanel from "./WeeklySummaryPanel";
+import RevenueCostTrendChart from "./RevenueCostTrendChart";
 
 interface AnalyticsData {
   campaigns: any[];
@@ -400,6 +401,9 @@ export default function MarketingAnalyticsTab() {
           </div>
         </div>
       </div>
+
+      {/* Revenue vs Cost Trend */}
+      <RevenueCostTrendChart />
 
       {/* Weekly Summary Panel */}
       <WeeklySummaryPanel />
