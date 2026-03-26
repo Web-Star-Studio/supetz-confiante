@@ -90,7 +90,7 @@ export default function Afiliados() {
       toast.error("Erro ao aprovar afiliado");
     } else {
       toast.success(`${aff.name} aprovado! Cupom: ${couponCode}`);
-      logAction("approve_affiliate", "affiliate", aff.id, { name: aff.name, coupon: couponCode });
+      log({ action: "create", entity_type: "affiliate", entity_id: aff.id, details: { name: aff.name, coupon: couponCode } });
       loadData();
     }
   };
