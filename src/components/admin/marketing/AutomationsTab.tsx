@@ -6,7 +6,7 @@ import {
   Play, Settings2, ChevronDown, ChevronUp, Activity,
   BarChart3, Bell, Save, Loader2, Plus, Trash2, Copy,
   TrendingUp, AlertTriangle, CheckCircle2, Info, X,
-  Mail, Ticket, Sparkles, Eye,
+  Mail, Ticket, Sparkles, Eye, ArrowRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Switch } from "@/components/ui/switch";
