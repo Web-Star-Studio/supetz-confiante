@@ -283,7 +283,7 @@ export default function AdminMarketing() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-extrabold text-foreground font-display">Marketing</h1>
-          <p className="text-muted-foreground mt-1">Campanhas segmentadas e newsletter</p>
+          <p className="text-muted-foreground mt-1">Campanhas, templates de e-mail e newsletter</p>
         </div>
         {activeTab === "campaigns" && (
           <button
