@@ -327,7 +327,7 @@ export default function Produto() {
               )}
 
               {/* Price block */}
-              <div className="mt-8 p-6 rounded-2xl bg-muted/50 border border-border">
+              <div className="mt-6 md:mt-8 p-4 md:p-6 rounded-2xl bg-muted/50 border border-border">
                 <div className="flex items-baseline gap-3">
                   <span className="text-4xl font-black text-foreground">
                     R$ {product.price.toFixed(2).replace(".", ",")}
