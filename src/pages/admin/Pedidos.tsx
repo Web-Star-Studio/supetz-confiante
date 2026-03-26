@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Filter, Copy, CheckCircle, X, MapPin, ShoppingCart, Clock, Truck, ChevronLeft, ChevronRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuditLog } from "@/hooks/useAuditLog";
 
 const PAGE_SIZE = 10;
+
+type SortCol = "created_at" | "total" | "status" | "customer_name";
+type SortDir = "asc" | "desc";
+
+function SortIcon({ column, current, dir }: { column: string; current: string; dir: SortDir }) {
+  if (column !== current) return <ArrowUpDown className="w-3.5 h-3.5 opacity-40" />;
+  return dir === "asc" ? <ArrowUp className="w-3.5 h-3.5" /> : <ArrowDown className="w-3.5 h-3.5" />;
+}
 
 function PedidosSkeleton() {
   return (
@@ -33,13 +41,25 @@ export default function AdminPedidos() {
   const [copied, setCopied] = useState(false);
   const [page, setPage] = useState(0);
   const [totalCount, setTotalCount] = useState(0);
+  const [sortCol, setSortCol] = useState<SortCol>("created_at");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const { log } = useAuditLog();
+
+  const toggleSort = (col: SortCol) => {
+    if (sortCol === col) {
+      setSortDir(d => d === "asc" ? "desc" : "asc");
+    } else {
+      setSortCol(col);
+      setSortDir("desc");
+    }
+    setPage(0);
+  };
 
   const fetchOrders = async () => {
     setLoading(true);
     const from = page * PAGE_SIZE;
     const to = from + PAGE_SIZE - 1;
-    let query = supabase.from("orders").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
+    let query = supabase.from("orders").select("*", { count: "exact" }).order(sortCol, { ascending: sortDir === "asc" }).range(from, to);
     if (statusFilter !== "all") query = query.eq("status", statusFilter);
     if (search.trim()) query = query.or(`customer_name.ilike.%${search.trim()}%,id.ilike.%${search.trim()}%`);
     const { data, count } = await query;
@@ -48,7 +68,7 @@ export default function AdminPedidos() {
     setLoading(false);
   };
 
-  useEffect(() => { fetchOrders(); }, [statusFilter, page, search]);
+  useEffect(() => { fetchOrders(); }, [statusFilter, page, search, sortCol, sortDir]);
   useEffect(() => { setPage(0); }, [statusFilter, search]);
 
   const totalPages = Math.ceil(totalCount / PAGE_SIZE);
