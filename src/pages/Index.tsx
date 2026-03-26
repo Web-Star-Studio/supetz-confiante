@@ -58,6 +58,7 @@ const Index = () => {
         <TreatmentPlansSection />
         <PurchaseSecuritySection />
         <FAQStandaloneSection />
+        <NewsletterSection />
         <FinalCTASection />
       </div>
     </Layout>
