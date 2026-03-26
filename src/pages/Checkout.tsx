@@ -651,29 +651,13 @@ export default function Checkout() {
                       <Sparkles className="w-5 h-5 text-supet-orange flex-shrink-0" />
                       <div className="flex-1">
                         <p className="text-sm font-bold text-supet-text">Indicação de {affiliateInfo.name}</p>
-                        {affiliateInfo.coupon_code && (
+                        {affiliateInfo.coupon_code && affiliateCouponApplied && (
                           <p className="text-xs text-supet-text/60 mt-0.5">
-                            Cupom <span className="font-mono font-bold text-supet-orange">{affiliateInfo.coupon_code}</span> disponível para aplicar
+                            Cupom <span className="font-mono font-bold text-supet-orange">{affiliateInfo.coupon_code}</span> aplicado automaticamente
                           </p>
                         )}
                       </div>
-                      {affiliateInfo.coupon_code && !appliedCoupon && !affiliateCouponApplied && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setCouponCode(affiliateInfo.coupon_code!);
-                            setAffiliateCouponApplied(true);
-                            // Auto-apply: search in user_coupons or just set as manual code
-                            handleApplyCoupon();
-                          }}
-                          className="bg-supet-orange text-white rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-supet-orange-dark transition-colors flex-shrink-0"
-                        >
-                          Aplicar
-                        </button>
-                      )}
-                      {(appliedCoupon || affiliateCouponApplied) && (
-                        <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
-                      )}
+                      <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
                     </div>
                   </div>
                 )}
