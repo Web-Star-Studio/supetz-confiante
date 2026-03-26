@@ -806,6 +806,9 @@ export default function AutomationsTab() {
                           <Clock className="w-3 h-3" /> {new Date(auto.last_run_at).toLocaleDateString("pt-BR")}
                         </span>
                       )}
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        ⏰ {auto.scheduled_time || "09:00"}
+                      </span>
                       {auto.action_config?.email_template_id && (() => {
                         const tpl = allTemplates.find((t) => t.id === auto.action_config.email_template_id);
                         return tpl ? (
