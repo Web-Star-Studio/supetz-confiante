@@ -132,14 +132,14 @@ export default function AdminMarketing() {
       const { data: statusData } = await supabase.from("customer_status").select("user_id").eq("status", form.segment_status);
       const ids = (statusData || []).map((s: any) => s.user_id);
       if (ids.length > 0) query = query.in("user_id", ids);
-      else { setSending(false); return; }
+      else { toast.warning("Nenhum cliente encontrado para este segmento"); setSending(false); return; }
     }
 
     if (form.segment_tag) {
       const { data: tagData } = await supabase.from("customer_tag_assignments").select("user_id").eq("tag_id", form.segment_tag);
       const ids = (tagData || []).map((t: any) => t.user_id);
       if (ids.length > 0) query = query.in("user_id", ids);
-      else { setSending(false); return; }
+      else { toast.warning("Nenhum cliente encontrado para esta tag"); setSending(false); return; }
     }
 
     const { data: profilesData } = await query;
