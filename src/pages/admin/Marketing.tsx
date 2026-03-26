@@ -229,15 +229,42 @@ export default function AdminMarketing() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-extrabold text-foreground font-display">Marketing</h1>
-          <p className="text-muted-foreground mt-1">Campanhas segmentadas e engajamento</p>
+          <p className="text-muted-foreground mt-1">Campanhas segmentadas e newsletter</p>
         </div>
-        <button
-          onClick={() => setShowCreate(!showCreate)}
-          className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all"
-        >
-          <Plus className="w-4 h-4" /> Nova Campanha
-        </button>
+        {activeTab === "campaigns" && (
+          <button
+            onClick={() => setShowCreate(!showCreate)}
+            className="flex items-center gap-2 px-5 py-3 rounded-2xl bg-primary text-primary-foreground font-semibold text-sm shadow-lg shadow-primary/20 hover:shadow-xl transition-all"
+          >
+            <Plus className="w-4 h-4" /> Nova Campanha
+          </button>
+        )}
       </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2 mb-6">
+        {([
+          { key: "campaigns" as const, label: "Campanhas", icon: Megaphone },
+          { key: "newsletter" as const, label: "Newsletter", icon: Mail },
+        ]).map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-sm font-semibold transition-all ${
+              activeTab === tab.key
+                ? "bg-primary text-primary-foreground shadow-md"
+                : "bg-card border border-border/50 text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <tab.icon className="w-4 h-4" /> {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === "newsletter" ? (
+        <NewsletterTab />
+      ) : (
+        <>
 
       {/* Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
