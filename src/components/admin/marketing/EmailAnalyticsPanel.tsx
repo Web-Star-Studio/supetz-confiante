@@ -202,6 +202,12 @@ export default function EmailAnalyticsPanel() {
   }, [campaigns, recipients, dedupedLogs]);
 
   // Recent failures
+  const recentFailures = useMemo(() => {
+    return dedupedLogs
+      .filter((l) => l.status === "dlq" || l.status === "failed")
+      .slice(0, 5);
+  }, [dedupedLogs]);
+
   // Current failure rate for alert banner
   const currentFailureRate = useMemo(() => {
     if (globalStats.total === 0) return 0;
@@ -224,11 +230,6 @@ export default function EmailAnalyticsPanel() {
       setShowAlertConfig(false);
     }
   };
-
-    return dedupedLogs
-      .filter((l) => l.status === "dlq" || l.status === "failed")
-      .slice(0, 5);
-  }, [dedupedLogs]);
 
   const chartSampled = globalStats.daily.length > 30
     ? globalStats.daily.filter((_, i) => i % Math.ceil(globalStats.daily.length / 30) === 0 || i === globalStats.daily.length - 1)
