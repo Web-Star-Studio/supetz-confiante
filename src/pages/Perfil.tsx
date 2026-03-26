@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Camera, Package, Shield, User, Phone, Loader2, CheckCircle2, Lock, Mail,
   PawPrint, MapPin, Bell, BookOpen, Star, Ticket, LogOut, ChevronRight, ChevronLeft, Store, Menu, X,
-  Sparkles, Trophy, LayoutDashboard, PanelLeftClose, PanelLeftOpen,
+  Sparkles, Trophy, LayoutDashboard, PanelLeftClose, PanelLeftOpen, Handshake,
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/context/AuthContext";
