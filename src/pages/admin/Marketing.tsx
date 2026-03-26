@@ -166,6 +166,7 @@ export default function AdminMarketing() {
       name: camp.name + " (cópia)",
       type: (camp.type as any) || "notification",
       message: camp.message || "",
+      template_id: (camp as any).template_id || "",
       coupon_discount_type: (camp.coupon_discount_type as any) || "percentage",
       coupon_discount_value: camp.coupon_discount_value || 10,
       coupon_min_order: camp.coupon_min_order || 50,
