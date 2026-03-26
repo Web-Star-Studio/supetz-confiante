@@ -69,17 +69,17 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           }`}
         >
           {/* Logo */}
-          <div className={`flex items-center justify-between border-b border-border/50 ${collapsed ? "h-[72px] px-3" : "h-20 px-6"}`}>
+          <div className={`flex items-center justify-center border-b border-border/50 ${collapsed ? "h-[72px] px-3" : "h-24 px-6"}`}>
             <Link to="/admin" className="flex items-center">
               <img
                 src="/supetNewLogo.svg"
                 alt="Supet"
-                className={`transition-all duration-300 ${collapsed ? "h-8" : "h-14"}`}
+                className={`transition-all duration-300 ${collapsed ? "h-8" : "h-[42px]"}`}
               />
             </Link>
             <button
               onClick={() => setSidebarOpen(false)}
-              className="lg:hidden w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              className="lg:hidden ml-auto w-8 h-8 rounded-xl flex items-center justify-center text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
