@@ -47,7 +47,7 @@ interface Payout {
 }
 
 export default function Afiliados() {
-  const { logAction } = useAuditLog();
+  const { log } = useAuditLog();
   const [affiliates, setAffiliates] = useState<Affiliate[]>([]);
   const [sales, setSales] = useState<Sale[]>([]);
   const [payouts, setPayouts] = useState<Payout[]>([]);
