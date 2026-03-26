@@ -399,6 +399,9 @@ export default function MarketingAnalyticsTab() {
           </div>
         </div>
       </div>
+
+      {/* Email Analytics Panel */}
+      <EmailAnalyticsPanel />
     </div>
   );
 }
