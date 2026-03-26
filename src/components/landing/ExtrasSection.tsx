@@ -55,9 +55,11 @@ export default function ExtrasSection() {
 
                             <div className="flex justify-between items-start gap-4">
                                 <div>
+                                <Link to={`/produto/${product.id}`} className="hover:opacity-80 transition-opacity">
                                     <h3 className="text-2xl font-extrabold text-supet-text tracking-tight group-hover:text-supet-orange transition-colors duration-300">
                                         {product.title}
                                     </h3>
+                                </Link>
                                     <p className="mt-2 text-base text-supet-text/60 font-medium">
                                         {product.subtitle}
                                     </p>
