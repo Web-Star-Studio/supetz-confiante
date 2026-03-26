@@ -15,6 +15,34 @@ const iconByPlatform = {
 
 export default function Footer() {
   const reduceMotion = useReducedMotion();
+  const [nlEmail, setNlEmail] = useState("");
+  const [nlLoading, setNlLoading] = useState(false);
+  const [nlDone, setNlDone] = useState(false);
+
+  async function handleNewsletter(e: React.FormEvent) {
+    e.preventDefault();
+    const trimmed = nlEmail.trim().toLowerCase();
+    if (!trimmed || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) {
+      toast.error("Insira um e-mail válido.");
+      return;
+    }
+    setNlLoading(true);
+    const { error } = await supabase
+      .from("newsletter_subscribers" as any)
+      .insert({ email: trimmed, source: "footer" } as any);
+    if (error) {
+      if (error.code === "23505") {
+        toast.info("Você já está inscrito! 🎉");
+        setNlDone(true);
+      } else {
+        toast.error("Erro ao se inscrever.");
+      }
+    } else {
+      toast.success("Inscrição confirmada! 🎉");
+      setNlDone(true);
+    }
+    setNlLoading(false);
+  }
 
   return (
     <footer className="relative overflow-hidden bg-gradient-to-b from-[#FE6D00] to-[#E56200] pt-20 pb-10 text-white hidden md:block">
