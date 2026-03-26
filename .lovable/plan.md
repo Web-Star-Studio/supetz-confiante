@@ -1,63 +1,110 @@
 
 
-## Plan: Marketing Module — Advanced Improvements
+# Sistema de Feedback da Super IA — Plano de Implementacao
 
-### Overview
+## Resumo
 
-Enhance the Marketing module with smarter features: campaign duplication, scheduling, A/B testing fields, performance analytics, and improved newsletter management with re-subscribe and bulk actions.
+Implementar um sistema de feedback completo para o chatbot Super IA com coleta estruturada, auto-correcao via prompt e painel admin de monitoramento.
 
-### Changes
+## Etapas
 
-#### 1. Campaign Enhancements (`src/pages/admin/Marketing.tsx`)
+### 1. Criar tabela `chat_feedback` (migration)
 
-**Campaign duplication**: Add a "Duplicar" button on each campaign row that pre-fills the create form with that campaign's settings (name + " (cópia)", same type, message, segmentation, coupon config).
-
-**Campaign scheduling**: Add an optional `scheduled_for` datetime picker to the create form. If set, campaign is saved as `status: "scheduled"` instead of being sent immediately. Add a new status badge for "Agendada" with a clock icon.
-
-**Campaign deletion**: Add ability to delete draft/scheduled campaigns.
-
-**Improved stats row**: Add a 4th stat card showing conversion rate (campaigns with coupon type that were used vs total coupons generated). Replace the simple 3-card layout with 4 cards.
-
-**Campaign search/filter**: Add a search bar and status filter dropdown above the campaign list to quickly find campaigns by name or filter by status.
-
-#### 2. Database Migration
-
-Add `scheduled_for` column to `campaigns` table:
 ```sql
-ALTER TABLE public.campaigns ADD COLUMN scheduled_for timestamptz;
+CREATE TABLE public.chat_feedback (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL,
+  conversation_id uuid NOT NULL,
+  message_content text NOT NULL,
+  rating text NOT NULL CHECK (rating IN ('positive', 'negative')),
+  reason text,
+  comment text,
+  created_at timestamptz NOT NULL DEFAULT now()
+);
+
+ALTER TABLE public.chat_feedback ENABLE ROW LEVEL SECURITY;
+
+-- Usuario insere proprio feedback
+CREATE POLICY "Users can insert own feedback"
+  ON public.chat_feedback FOR INSERT TO authenticated
+  WITH CHECK (auth.uid() = user_id);
+
+-- Usuario le proprio feedback
+CREATE POLICY "Users can view own feedback"
+  ON public.chat_feedback FOR SELECT TO authenticated
+  USING (auth.uid() = user_id);
+
+-- Admin le todos
+CREATE POLICY "Admins can view all feedback"
+  ON public.chat_feedback FOR SELECT TO authenticated
+  USING (has_role(auth.uid(), 'admin'));
 ```
 
-#### 3. Newsletter Tab Improvements (`src/components/admin/NewsletterTab.tsx`)
+Sem UPDATE/DELETE — feedbacks sao imutaveis.
 
-**Re-subscribe action**: Add a button to re-activate unsubscribed users (set status back to "active", clear unsubscribed_at).
+### 2. Atualizar Frontend (`FloatingChatbot.tsx`)
 
-**Bulk actions**: Add select-all checkbox and bulk unsubscribe/delete for selected subscribers.
+**Feedback positivo (thumbs up):** Salva imediatamente na tabela `chat_feedback` com `rating: "positive"`. Mostra toast de agradecimento.
 
-**Source breakdown chart**: Add a mini visual showing subscriber sources (footer vs landing vs registration) as colored pills with counts.
+**Feedback negativo (thumbs down):** Abre formulario inline abaixo da mensagem com:
+- Radio buttons com motivos pre-definidos: "Resposta incorreta", "Nao entendeu minha pergunta", "Pouco util", "Outro"
+- Textarea opcional (max 300 chars) para comentario
+- Botoes "Enviar feedback" e "Cancelar"
 
-**Subscriber growth indicator**: Show a simple "+X this week" badge next to the total count.
+Ao submeter, salva na `chat_feedback` com `rating: "negative"`, `reason` e `comment`. Toast de agradecimento.
 
-#### 4. Campaign Analytics Section (`src/pages/admin/Marketing.tsx`)
+Dados salvos: `user_id`, `conversation_id`, `message_content` (primeiros 500 chars da resposta), `rating`, `reason`, `comment`.
 
-When a campaign is expanded, show richer details:
-- A mini progress bar for open rate
-- Coupon redemption rate (count `user_coupons` with `used = true` linked via `campaign_recipients`)
-- Timestamp of first and last open
+Substitui o sistema atual de feedback simples (que apenas atualiza `chat_messages.feedback`) por esse sistema mais rico.
 
-#### 5. Files to Modify
+### 3. Auto-Correcao no Backend (`supabase/functions/chatbot/index.ts`)
 
-| File | Changes |
-|------|---------|
-| Migration SQL | Add `scheduled_for` to campaigns |
-| `src/pages/admin/Marketing.tsx` | Campaign search, duplication, scheduling, deletion, richer analytics, 4th stat card |
-| `src/components/admin/NewsletterTab.tsx` | Re-subscribe, bulk actions, source breakdown, growth indicator |
+Antes de chamar a IA, buscar os 5 feedbacks negativos mais recentes:
 
-### Technical Details
+```sql
+SELECT reason, comment, message_content
+FROM chat_feedback
+WHERE rating = 'negative'
+ORDER BY created_at DESC
+LIMIT 5
+```
 
-- Campaign duplication copies all form fields and opens the create panel pre-filled
-- Scheduled campaigns use `status: "scheduled"` — actual sending requires a cron job or manual trigger (for now, admin can manually send when ready)
-- Bulk select uses local state array of selected IDs, with a floating action bar
-- Source breakdown computed client-side from existing subscriber data
-- Growth indicator counts subscribers with `subscribed_at` within last 7 days
-- All new UI follows existing design tokens: `rounded-3xl` cards, `rounded-2xl` inputs, primary color accents
+Injetar no system prompt como secao de auto-correcao:
+
+```
+## ⚠️ AUTO-CORREÇÃO (baseada em feedbacks recentes)
+Os seguintes problemas foram reportados por usuarios:
+1. Motivo: "Resposta incorreta" — "informacao sobre dosagem estava errada"
+2. ...
+Ajuste suas respostas para evitar esses problemas. Seja mais precisa e util.
+```
+
+### 4. Painel Admin de Feedback (`src/pages/admin/Feedback.tsx`)
+
+Nova pagina no admin com:
+
+**KPIs no topo:**
+- Total de feedbacks
+- Taxa de satisfacao (positivos / total)
+- Total de negativos
+- Feedbacks do dia
+
+**Filtros:** por rating (positivo/negativo), busca textual no conteudo/comentario
+
+**Tabela:** rating (badge), motivo, comentario, conteudo da mensagem (truncado), data
+
+**Exportacao CSV:** botao para download com encoding UTF-8 + BOM
+
+Adicionar link na sidebar do admin (`AdminLayout.tsx`).
+
+### 5. Rota no App.tsx
+
+Adicionar rota `/admin/feedback` apontando para o novo componente, protegida pelo `AdminRoute`.
+
+## Detalhes Tecnicos
+
+- **Tabela:** `chat_feedback` com RLS — usuarios inserem/leem proprios, admins leem todos
+- **Frontend:** formulario inline com RadioGroup + Textarea do shadcn, animado com framer-motion
+- **Edge Function:** query com `supabaseAdmin` (service role) para ler feedbacks globais
+- **Admin:** Recharts para KPIs, tabela com paginacao e filtros, CSV via Blob download
 
