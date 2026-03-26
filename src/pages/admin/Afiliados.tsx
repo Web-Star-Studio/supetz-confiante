@@ -161,6 +161,37 @@ export default function Afiliados() {
     }
   };
 
+  const handleSaveEditFields = async () => {
+    if (!selectedAffiliate) return;
+    const { error } = await supabase.from("affiliates").update({
+      name: editFields.name,
+      email: editFields.email,
+      instagram: editFields.instagram || null,
+      pix_key: editFields.pix_key || null,
+      channel_type: editFields.channel_type,
+    }).eq("id", selectedAffiliate.id);
+    if (error) {
+      toast.error("Erro ao salvar alterações");
+    } else {
+      toast.success("Dados atualizados!");
+      log({ action: "update", entity_type: "affiliate", entity_id: selectedAffiliate.id, details: { edited: editFields } });
+      setSelectedAffiliate(null);
+      loadData();
+    }
+  };
+
+  const openAffiliateDetail = (aff: Affiliate) => {
+    setSelectedAffiliate(aff);
+    setEditCommission(aff.commission_percent);
+    setEditFields({
+      name: aff.name,
+      email: aff.email,
+      instagram: aff.instagram || "",
+      pix_key: aff.pix_key || "",
+      channel_type: aff.channel_type,
+    });
+  };
+
   const handleMarkPayoutPaid = async (payout: Payout) => {
     const { error } = await supabase.from("affiliate_payouts").update({ status: "paid", paid_at: new Date().toISOString() }).eq("id", payout.id);
     if (error) {
