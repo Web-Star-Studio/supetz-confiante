@@ -228,14 +228,15 @@ export default function Checkout() {
 
     try {
       // Build items payload with affiliate metadata
-      const affiliateRef = localStorage.getItem("supet_ref") || null;
-      const affiliateCoupon = appliedCoupon ? appliedCoupon.code : null;
+      const refData = getActiveRef();
+      const affiliateRef = refData?.slug || null;
+      const orderCouponCode = appliedCoupon ? appliedCoupon.code : (affiliateInfo?.coupon_code || null);
 
       const orderItems = items.map((item, idx) => ({
         title: item.product.title,
         price: item.product.price,
         quantity: item.quantity,
-        ...(idx === 0 ? { coupon_code: affiliateCoupon, affiliate_ref: affiliateRef } : {}),
+        ...(idx === 0 ? { coupon_code: orderCouponCode, affiliate_ref: affiliateRef } : {}),
       }));
 
       const { error: orderError } = await supabase.from("orders").insert({
