@@ -232,6 +232,7 @@ export default function AdminMarketing() {
       name: form.name,
       type: form.type,
       message: form.message,
+      template_id: form.template_id || null,
       segment_filter: segmentFilter,
       status: isScheduled ? "scheduled" : "active",
       sent_at: isScheduled ? null : new Date().toISOString(),
