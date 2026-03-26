@@ -3,10 +3,11 @@ import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/context/AuthContext";
 import Layout from "@/components/layout/Layout";
-import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check, MapPin } from "lucide-react";
+import { ShieldCheck, CreditCard, Truck, User, Lock, LayoutGrid, AlertCircle, Loader2, Ticket, Star, X, Check, MapPin, Sparkles } from "lucide-react";
 import { motion } from "framer-motion";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { getActiveRef } from "@/components/affiliate/RefTracker";
 
 interface Coupon {
   id: string;
@@ -57,6 +58,10 @@ export default function Checkout() {
   const [couponLoading, setCouponLoading] = useState(false);
   const [availableCoupons, setAvailableCoupons] = useState<Coupon[]>([]);
 
+  // Affiliate referral state
+  const [affiliateInfo, setAffiliateInfo] = useState<{ name: string; coupon_code: string | null; ref_slug: string } | null>(null);
+  const [affiliateCouponApplied, setAffiliateCouponApplied] = useState(false);
+
   // Points state
   const [totalPoints, setTotalPoints] = useState(0);
   const [pointsToUse, setPointsToUse] = useState(0);
@@ -74,6 +79,24 @@ export default function Checkout() {
     : 0;
   const totalDiscount = couponDiscount + pointsValue;
   const finalPrice = Math.max(0, totalPrice - totalDiscount);
+
+  // Load affiliate referral data
+  useEffect(() => {
+    const ref = getActiveRef();
+    if (ref) {
+      supabase
+        .from("affiliates")
+        .select("name, coupon_code, ref_slug")
+        .eq("ref_slug", ref.slug)
+        .eq("status", "active")
+        .maybeSingle()
+        .then(({ data }) => {
+          if (data) {
+            setAffiliateInfo(data as { name: string; coupon_code: string | null; ref_slug: string });
+          }
+        });
+    }
+  }, []);
 
   useEffect(() => {
     if (user) {
@@ -205,14 +228,15 @@ export default function Checkout() {
 
     try {
       // Build items payload with affiliate metadata
-      const affiliateRef = localStorage.getItem("supet_ref") || null;
-      const affiliateCoupon = appliedCoupon ? appliedCoupon.code : null;
+      const refData = getActiveRef();
+      const affiliateRef = refData?.slug || null;
+      const orderCouponCode = appliedCoupon ? appliedCoupon.code : (affiliateInfo?.coupon_code || null);
 
       const orderItems = items.map((item, idx) => ({
         title: item.product.title,
         price: item.product.price,
         quantity: item.quantity,
-        ...(idx === 0 ? { coupon_code: affiliateCoupon, affiliate_ref: affiliateRef } : {}),
+        ...(idx === 0 ? { coupon_code: orderCouponCode, affiliate_ref: affiliateRef } : {}),
       }));
 
       const { error: orderError } = await supabase.from("orders").insert({
@@ -586,6 +610,40 @@ export default function Checkout() {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Affiliate Referral Banner */}
+                {affiliateInfo && (
+                  <div className="border-t border-supet-text/10 pt-5 mb-2">
+                    <div className="flex items-center gap-3 bg-supet-orange/10 border border-supet-orange/20 rounded-xl px-4 py-3">
+                      <Sparkles className="w-5 h-5 text-supet-orange flex-shrink-0" />
+                      <div className="flex-1">
+                        <p className="text-sm font-bold text-supet-text">Indicação de {affiliateInfo.name}</p>
+                        {affiliateInfo.coupon_code && (
+                          <p className="text-xs text-supet-text/60 mt-0.5">
+                            Cupom <span className="font-mono font-bold text-supet-orange">{affiliateInfo.coupon_code}</span> disponível para aplicar
+                          </p>
+                        )}
+                      </div>
+                      {affiliateInfo.coupon_code && !appliedCoupon && !affiliateCouponApplied && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setCouponCode(affiliateInfo.coupon_code!);
+                            setAffiliateCouponApplied(true);
+                            // Auto-apply: search in user_coupons or just set as manual code
+                            handleApplyCoupon();
+                          }}
+                          className="bg-supet-orange text-white rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-supet-orange-dark transition-colors flex-shrink-0"
+                        >
+                          Aplicar
+                        </button>
+                      )}
+                      {(appliedCoupon || affiliateCouponApplied) && (
+                        <Check className="w-5 h-5 text-green-600 flex-shrink-0" />
+                      )}
+                    </div>
+                  </div>
+                )}
 
                 {/* Coupon Section */}
                 {user && (
