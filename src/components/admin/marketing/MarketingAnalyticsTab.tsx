@@ -7,6 +7,7 @@ import {
   Megaphone, Calendar, UserPlus, Loader2,
 } from "lucide-react";
 import EmailAnalyticsPanel from "./EmailAnalyticsPanel";
+import WeeklySummaryPanel from "./WeeklySummaryPanel";
 
 interface AnalyticsData {
   campaigns: any[];
