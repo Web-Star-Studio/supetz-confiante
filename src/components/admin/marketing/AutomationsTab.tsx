@@ -186,8 +186,9 @@ export default function AutomationsTab() {
       action_type: createForm.action_type,
       trigger_config: createForm.trigger_config,
       action_config: createForm.action_config,
+      scheduled_time: createForm.scheduled_time || "09:00",
       enabled: false,
-    });
+    } as any);
     if (error) { toast.error("Erro ao criar automação"); setCreating(false); return; }
     log({ action: "create", entity_type: "marketing_automation", details: { name: createForm.name } });
     toast.success("Automação criada! Ative para começar a usar.");
