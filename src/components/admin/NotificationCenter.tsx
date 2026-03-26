@@ -170,6 +170,8 @@ export default function NotificationCenter() {
               <button className={chipClass(typeFilter === "order")} onClick={() => setTypeFilter("order")}>Pedidos</button>
               <button className={chipClass(typeFilter === "restock")} onClick={() => setTypeFilter("restock")}>Reposição</button>
               <button className={chipClass(typeFilter === "stock")} onClick={() => setTypeFilter("stock")}>Estoque</button>
+              <button className={chipClass(typeFilter === "marketing_summary")} onClick={() => setTypeFilter("marketing_summary")}>Marketing</button>
+              <button className={chipClass(typeFilter === "email_alert")} onClick={() => setTypeFilter("email_alert")}>E-mail</button>
             </div>
 
             {/* List */}
