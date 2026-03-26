@@ -25,6 +25,8 @@ export default function Produto() {
   const [qty, setQty] = useState(1);
   const [mainImg, setMainImg] = useState(0);
   const [added, setAdded] = useState(false);
+  const [zoomPos, setZoomPos] = useState<{ x: number; y: number } | null>(null);
+  const imgRef = useRef<HTMLDivElement>(null);
   const { images: bucketImages } = useProductImages(id);
 
   useEffect(() => {
