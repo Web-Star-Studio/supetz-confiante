@@ -61,6 +61,7 @@ export default function AdminMarketing() {
     segment_tag: "" as string,
     segment_min_spent: "",
     segment_days_inactive: "",
+    segment_newsletter: "" as "" | "all" | "leads" | "registered",
   });
 
   const [allTags, setAllTags] = useState<{ id: string; name: string; color: string }[]>([]);
