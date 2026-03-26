@@ -1,35 +1,23 @@
 
 
-# Plano: Unificar Clientes + CRM em um unico modulo
+## Plan: Add Apple Sign In to Login and Registration Pages
 
-## Objetivo
-Eliminar a pagina `/admin/clientes` separada e manter apenas `/admin/crm` como modulo unico de gestao de clientes, combinando as stats da pagina Clientes (total, com compras, gasto medio) com as funcionalidades avancadas do CRM (funil, tags, drawer, notas).
+### Summary
+Add an "Apple Sign In" button alongside the existing Google button on both the Login and Cadastro (Registration) pages, using the same `lovable.auth.signInWithOAuth("apple")` method.
 
-## Alteracoes
+### Changes
 
-### 1. Enriquecer a pagina CRM com stats da pagina Clientes
-- Adicionar os 3 cards de metricas (Total clientes, Com compras, Gasto medio) acima dos cards de funil no CRM
-- Os dados ja estao disponiveis no state `clients` do CRM
+**1. `src/pages/Login.tsx`**
+- Add an Apple sign-in button below the Google button
+- Use `lovable.auth.signInWithOAuth("apple", { redirect_uri: window.location.origin })`
+- Style consistently with the Google button, using the Apple logo SVG icon
 
-### 2. Remover rota e sidebar de "Clientes"
-- **AdminLayout.tsx**: Remover o item `{ label: "Clientes", path: "/admin/clientes", icon: Users }` do array `navItems`
-- **AnimatedRoutes.tsx**: Remover import de `AdminClientes` e a rota `/admin/clientes`
+**2. `src/pages/Cadastro.tsx`**
+- Add the same Apple sign-in button below the Google button
+- Same styling and behavior as Login page
 
-### 3. Renomear sidebar
-- Mudar o label do CRM de "CRM" para "Clientes" (com icone `Users` ou manter `ContactRound`) para ficar mais intuitivo
-
-### 4. Atualizar Dashboard
-- Qualquer link interno que aponte para `/admin/clientes` deve apontar para `/admin/crm`
-
-### 5. Limpar arquivo
-- Deletar `src/pages/admin/Clientes.tsx` (codigo morto)
-
----
-
-## Arquivos afetados
-- `src/components/admin/AdminLayout.tsx` — remover item Clientes, renomear CRM
-- `src/components/layout/AnimatedRoutes.tsx` — remover rota e import
-- `src/pages/admin/CRM.tsx` — adicionar stats cards (Total, Com compras, Gasto medio)
-- `src/pages/admin/Dashboard.tsx` — atualizar links para `/admin/crm`
-- `src/pages/admin/Clientes.tsx` — deletar
+### Technical Details
+- Both providers (Google and Apple) are natively supported by Lovable Cloud — no additional configuration needed
+- The divider text "ou continue com" already exists; both buttons will appear below it
+- Apple button will use a black Apple logo icon with text "Entrar com Apple" / "Criar conta com Apple"
 
