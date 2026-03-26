@@ -57,7 +57,7 @@ export default function ParceirosTestimonials() {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: motionTokens.durationFast, ease: motionTokens.easeOut as unknown as number[] }}
+          transition={{ duration: motionTokens.durationFast, ease }}
           className="text-xs font-black uppercase tracking-[0.26em] text-primary text-center mb-4"
         >
           Depoimentos
