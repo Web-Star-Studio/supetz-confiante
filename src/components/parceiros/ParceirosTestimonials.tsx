@@ -1,6 +1,8 @@
-import { motion } from "framer-motion";
+import { motion, type Transition } from "framer-motion";
 import { Star } from "lucide-react";
 import { motionTokens } from "@/lib/motion";
+
+const ease = motionTokens.easeOut as [number, number, number, number];
 
 const testimonials = [
   {

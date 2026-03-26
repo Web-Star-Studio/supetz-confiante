@@ -74,6 +74,7 @@ export default function Parceiros() {
         <ParceirosHero />
         <ParceirosStats />
         <ParceirosBenefits />
+        <ParceirosTestimonials />
         <ParceirosTimeline />
         <ParceirosForm
           user={user}
