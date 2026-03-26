@@ -31,6 +31,7 @@ export default function ParceirosForm({ user, form, setForm, loading, submitted,
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: motionTokens.durationBase, ease: motionTokens.easeOut }}
+          data-parceiros-form
           className="rounded-3xl bg-secondary/60 p-8 md:p-10"
         >
           {submitted ? (
