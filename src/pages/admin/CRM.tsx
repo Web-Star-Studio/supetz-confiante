@@ -5,6 +5,7 @@ import { Search, Plus, Tag, Download } from "lucide-react";
 import CRMFunnelCards from "@/components/admin/crm/CRMFunnelCards";
 import CRMClientList, { type EnrichedClient } from "@/components/admin/crm/CRMClientList";
 import CRMClientDrawer from "@/components/admin/crm/CRMClientDrawer";
+import { toast } from "sonner";
 
 export default function AdminCRM() {
   const [clients, setClients] = useState<EnrichedClient[]>([]);
