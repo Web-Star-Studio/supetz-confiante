@@ -935,12 +935,17 @@ export default function Checkout() {
 
                   <div className="flex justify-between items-center text-supet-text/60 font-bold">
                     <span>Frete</span>
-                    {totalPrice > 299.80 ? (
+                    {shippingCost === 0 ? (
                       <span className="text-green-500 flex items-center gap-1"><ShieldCheck className="w-3.5 h-3.5"/> Grátis</span>
                     ) : (
-                      <span>Calculando...</span>
+                      <span>R$ {shippingCost.toFixed(2).replace('.', ',')}</span>
                     )}
                   </div>
+                  {shippingCost > 0 && (
+                    <p className="text-xs text-supet-text/40 font-medium">
+                      Frete grátis para compras acima de R$ {SHIPPING_FREE_THRESHOLD.toFixed(2).replace('.', ',')}
+                    </p>
+                  )}
                   <div className="border-t border-supet-text/10 pt-4 flex justify-between items-center text-supet-text font-black text-xl">
                     <span>Total</span>
                     <span className="text-supet-orange">R$ {finalPrice.toFixed(2).replace('.', ',')}</span>
