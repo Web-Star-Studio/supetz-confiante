@@ -9,6 +9,7 @@ import { Check, Star } from "lucide-react";
 export default function PricingSection() {
   const { addItem } = useCart();
   const { products, loading } = useProducts({ category: "combo" });
+  const ratings = useProductRatings(products.map(p => p.id));
   const [addedId, setAddedId] = useState<string | null>(null);
 
   const handleAdd = (product: any) => {
