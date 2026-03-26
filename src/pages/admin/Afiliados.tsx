@@ -179,6 +179,43 @@ export default function Afiliados() {
     }
   };
 
+  const handleAddAffiliate = async () => {
+    if (!addForm.name || !addForm.email) {
+      toast.error("Nome e email são obrigatórios");
+      return;
+    }
+
+    const refSlug = addForm.name.split(" ")[0].toLowerCase().replace(/[^a-z0-9]/g, "") + Math.random().toString(36).substring(2, 5);
+    const couponCode = addForm.autoApprove
+      ? `SUPET-${addForm.name.split(" ")[0].toUpperCase()}-${Math.random().toString(36).substring(2, 6).toUpperCase()}`
+      : null;
+
+    // Use a placeholder user_id for admin-created affiliates (will be linked later if they register)
+    const { error } = await supabase.from("affiliates").insert({
+      name: addForm.name,
+      email: addForm.email,
+      instagram: addForm.instagram || null,
+      channel_type: addForm.channel_type,
+      commission_percent: addForm.commission_percent,
+      pix_key: addForm.pix_key || null,
+      ref_slug: refSlug,
+      coupon_code: couponCode,
+      status: addForm.autoApprove ? "active" : "pending",
+      approved_at: addForm.autoApprove ? new Date().toISOString() : null,
+      user_id: "00000000-0000-0000-0000-000000000000",
+    });
+
+    if (error) {
+      toast.error("Erro ao adicionar afiliado: " + error.message);
+    } else {
+      toast.success(`${addForm.name} adicionado${addForm.autoApprove ? " e aprovado" : ""}!`);
+      log({ action: "create", entity_type: "affiliate", entity_id: "new", details: { name: addForm.name, autoApprove: addForm.autoApprove } });
+      setShowAddDialog(false);
+      setAddForm({ name: "", email: "", instagram: "", channel_type: "influencer", commission_percent: 10, pix_key: "", autoApprove: false });
+      loadData();
+    }
+  };
+
   const filtered = affiliates.filter((a) => {
     if (statusFilter !== "all" && a.status !== statusFilter) return false;
     if (search && !a.name.toLowerCase().includes(search.toLowerCase()) && !a.email.toLowerCase().includes(search.toLowerCase())) return false;
