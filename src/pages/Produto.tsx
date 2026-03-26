@@ -163,7 +163,7 @@ export default function Produto() {
             </span>
           </nav>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-12 lg:gap-20">
             {/* Gallery */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
