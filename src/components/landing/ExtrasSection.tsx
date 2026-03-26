@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
 import { motionTokens } from "@/lib/motion";
