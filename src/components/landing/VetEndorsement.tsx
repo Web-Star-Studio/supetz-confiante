@@ -49,10 +49,10 @@ export default function VetEndorsement() {
             </h2>
 
             <div className="space-y-6 text-lg md:text-xl text-supet-text/70 leading-relaxed font-medium">
-              <p>
+              <p data-speakable="true">
                 A maioria das abordagens convencionais foca apenas em anestesiar a pele temporariamente. O problema retorna assim que o efeito da pomada ou do corticoide passa, colocando a saúde do animal em risco a longo prazo.
               </p>
-              <p>
+              <p data-speakable="true">
                 A fórmula da Supet age no <strong className="text-supet-text">epicentro da inflamação celular</strong>. A combinação exata de Ômega 3 superconcentrado, Zinco e Biotina não apenas interrompe a cascata inflamatória (o que causa a coceira), mas reconstrói fisicamente as barreiras de proteção da pele.
               </p>
             </div>
