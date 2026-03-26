@@ -42,9 +42,30 @@ export default function AdminPedidos() {
 
   useEffect(() => { fetchOrders(); }, [statusFilter]);
 
+  const statusMessages: Record<string, string> = {
+    confirmed: "Seu pedido foi confirmado e está sendo preparado! ✅",
+    shipped: "Seu pedido foi enviado! 🚚 Em breve chegará ao destino.",
+    delivered: "Seu pedido foi entregue! 🎉 Esperamos que aproveite.",
+    cancelled: "Seu pedido foi cancelado. Entre em contato se precisar de ajuda.",
+  };
+
   const updateStatus = async (orderId: string, newStatus: string) => {
+    // Get order to find user_id
+    const order = orders.find(o => o.id === orderId);
     await supabase.from("orders").update({ status: newStatus }).eq("id", orderId);
     log({ action: "update", entity_type: "order", entity_id: orderId, details: { status: newStatus } });
+
+    // Send in-app notification to the customer
+    if (order?.user_id && statusMessages[newStatus]) {
+      await supabase.from("user_notifications").insert({
+        user_id: order.user_id,
+        title: `Pedido #${orderId.slice(0, 8)} — ${statusLabels[newStatus]?.label || newStatus}`,
+        message: statusMessages[newStatus],
+        type: "order",
+        link: "/perfil",
+      });
+    }
+
     fetchOrders();
   };
 
