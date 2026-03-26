@@ -31,18 +31,27 @@ export default function AdminPedidos() {
   const [loading, setLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [copied, setCopied] = useState(false);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
   const { log } = useAuditLog();
 
   const fetchOrders = async () => {
     setLoading(true);
-    let query = supabase.from("orders").select("*").order("created_at", { ascending: false });
+    const from = page * PAGE_SIZE;
+    const to = from + PAGE_SIZE - 1;
+    let query = supabase.from("orders").select("*", { count: "exact" }).order("created_at", { ascending: false }).range(from, to);
     if (statusFilter !== "all") query = query.eq("status", statusFilter);
-    const { data } = await query;
+    if (search.trim()) query = query.or(`customer_name.ilike.%${search.trim()}%,id.ilike.%${search.trim()}%`);
+    const { data, count } = await query;
     setOrders(data || []);
+    setTotalCount(count || 0);
     setLoading(false);
   };
 
-  useEffect(() => { fetchOrders(); }, [statusFilter]);
+  useEffect(() => { fetchOrders(); }, [statusFilter, page, search]);
+  useEffect(() => { setPage(0); }, [statusFilter, search]);
+
+  const totalPages = Math.ceil(totalCount / PAGE_SIZE);
 
   const statusMessages: Record<string, string> = {
     confirmed: "Seu pedido foi confirmado e está sendo preparado! ✅",
