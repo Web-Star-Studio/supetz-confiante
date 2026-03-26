@@ -359,6 +359,8 @@ export default function AdminMarketing() {
         <CampaignTemplatesTab />
       ) : activeTab === "automations" ? (
         <AutomationsTab />
+      ) : activeTab === "analytics" ? (
+        <MarketingAnalyticsTab />
       ) : (
         <>
           {/* Stats */}
