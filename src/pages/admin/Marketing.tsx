@@ -73,7 +73,7 @@ export default function AdminMarketing() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates">("campaigns");
+  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates" | "automations">("campaigns");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
