@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import {
   Handshake, Users, DollarSign, TrendingUp, CheckCircle, XCircle,
-  Clock, Eye, Loader2, Search, Wallet, Plus,
+  Clock, Eye, Loader2, Search, Wallet, Plus, Trash2,
 } from "lucide-react";
 import { format } from "date-fns";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -144,6 +144,26 @@ export default function Afiliados() {
       toast.error("Erro ao reativar");
     } else {
       toast.success(`${aff.name} reativado.`);
+      loadData();
+    }
+  };
+
+  const handleDelete = async (aff: Affiliate) => {
+    if (!window.confirm(`Tem certeza que deseja excluir permanentemente "${aff.name}"? Esta ação não pode ser desfeita.`)) return;
+    
+    // Delete related records first, then the affiliate
+    await Promise.all([
+      supabase.from("affiliate_sales").delete().eq("affiliate_id", aff.id),
+      supabase.from("affiliate_clicks").delete().eq("affiliate_id", aff.id),
+      supabase.from("affiliate_payouts").delete().eq("affiliate_id", aff.id),
+    ]);
+
+    const { error } = await supabase.from("affiliates").delete().eq("id", aff.id);
+    if (error) {
+      toast.error("Erro ao excluir afiliado: " + error.message);
+    } else {
+      toast.success(`${aff.name} excluído permanentemente.`);
+      log({ action: "delete", entity_type: "affiliate", entity_id: aff.id, details: { name: aff.name, email: aff.email } });
       loadData();
     }
   };
@@ -421,9 +441,16 @@ export default function Afiliados() {
                           <button
                             onClick={() => openAffiliateDetail(aff)}
                             className="text-muted-foreground hover:bg-muted p-1.5 rounded-lg"
-                            title="Detalhes"
+                            title="Editar"
                           >
                             <Eye className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(aff)}
+                            className="text-destructive hover:bg-destructive/10 p-1.5 rounded-lg"
+                            title="Excluir"
+                          >
+                            <Trash2 className="w-4 h-4" />
                           </button>
                         </div>
                       </td>
