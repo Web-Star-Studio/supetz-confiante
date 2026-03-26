@@ -150,10 +150,10 @@ export default function Produto() {
         ]}
       />
 
-      <div className="min-h-screen bg-background pt-28 pb-20 px-6">
+      <div className="min-h-screen bg-background pt-16 md:pt-28 pb-20 px-4 md:px-6">
         <div className="mx-auto max-w-6xl">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-sm text-muted-foreground mb-10">
+          <nav className="flex items-center gap-1.5 text-xs md:text-sm text-muted-foreground mb-6 md:mb-10">
             <Link to="/" className="hover:text-foreground transition-colors">Home</Link>
             <ChevronRight className="w-3.5 h-3.5" />
             <Link to="/shop" className="hover:text-foreground transition-colors">Loja</Link>
@@ -163,7 +163,7 @@ export default function Produto() {
             </span>
           </nav>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-20">
             {/* Gallery */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -295,7 +295,7 @@ export default function Produto() {
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
+              <h1 className="text-2xl md:text-4xl font-extrabold text-foreground tracking-tight leading-tight">
                 {product.title}
               </h1>
               {product.subtitle && (
@@ -327,9 +327,9 @@ export default function Produto() {
               )}
 
               {/* Price block */}
-              <div className="mt-8 p-6 rounded-2xl bg-muted/50 border border-border">
+              <div className="mt-6 md:mt-8 p-4 md:p-6 rounded-2xl bg-muted/50 border border-border">
                 <div className="flex items-baseline gap-3">
-                  <span className="text-4xl font-black text-foreground">
+                  <span className="text-3xl md:text-4xl font-black text-foreground">
                     R$ {product.price.toFixed(2).replace(".", ",")}
                   </span>
                   {product.originalPrice > product.price && (

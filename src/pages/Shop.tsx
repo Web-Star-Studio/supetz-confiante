@@ -132,7 +132,7 @@ function ShopHero({
   loading: boolean;
 }) {
   return (
-    <section className="bg-supet-bg pt-6 md:pt-32 pb-24 border-b border-border/30 relative">
+    <section className="bg-supet-bg pt-16 md:pt-32 pb-24 border-b border-border/30 relative">
       <div className="mx-auto max-w-[1400px] px-4 md:px-6 lg:px-12">
         <div className="mb-4 md:mb-8">
           <span className="text-[10px] md:text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
