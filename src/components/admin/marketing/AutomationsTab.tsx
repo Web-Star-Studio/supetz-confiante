@@ -77,7 +77,7 @@ export default function AutomationsTab() {
       .update({ enabled: !auto.enabled })
       .eq("id", auto.id);
     if (error) { toast.error("Erro ao atualizar"); return; }
-    log({ action: auto.enabled ? "disable" : "enable", entity_type: "marketing_automation", entity_id: auto.id });
+    log({ action: "update", entity_type: "marketing_automation", entity_id: auto.id, details: { enabled: !auto.enabled } });
     toast.success(auto.enabled ? "Automação desativada" : "Automação ativada! 🚀");
     fetchData();
   };
