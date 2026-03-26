@@ -90,6 +90,12 @@ export default function Shop() {
             { name: "Home", url: "https://supetz-playful-trust.lovable.app/" },
             { name: "Loja", url: "https://supetz-playful-trust.lovable.app/shop" },
           ]),
+          buildCollectionPageSchema({
+            name: "Loja Supet — Gomas Naturais",
+            description: "Coleção completa de gomas naturais Supet para a saúde do seu pet.",
+            url: "https://supetz-playful-trust.lovable.app/shop",
+            numberOfItems: comboProducts.length || 3,
+          }),
         ]}
       />
       <ShopHero

@@ -70,7 +70,7 @@ export default function Ciencia() {
               Ciência Aplicada <br />
               <span className="text-supet-orange italic font-serif lowercase">à Longevidade.</span>
             </h1>
-            <p className="mt-6 text-xl text-supet-text/60 font-medium leading-relaxed">
+            <p data-speakable="true" className="mt-6 text-xl text-supet-text/60 font-medium leading-relaxed">
               Não maquíamos sintomas. Nós formulamos a composição mais avançada do Brasil para tratar alergias, recuperar a pelagem e fortalecer a imunidade <strong className="text-supet-text">de dentro para fora.</strong>
             </p>
           </div>
