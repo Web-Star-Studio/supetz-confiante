@@ -164,9 +164,10 @@ export default function AutomationsTab() {
         name: editForm.name,
         description: editForm.description,
         action_type: editForm.action_type,
+        scheduled_time: editForm.scheduled_time || "09:00",
         trigger_config: editForm.trigger_config,
         action_config: editForm.action_config,
-      })
+      } as any)
       .eq("id", editingId);
     if (error) { toast.error("Erro ao salvar"); setSaving(false); return; }
     log({ action: "update", entity_type: "marketing_automation", entity_id: editingId });
