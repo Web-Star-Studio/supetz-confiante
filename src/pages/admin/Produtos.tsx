@@ -165,6 +165,8 @@ export default function AdminProdutos() {
   const inactiveCount = products.filter(p => !p.active).length;
   const categoryLabel = (cat: string) => CATEGORIES.find(c => c.value === cat)?.label || cat;
 
+  const showingLabel = totalCount > 0 ? ` (${page * PAGE_SIZE + 1}–${Math.min((page + 1) * PAGE_SIZE, totalCount)} de ${totalCount})` : "";
+
   return (
     <AdminLayout>
       <div className="flex items-center justify-between mb-8">
