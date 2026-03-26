@@ -631,7 +631,7 @@ export default function Checkout() {
                             setCouponCode(affiliateInfo.coupon_code!);
                             setAffiliateCouponApplied(true);
                             // Auto-apply: search in user_coupons or just set as manual code
-                            handleApplyCouponByCode(affiliateInfo.coupon_code!);
+                            handleApplyCoupon();
                           }}
                           className="bg-supet-orange text-white rounded-full px-4 py-1.5 text-xs font-bold uppercase tracking-wider hover:bg-supet-orange-dark transition-colors flex-shrink-0"
                         >
