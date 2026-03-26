@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useProducts } from "@/hooks/useProducts";
 import { useCart } from "@/context/CartContext";
-import { Check } from "lucide-react";
+import { useProductRatings } from "@/hooks/useProductRatings";
+import { Check, Star } from "lucide-react";
 
 export default function PricingSection() {
   const { addItem } = useCart();
