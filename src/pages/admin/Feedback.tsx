@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import FeedbackTrendChart from "@/components/admin/FeedbackTrendChart";
 
 type FeedbackRow = {
   id: string;
