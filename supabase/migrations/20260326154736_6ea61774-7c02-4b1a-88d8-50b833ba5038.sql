@@ -1,0 +1,1 @@
+ALTER TABLE public.marketing_automations ADD COLUMN scheduled_time text DEFAULT '09:00';

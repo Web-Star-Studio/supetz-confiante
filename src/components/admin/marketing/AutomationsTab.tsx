@@ -24,6 +24,7 @@ interface Automation {
   last_run_at: string | null;
   created_at: string;
   updated_at: string;
+  scheduled_time: string | null;
 }
 
 interface Execution {
@@ -70,6 +71,7 @@ const defaultCreateForm = {
   description: "",
   trigger_type: "pet_birthday",
   action_type: "notification",
+  scheduled_time: "09:00",
   trigger_config: {} as any,
   action_config: {
     notification_title: "",
@@ -147,6 +149,7 @@ export default function AutomationsTab() {
       name: auto.name,
       description: auto.description,
       action_type: auto.action_type,
+      scheduled_time: auto.scheduled_time || "09:00",
       trigger_config: { ...auto.trigger_config },
       action_config: { ...auto.action_config },
     });
@@ -161,9 +164,10 @@ export default function AutomationsTab() {
         name: editForm.name,
         description: editForm.description,
         action_type: editForm.action_type,
+        scheduled_time: editForm.scheduled_time || "09:00",
         trigger_config: editForm.trigger_config,
         action_config: editForm.action_config,
-      })
+      } as any)
       .eq("id", editingId);
     if (error) { toast.error("Erro ao salvar"); setSaving(false); return; }
     log({ action: "update", entity_type: "marketing_automation", entity_id: editingId });
@@ -184,8 +188,9 @@ export default function AutomationsTab() {
       action_type: createForm.action_type,
       trigger_config: createForm.trigger_config,
       action_config: createForm.action_config,
+      scheduled_time: createForm.scheduled_time || "09:00",
       enabled: false,
-    });
+    } as any);
     if (error) { toast.error("Erro ao criar automação"); setCreating(false); return; }
     log({ action: "create", entity_type: "marketing_automation", details: { name: createForm.name } });
     toast.success("Automação criada! Ative para começar a usar.");
@@ -669,7 +674,7 @@ export default function AutomationsTab() {
                     })()}
                   </div>
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                       <label className="text-xs font-semibold text-muted-foreground mb-1 block">Nome *</label>
                       <input
@@ -687,6 +692,18 @@ export default function AutomationsTab() {
                         placeholder="Descreva o objetivo"
                         className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground placeholder:text-muted-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
                       />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-muted-foreground mb-1 block flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5" /> Horário de execução
+                      </label>
+                      <input
+                        type="time"
+                        value={createForm.scheduled_time}
+                        onChange={(e) => setCreateForm({ ...createForm, scheduled_time: e.target.value })}
+                        className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30"
+                      />
+                      <p className="text-[10px] text-muted-foreground mt-1">Horário diário para verificar e disparar</p>
                     </div>
                   </div>
 
@@ -789,6 +806,9 @@ export default function AutomationsTab() {
                           <Clock className="w-3 h-3" /> {new Date(auto.last_run_at).toLocaleDateString("pt-BR")}
                         </span>
                       )}
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+                        ⏰ {auto.scheduled_time || "09:00"}
+                      </span>
                       {auto.action_config?.email_template_id && (() => {
                         const tpl = allTemplates.find((t) => t.id === auto.action_config.email_template_id);
                         return tpl ? (
@@ -849,6 +869,14 @@ export default function AutomationsTab() {
                           <label className="text-xs font-semibold text-muted-foreground mb-1 block">Descrição</label>
                           <input value={editForm.description}
                             onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                            className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
+                        </div>
+                        <div>
+                          <label className="text-xs font-semibold text-muted-foreground mb-1 block flex items-center gap-1.5">
+                            <Clock className="w-3.5 h-3.5" /> Horário de execução diária
+                          </label>
+                          <input type="time" value={editForm.scheduled_time || "09:00"}
+                            onChange={(e) => setEditForm({ ...editForm, scheduled_time: e.target.value })}
                             className="w-full px-4 py-3 rounded-2xl bg-muted text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-primary/30" />
                         </div>
                         <div>
@@ -952,7 +980,8 @@ export default function AutomationsTab() {
         <div>
           <p className="text-sm font-bold text-foreground">Execução automática</p>
           <p className="text-xs text-muted-foreground mt-1">
-            As automações ativas são verificadas diariamente às 9h. Cada usuário recebe no máximo uma ação por automação por dia.
+            As automações ativas são verificadas diariamente no horário configurado (padrão: 09:00). Cada automação pode ter seu próprio horário de execução.
+            Cada usuário recebe no máximo uma ação por automação por dia.
             Use o botão "Nova Automação" para criar gatilhos personalizados ou "Executar agora" para rodar manualmente.
           </p>
         </div>
