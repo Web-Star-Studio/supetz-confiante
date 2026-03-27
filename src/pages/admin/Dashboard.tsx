@@ -2,11 +2,12 @@ import { useEffect, useState, useMemo } from "react";
 import AdminLayout from "@/components/admin/AdminLayout";
 import RevenueChart from "@/components/admin/RevenueChart";
 import EmergencyAnalytics from "@/components/admin/EmergencyAnalytics";
+import CrossModuleInsights from "@/components/admin/CrossModuleInsights";
 import { supabase } from "@/integrations/supabase/client";
 import {
   ShoppingCart, Package, Users, TrendingUp, ArrowUpRight, ArrowDownRight,
   AlertTriangle, Crown, UserPlus, UserCheck, UserX, Megaphone, DollarSign,
-  Boxes, Eye, Wallet,
+  Boxes, Eye, Wallet, Activity,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -125,6 +126,9 @@ export default function AdminDashboard() {
   // Marketing
   const [activeCampaigns, setActiveCampaigns] = useState(0);
   const [totalCampaignRecipients, setTotalCampaignRecipients] = useState(0);
+  const [allCampaigns, setAllCampaigns] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allExpenses, setAllExpenses] = useState<any[]>([]);
 
   // Financial
   const [totalExpenses, setTotalExpenses] = useState(0);
@@ -181,6 +185,9 @@ export default function AdminDashboard() {
       // Marketing
       setActiveCampaigns(campaigns.filter((c: any) => c.status === "active").length);
       setTotalCampaignRecipients(recipientsRes.count || 0);
+      setAllCampaigns(campaigns);
+      setAllProducts(products);
+      setAllExpenses(expenses);
 
       // Expenses
       const totalExp = expenses.reduce((s, e: any) => s + Number(e.amount), 0);
@@ -412,6 +419,24 @@ export default function AdminDashboard() {
             </table>
           </div>
         )}
+      </div>
+
+      {/* Cross-Module Insights */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Activity className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-bold text-foreground">Inteligência Cross-Module</h2>
+        </div>
+        <CrossModuleInsights
+          orders={allOrders}
+          profiles={totalCustomers}
+          products={allProducts}
+          campaigns={allCampaigns}
+          recipients={totalCampaignRecipients}
+          expenses={allExpenses}
+          funnelData={funnelData}
+          lowStockCount={lowStockProducts.length}
+        />
       </div>
 
       {/* Emergency Analytics */}
