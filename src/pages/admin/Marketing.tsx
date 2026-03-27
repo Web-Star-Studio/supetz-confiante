@@ -335,9 +335,12 @@ export default function AdminMarketing() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 flex-wrap">
         {([
           { key: "campaigns" as const, label: "Campanhas", icon: Megaphone },
+          { key: "segmentation" as const, label: "Segmentação", icon: Target },
+          { key: "analysis" as const, label: "Análise", icon: TrendingUp },
+          { key: "abtesting" as const, label: "A/B Testing", icon: FlaskConical },
           { key: "automations" as const, label: "Automações", icon: Zap },
           { key: "templates" as const, label: "Templates", icon: FileText },
           { key: "newsletter" as const, label: "Newsletter", icon: Mail },
