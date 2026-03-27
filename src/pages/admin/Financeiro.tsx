@@ -456,8 +456,11 @@ export default function AdminFinanceiro() {
       </div>
 
       <Tabs defaultValue="overview" className="mb-6">
-        <TabsList className="bg-card rounded-2xl p-1">
+        <TabsList className="bg-card rounded-2xl p-1 flex-wrap">
           <TabsTrigger value="overview" className="rounded-xl text-xs font-semibold"><BarChart3 className="w-3.5 h-3.5 mr-1.5" />Visão Geral</TabsTrigger>
+          <TabsTrigger value="dre" className="rounded-xl text-xs font-semibold"><Activity className="w-3.5 h-3.5 mr-1.5" />DRE</TabsTrigger>
+          <TabsTrigger value="projections" className="rounded-xl text-xs font-semibold"><Zap className="w-3.5 h-3.5 mr-1.5" />Projeções</TabsTrigger>
+          <TabsTrigger value="margins" className="rounded-xl text-xs font-semibold"><Target className="w-3.5 h-3.5 mr-1.5" />Margens</TabsTrigger>
           <TabsTrigger value="forecast" className="rounded-xl text-xs font-semibold"><Zap className="w-3.5 h-3.5 mr-1.5" />Previsão</TabsTrigger>
           <TabsTrigger value="breakdown" className="rounded-xl text-xs font-semibold"><Calendar className="w-3.5 h-3.5 mr-1.5" />Mensal</TabsTrigger>
         </TabsList>
