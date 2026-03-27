@@ -34,6 +34,7 @@ export default function AdminConfiguracoes() {
           if (s.key === "store_phone") setStorePhone((s.value as any)?.value || "");
           if (s.key === "store_address") setStoreAddress((s.value as any)?.value || "");
           if (s.key === "feedback_satisfaction_threshold") setFeedbackThreshold(Number((s.value as any)?.value) || 70);
+          if (s.key === "health_score_threshold") setHealthScoreThreshold(Number((s.value as any)?.value) || 40);
         });
       }
     }
