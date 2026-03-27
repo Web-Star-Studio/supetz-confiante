@@ -121,7 +121,29 @@ export default function AdminConfiguracoes() {
                   className={`${inputClass} w-24 text-center`}
                 />
                 <span className="text-sm text-muted-foreground font-medium">%</span>
+            </div>
+
+            {/* Health Score Threshold */}
+            <div className="pt-3 border-t border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="w-4 h-4 text-destructive" />
+                <label className="text-sm font-semibold text-foreground">Limiar do Score de Saúde do Negócio</label>
               </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Alerta automático diário quando o score geral do negócio cair abaixo deste valor (0-100).
+              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min={10}
+                  max={80}
+                  value={healthScoreThreshold}
+                  onChange={e => setHealthScoreThreshold(Math.min(80, Math.max(10, Number(e.target.value))))}
+                  className={`${inputClass} w-24 text-center`}
+                />
+                <span className="text-sm text-muted-foreground font-medium">/ 100</span>
+              </div>
+            </div>
             </div>
             {storeSuccess && (
               <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 rounded-2xl p-3 text-sm font-medium">
