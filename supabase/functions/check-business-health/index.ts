@@ -104,7 +104,16 @@ Deno.serve(async (req) => {
 
     console.log(`Business health score: ${overallScore}`);
 
-    const THRESHOLD = 40;
+    // Read configurable threshold from store_settings
+    const { data: thresholdSetting } = await supabase
+      .from("store_settings")
+      .select("value")
+      .eq("key", "health_score_threshold")
+      .maybeSingle();
+
+    const THRESHOLD = thresholdSetting?.value?.value
+      ? Number(thresholdSetting.value.value)
+      : 40;
 
     if (overallScore < THRESHOLD) {
       // Check if we already sent an alert in the last 24h
