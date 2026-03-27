@@ -96,7 +96,8 @@ export default function NotificationCenter() {
 
   const handleNotifClick = (notif: Notification) => {
     markAsRead(notif.id);
-    if (notif.order_id) { navigate("/admin/pedidos"); setOpen(false); }
+    if (notif.type === "health_alert") { navigate("/admin"); setOpen(false); }
+    else if (notif.order_id) { navigate("/admin/pedidos"); setOpen(false); }
   };
 
   const getIcon = (type: string) => {
