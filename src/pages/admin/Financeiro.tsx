@@ -15,6 +15,9 @@ import {
   BarChart, Bar, PieChart as RPieChart, Pie, Cell, Legend, ComposedChart, Line,
 } from "recharts";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import DRETab from "@/components/admin/finance/DRETab";
+import ProjectionsTab from "@/components/admin/finance/ProjectionsTab";
+import MarginAnalysisTab from "@/components/admin/finance/MarginAnalysisTab";
 
 interface Order {
   id: string;
