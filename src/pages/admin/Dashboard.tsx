@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   ShoppingCart, Package, Users, TrendingUp, ArrowUpRight, ArrowDownRight,
   AlertTriangle, Crown, UserPlus, UserCheck, UserX, Megaphone, DollarSign,
-  Boxes, Eye, Wallet,
+  Boxes, Eye, Wallet, Activity,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
