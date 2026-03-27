@@ -368,6 +368,12 @@ export default function AdminMarketing() {
         <AutomationsTab />
       ) : activeTab === "analytics" ? (
         <MarketingAnalyticsTab />
+      ) : activeTab === "segmentation" ? (
+        <AdvancedSegmentationTab />
+      ) : activeTab === "analysis" ? (
+        <CampaignAnalysisTab />
+      ) : activeTab === "abtesting" ? (
+        <ABTestingTab />
       ) : (
         <>
           {/* Stats */}
