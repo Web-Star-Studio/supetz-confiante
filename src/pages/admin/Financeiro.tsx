@@ -523,6 +523,21 @@ export default function AdminFinanceiro() {
           </div>
         </TabsContent>
 
+        {/* DRE Tab */}
+        <TabsContent value="dre">
+          <DRETab orders={orders} expenses={expenses} />
+        </TabsContent>
+
+        {/* Projections Tab */}
+        <TabsContent value="projections">
+          <ProjectionsTab orders={orders} expenses={expenses} />
+        </TabsContent>
+
+        {/* Margin Analysis Tab */}
+        <TabsContent value="margins">
+          <MarginAnalysisTab orders={orders} expenses={expenses} />
+        </TabsContent>
+
         {/* Forecast Tab */}
         <TabsContent value="forecast">
           <div className="bg-card rounded-3xl p-5">
