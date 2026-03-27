@@ -6,6 +6,7 @@ import {
   Megaphone, Plus, Send, Eye, Users, Tag, Percent,
   DollarSign, Clock, CheckCircle, XCircle, ChevronDown, ChevronUp,
   Mail, Copy, Trash2, Search, CalendarIcon, FileText, Zap, BarChart3,
+  Target, FlaskConical, TrendingUp,
 } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 import { toast } from "sonner";
@@ -13,6 +14,9 @@ import NewsletterTab from "@/components/admin/NewsletterTab";
 import CampaignTemplatesTab from "@/components/admin/marketing/CampaignTemplatesTab";
 import AutomationsTab from "@/components/admin/marketing/AutomationsTab";
 import MarketingAnalyticsTab from "@/components/admin/marketing/MarketingAnalyticsTab";
+import AdvancedSegmentationTab from "@/components/admin/marketing/AdvancedSegmentationTab";
+import CampaignAnalysisTab from "@/components/admin/marketing/CampaignAnalysisTab";
+import ABTestingTab from "@/components/admin/marketing/ABTestingTab";
 import { Progress } from "@/components/ui/progress";
 import { format } from "date-fns";
 import { Calendar } from "@/components/ui/calendar";
@@ -84,7 +88,7 @@ export default function AdminMarketing() {
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates" | "automations" | "analytics">("campaigns");
+  const [activeTab, setActiveTab] = useState<"campaigns" | "newsletter" | "templates" | "automations" | "analytics" | "segmentation" | "analysis" | "abtesting">("campaigns");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 
@@ -331,9 +335,12 @@ export default function AdminMarketing() {
       </div>
 
       {/* Tabs */}
-      <div className="flex gap-2 mb-6">
+      <div className="flex gap-2 mb-6 flex-wrap">
         {([
           { key: "campaigns" as const, label: "Campanhas", icon: Megaphone },
+          { key: "segmentation" as const, label: "Segmentação", icon: Target },
+          { key: "analysis" as const, label: "Análise", icon: TrendingUp },
+          { key: "abtesting" as const, label: "A/B Testing", icon: FlaskConical },
           { key: "automations" as const, label: "Automações", icon: Zap },
           { key: "templates" as const, label: "Templates", icon: FileText },
           { key: "newsletter" as const, label: "Newsletter", icon: Mail },
@@ -361,6 +368,12 @@ export default function AdminMarketing() {
         <AutomationsTab />
       ) : activeTab === "analytics" ? (
         <MarketingAnalyticsTab />
+      ) : activeTab === "segmentation" ? (
+        <AdvancedSegmentationTab />
+      ) : activeTab === "analysis" ? (
+        <CampaignAnalysisTab />
+      ) : activeTab === "abtesting" ? (
+        <ABTestingTab />
       ) : (
         <>
           {/* Stats */}
