@@ -3,7 +3,7 @@ import AdminLayout from "@/components/admin/AdminLayout";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { motion } from "framer-motion";
-import { Loader2, CheckCircle, Store, BrainCircuit } from "lucide-react";
+import { Loader2, CheckCircle, Store, BrainCircuit, Activity } from "lucide-react";
 import { useAuditLog } from "@/hooks/useAuditLog";
 
 export default function AdminConfiguracoes() {
@@ -23,6 +23,7 @@ export default function AdminConfiguracoes() {
 
   // Feedback threshold
   const [feedbackThreshold, setFeedbackThreshold] = useState(70);
+  const [healthScoreThreshold, setHealthScoreThreshold] = useState(40);
 
   useEffect(() => {
     async function loadSettings() {
@@ -33,6 +34,7 @@ export default function AdminConfiguracoes() {
           if (s.key === "store_phone") setStorePhone((s.value as any)?.value || "");
           if (s.key === "store_address") setStoreAddress((s.value as any)?.value || "");
           if (s.key === "feedback_satisfaction_threshold") setFeedbackThreshold(Number((s.value as any)?.value) || 70);
+          if (s.key === "health_score_threshold") setHealthScoreThreshold(Number((s.value as any)?.value) || 40);
         });
       }
     }
@@ -47,13 +49,14 @@ export default function AdminConfiguracoes() {
       { key: "store_phone", value: { value: storePhone } },
       { key: "store_address", value: { value: storeAddress } },
       { key: "feedback_satisfaction_threshold", value: { value: String(feedbackThreshold) } },
+      { key: "health_score_threshold", value: { value: String(healthScoreThreshold) } },
     ];
     for (const s of settings) {
       await supabase.from("store_settings").upsert(s, { onConflict: "key" });
     }
     setSavingStore(false);
     setStoreSuccess(true);
-    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress, feedbackThreshold } });
+    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress, feedbackThreshold, healthScoreThreshold } });
     setTimeout(() => setStoreSuccess(false), 3000);
   };
 
@@ -118,7 +121,29 @@ export default function AdminConfiguracoes() {
                   className={`${inputClass} w-24 text-center`}
                 />
                 <span className="text-sm text-muted-foreground font-medium">%</span>
+            </div>
+
+            {/* Health Score Threshold */}
+            <div className="pt-3 border-t border-border">
+              <div className="flex items-center gap-2 mb-2">
+                <Activity className="w-4 h-4 text-destructive" />
+                <label className="text-sm font-semibold text-foreground">Limiar do Score de Saúde do Negócio</label>
               </div>
+              <p className="text-xs text-muted-foreground mb-2">
+                Alerta automático diário quando o score geral do negócio cair abaixo deste valor (0-100).
+              </p>
+              <div className="flex items-center gap-3">
+                <input
+                  type="number"
+                  min={10}
+                  max={80}
+                  value={healthScoreThreshold}
+                  onChange={e => setHealthScoreThreshold(Math.min(80, Math.max(10, Number(e.target.value))))}
+                  className={`${inputClass} w-24 text-center`}
+                />
+                <span className="text-sm text-muted-foreground font-medium">/ 100</span>
+              </div>
+            </div>
             </div>
             {storeSuccess && (
               <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 rounded-2xl p-3 text-sm font-medium">
