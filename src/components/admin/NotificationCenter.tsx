@@ -17,7 +17,7 @@ interface Notification {
 }
 
 type StatusFilter = "all" | "unread" | "read";
-type TypeFilter = "all" | "order" | "restock" | "stock" | "marketing_summary" | "email_alert";
+type TypeFilter = "all" | "order" | "restock" | "stock" | "marketing_summary" | "email_alert" | "health_alert";
 
 export default function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
