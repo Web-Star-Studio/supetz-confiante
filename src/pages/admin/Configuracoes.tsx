@@ -56,7 +56,7 @@ export default function AdminConfiguracoes() {
     }
     setSavingStore(false);
     setStoreSuccess(true);
-    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress, feedbackThreshold } });
+    log({ action: "update", entity_type: "settings", details: { storeName, storePhone, storeAddress, feedbackThreshold, healthScoreThreshold } });
     setTimeout(() => setStoreSuccess(false), 3000);
   };
 
