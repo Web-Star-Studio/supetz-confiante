@@ -1,110 +1,70 @@
 
 
-# Sistema de Feedback da Super IA — Plano de Implementacao
+# Plano: CRM Inteligente com Scoring e Follow-up
 
 ## Resumo
 
-Implementar um sistema de feedback completo para o chatbot Super IA com coleta estruturada, auto-correcao via prompt e painel admin de monitoramento.
+Unificar a rota /admin/clientes (redirect) com /admin/crm, renomear para "Clientes" na sidebar, e adicionar recursos inteligentes: scoring de clientes, automações de follow-up, e analytics avançado.
 
 ## Etapas
 
-### 1. Criar tabela `chat_feedback` (migration)
+### 1. Remover redirect /admin/clientes e manter apenas /admin/crm
 
-```sql
-CREATE TABLE public.chat_feedback (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL,
-  conversation_id uuid NOT NULL,
-  message_content text NOT NULL,
-  rating text NOT NULL CHECK (rating IN ('positive', 'negative')),
-  reason text,
-  comment text,
-  created_at timestamptz NOT NULL DEFAULT now()
-);
+- Em `AnimatedRoutes.tsx`: remover a linha `<Route path="/admin/clientes" element={<Navigate to="/admin/crm" replace />} />`
+- A sidebar já aponta para `/admin/crm` com label "Clientes" -- sem mudanças necessarias
 
-ALTER TABLE public.chat_feedback ENABLE ROW LEVEL SECURITY;
+### 2. Reorganizar CRM.tsx em abas
 
--- Usuario insere proprio feedback
-CREATE POLICY "Users can insert own feedback"
-  ON public.chat_feedback FOR INSERT TO authenticated
-  WITH CHECK (auth.uid() = user_id);
+Transformar o modulo em interface com tabs:
+- **Clientes** (aba atual com lista, funil, filtros, bulk actions)
+- **Scoring** (nova aba)
+- **Follow-up** (nova aba)
+- **Analytics** (nova aba)
 
--- Usuario le proprio feedback
-CREATE POLICY "Users can view own feedback"
-  ON public.chat_feedback FOR SELECT TO authenticated
-  USING (auth.uid() = user_id);
+### 3. Aba Scoring -- Customer Scoring Inteligente
 
--- Admin le todos
-CREATE POLICY "Admins can view all feedback"
-  ON public.chat_feedback FOR SELECT TO authenticated
-  USING (has_role(auth.uid(), 'admin'));
-```
+Calcular um score automatico (0-100) para cada cliente baseado em:
+- **Recencia** (25pts): dias desde ultimo pedido
+- **Frequencia** (25pts): numero de pedidos
+- **Monetario** (25pts): gasto total
+- **Engajamento** (25pts): pontos de fidelidade, pets cadastrados, cupons usados
 
-Sem UPDATE/DELETE — feedbacks sao imutaveis.
+Exibir:
+- Distribuicao de scores em faixas (0-20 Frio, 21-40 Morno, 41-60 Quente, 61-80 Premium, 81-100 Diamante)
+- Top 10 clientes por score
+- Clientes com score em queda (comparando com dados de pedidos)
+- Badges visuais por faixa
 
-### 2. Atualizar Frontend (`FloatingChatbot.tsx`)
+### 4. Aba Follow-up -- Automacoes de Follow-up
 
-**Feedback positivo (thumbs up):** Salva imediatamente na tabela `chat_feedback` com `rating: "positive"`. Mostra toast de agradecimento.
+Detectar automaticamente oportunidades de follow-up:
+- **Carrinho abandonado**: clientes que nao compram ha X dias (configuravel)
+- **Pos-compra**: clientes que compraram nos ultimos 7 dias sem review
+- **Reativacao**: clientes inativos ha mais de 60 dias com historico de compras
+- **Upsell**: clientes com apenas 1 pedido e gasto alto
+- **Aniversario do pet**: pets com aniversario proximo (7 dias)
 
-**Feedback negativo (thumbs down):** Abre formulario inline abaixo da mensagem com:
-- Radio buttons com motivos pre-definidos: "Resposta incorreta", "Nao entendeu minha pergunta", "Pouco util", "Outro"
-- Textarea opcional (max 300 chars) para comentario
-- Botoes "Enviar feedback" e "Cancelar"
+Para cada oportunidade: botao de acao rapida (enviar notificacao ou cupom individual).
 
-Ao submeter, salva na `chat_feedback` com `rating: "negative"`, `reason` e `comment`. Toast de agradecimento.
+### 5. Aba Analytics -- Metricas de Clientes
 
-Dados salvos: `user_id`, `conversation_id`, `message_content` (primeiros 500 chars da resposta), `rating`, `reason`, `comment`.
+Graficos com Recharts:
+- **Crescimento da base**: novos clientes por mes (ultimos 6 meses)
+- **Distribuicao por status**: pie chart (Lead, Ativo, Inativo, VIP)
+- **Cohort simplificado**: taxa de retencao (% clientes que fizeram 2+ pedidos)
+- **Ticket medio por faixa de score**
 
-Substitui o sistema atual de feedback simples (que apenas atualiza `chat_messages.feedback`) por esse sistema mais rico.
+KPIs: LTV medio, taxa de retencao, churn rate, NPS estimado
 
-### 3. Auto-Correcao no Backend (`supabase/functions/chatbot/index.ts`)
+### 6. Arquivos modificados
 
-Antes de chamar a IA, buscar os 5 feedbacks negativos mais recentes:
+- `src/pages/admin/CRM.tsx` -- reorganizar em tabs, adicionar scoring/follow-up/analytics inline
+- `src/components/layout/AnimatedRoutes.tsx` -- remover redirect /admin/clientes
 
-```sql
-SELECT reason, comment, message_content
-FROM chat_feedback
-WHERE rating = 'negative'
-ORDER BY created_at DESC
-LIMIT 5
-```
+### Detalhes Tecnicos
 
-Injetar no system prompt como secao de auto-correcao:
-
-```
-## ⚠️ AUTO-CORREÇÃO (baseada em feedbacks recentes)
-Os seguintes problemas foram reportados por usuarios:
-1. Motivo: "Resposta incorreta" — "informacao sobre dosagem estava errada"
-2. ...
-Ajuste suas respostas para evitar esses problemas. Seja mais precisa e util.
-```
-
-### 4. Painel Admin de Feedback (`src/pages/admin/Feedback.tsx`)
-
-Nova pagina no admin com:
-
-**KPIs no topo:**
-- Total de feedbacks
-- Taxa de satisfacao (positivos / total)
-- Total de negativos
-- Feedbacks do dia
-
-**Filtros:** por rating (positivo/negativo), busca textual no conteudo/comentario
-
-**Tabela:** rating (badge), motivo, comentario, conteudo da mensagem (truncado), data
-
-**Exportacao CSV:** botao para download com encoding UTF-8 + BOM
-
-Adicionar link na sidebar do admin (`AdminLayout.tsx`).
-
-### 5. Rota no App.tsx
-
-Adicionar rota `/admin/feedback` apontando para o novo componente, protegida pelo `AdminRoute`.
-
-## Detalhes Tecnicos
-
-- **Tabela:** `chat_feedback` com RLS — usuarios inserem/leem proprios, admins leem todos
-- **Frontend:** formulario inline com RadioGroup + Textarea do shadcn, animado com framer-motion
-- **Edge Function:** query com `supabaseAdmin` (service role) para ler feedbacks globais
-- **Admin:** Recharts para KPIs, tabela com paginacao e filtros, CSV via Blob download
+- Scoring calculado client-side com dados ja carregados (profiles, orders, loyalty_points, pets, user_coupons)
+- Follow-ups detectados por queries aos dados existentes, sem novas tabelas
+- Graficos com Recharts (ja disponivel no projeto)
+- Nenhuma migracao de banco necessaria
 
