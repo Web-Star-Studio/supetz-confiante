@@ -49,6 +49,7 @@ export default function AdminConfiguracoes() {
       { key: "store_phone", value: { value: storePhone } },
       { key: "store_address", value: { value: storeAddress } },
       { key: "feedback_satisfaction_threshold", value: { value: String(feedbackThreshold) } },
+      { key: "health_score_threshold", value: { value: String(healthScoreThreshold) } },
     ];
     for (const s of settings) {
       await supabase.from("store_settings").upsert(s, { onConflict: "key" });
