@@ -23,6 +23,7 @@ export default function AdminConfiguracoes() {
 
   // Feedback threshold
   const [feedbackThreshold, setFeedbackThreshold] = useState(70);
+  const [healthScoreThreshold, setHealthScoreThreshold] = useState(40);
 
   useEffect(() => {
     async function loadSettings() {
