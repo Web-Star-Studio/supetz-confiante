@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Bell, Check, CheckCheck, ShoppingCart, X, Filter, Clock, BarChart3 } from "lucide-react";
+import { Bell, Check, CheckCheck, ShoppingCart, X, Filter, Clock, BarChart3, Activity } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
@@ -17,7 +17,7 @@ interface Notification {
 }
 
 type StatusFilter = "all" | "unread" | "read";
-type TypeFilter = "all" | "order" | "restock" | "stock" | "marketing_summary" | "email_alert";
+type TypeFilter = "all" | "order" | "restock" | "stock" | "marketing_summary" | "email_alert" | "health_alert";
 
 export default function NotificationCenter() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -96,7 +96,8 @@ export default function NotificationCenter() {
 
   const handleNotifClick = (notif: Notification) => {
     markAsRead(notif.id);
-    if (notif.order_id) { navigate("/admin/pedidos"); setOpen(false); }
+    if (notif.type === "health_alert") { navigate("/admin"); setOpen(false); }
+    else if (notif.order_id) { navigate("/admin/pedidos"); setOpen(false); }
   };
 
   const getIcon = (type: string) => {
@@ -107,6 +108,7 @@ export default function NotificationCenter() {
       case "marketing_summary": return <BarChart3 className="w-4 h-4 text-violet-600" />;
       case "email_alert": return <Bell className="w-4 h-4 text-destructive" />;
       case "feedback_alert": return <Bell className="w-4 h-4 text-amber-500" />;
+      case "health_alert": return <Activity className="w-4 h-4 text-destructive" />;
       default: return <Bell className="w-4 h-4 text-primary" />;
     }
   };
