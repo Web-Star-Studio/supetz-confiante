@@ -185,6 +185,9 @@ export default function AdminDashboard() {
       // Marketing
       setActiveCampaigns(campaigns.filter((c: any) => c.status === "active").length);
       setTotalCampaignRecipients(recipientsRes.count || 0);
+      setAllCampaigns(campaigns);
+      setAllProducts(products);
+      setAllExpenses(expenses);
 
       // Expenses
       const totalExp = expenses.reduce((s, e: any) => s + Number(e.amount), 0);
