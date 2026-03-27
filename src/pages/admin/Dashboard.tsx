@@ -126,6 +126,9 @@ export default function AdminDashboard() {
   // Marketing
   const [activeCampaigns, setActiveCampaigns] = useState(0);
   const [totalCampaignRecipients, setTotalCampaignRecipients] = useState(0);
+  const [allCampaigns, setAllCampaigns] = useState<any[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allExpenses, setAllExpenses] = useState<any[]>([]);
 
   // Financial
   const [totalExpenses, setTotalExpenses] = useState(0);
