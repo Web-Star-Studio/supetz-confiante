@@ -107,6 +107,7 @@ export default function NotificationCenter() {
       case "marketing_summary": return <BarChart3 className="w-4 h-4 text-violet-600" />;
       case "email_alert": return <Bell className="w-4 h-4 text-destructive" />;
       case "feedback_alert": return <Bell className="w-4 h-4 text-amber-500" />;
+      case "health_alert": return <Activity className="w-4 h-4 text-destructive" />;
       default: return <Bell className="w-4 h-4 text-primary" />;
     }
   };
