@@ -421,6 +421,24 @@ export default function AdminDashboard() {
         )}
       </div>
 
+      {/* Cross-Module Insights */}
+      <div className="mb-6">
+        <div className="flex items-center gap-2 mb-4">
+          <Activity className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-bold text-foreground">Inteligência Cross-Module</h2>
+        </div>
+        <CrossModuleInsights
+          orders={allOrders}
+          profiles={totalCustomers}
+          products={allProducts}
+          campaigns={allCampaigns}
+          recipients={totalCampaignRecipients}
+          expenses={allExpenses}
+          funnelData={funnelData}
+          lowStockCount={lowStockProducts.length}
+        />
+      </div>
+
       {/* Emergency Analytics */}
       <EmergencyAnalytics />
     </AdminLayout>
